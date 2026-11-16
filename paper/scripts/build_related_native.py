@@ -1,16 +1,25 @@
 """Reproduce the temporary native-process comparison, without technology scaling."""
+import argparse
 import csv
 import hashlib
 import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT/'data/evidence/related_native_20261116'
+SOURCE_RECORD = ROOT/'data/evidence/related_native_20261116'
+OUT = SOURCE_RECORD
 TABLE = ROOT/'tables/temp/related_ppa_native.tex'
 SOURCE = ROOT/'data/process_normalization/table_efficiencies.csv'
 
 
 def main():
+    global OUT, TABLE
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--official',action='store_true',help='Write the promoted official table and a separate evidence batch')
+    args=parser.parse_args()
+    if args.official:
+        OUT=ROOT/'data/evidence/related_native_main_20261116'
+        TABLE=ROOT/'tables/related_ppa_native.tex'
     with SOURCE.open() as f:
         rows = [dict(work=r['work'], node_nm=r['node_nm'], metric=r['metric'],
                      format=r['format'], config=r['config'], value=float(r['native']),
@@ -69,13 +78,16 @@ $\dagger$：TransDot 面积由原文图 7(a) 的 1\,ns 点估读，面效按表 
 \endgroup
 \end{table*}
 '''
+    if args.official:
+        table=table.replace('temporary manuscript only','official manuscript')
+        table=table.replace('mach2021fpnew_temp','mach2021fpnew').replace('bertaccini2024minifloats_temp','bertaccini2024minifloats')
     TABLE.parent.mkdir(parents=True,exist_ok=True);TABLE.write_text(table)
     OUT.mkdir(parents=True,exist_ok=True)
     with (OUT/'efficiencies.csv').open('w') as f:
         writer=csv.DictWriter(f,fieldnames=list(rows[0]),lineterminator='\n');writer.writeheader();writer.writerows(rows)
     def fp(path):return {'path':str(path.relative_to(ROOT)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
-    (OUT/'manifest.json').write_text(json.dumps(dict(scope='temporary Tables I and IV; no process conversion',
-        inputs=[fp(SOURCE),fp(Path(__file__)),fp(OUT/'sources.json'),fp(OUT/'user_comparison.png')],outputs=[fp(TABLE),fp(OUT/'efficiencies.csv')],
+    (OUT/'manifest.json').write_text(json.dumps(dict(scope=('official Table IV' if args.official else 'temporary Tables I and IV')+'; no process conversion',
+        inputs=[fp(SOURCE),fp(Path(__file__)),fp(SOURCE_RECORD/'sources.json'),fp(SOURCE_RECORD/'user_comparison.png')],outputs=[fp(TABLE),fp(OUT/'efficiencies.csv')],
         transdot=dict(cell_area_um2_estimate=6000,period_ps=1000,frequency_ghz=1,
             local_fpnew_relative_area_efficiency={'FP16':dict(mean=1.46,range=[1.28,1.52]),'FP8':dict(mean=2.92,range=[1.56,3.04])},
             method='Absolute area efficiencies use figure-estimated cell area; quoted means span timing sweep and are not multiplied into 22 nm SIMD data'),

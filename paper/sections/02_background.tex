@@ -45,38 +45,6 @@ d=c+\sum_{j=0}^{G-1}X_j^{(A)}X_j^{(B)}
 
 表~\ref{tab:vendor_ratios} 展示了从 $1:2:4$ 向 E 增强或 Q/E 同时增强的产品与研发路线。已有选择给出了配比变化的方向，但不能覆盖不同负载和硬件预算下的全部选择。本文进一步考察只增强 Q、提高 E 增配幅度以及扩大 Q/E 共同增配的组合，将 $1:4:4$、$1:2:12$、$1:2:16$、$1:6:12$ 和 $1:8:16$ 纳入探索，与上述四种配比共同构成九候选设计空间。
 
-\begin{table}[t]
-\centering
-\caption{Per-device dense matrix peaks (PFLOP/s) and roadmap targets.}
-\label{tab:vendor_ratios}
-\begingroup\footnotesize\setlength{\tabcolsep}{2pt}
-\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}llrrrl@{}}
-\toprule
-Vendor & Product & BF16 & MXFP8 & MXFP4 & Ratio \\
-\midrule
-NVIDIA & B200 SXM~\cite{nvidiahgx}
- & 2.250 & 4.500 & 9.000 & $1:2:4$ \\
- & B300 SXM~\cite{nvidiahgx}
- & 2.250 & 4.500 & 13.500 & $1:2:6$ \\
- & Rubin GPU~\cite{nvidiaverarubin}
- & 4.000 & 17.500 & 35.000 & $\approx 1:4:8$ \\
-\midrule
-AMD & MI355X~\cite{amdmi355x}
- & 2.517 & 5.033 & 10.066 & $1:2:4$ \\
- & MI455X~\cite{amdmi455x}
- & 5.033 & 20.133 & 40.265 & $1:4:8$ \\
-\midrule
-Huawei & Ascend 950PR~\cite{huawei950}
- & 0.432 & 0.865 & 1.730 & $1:2:4$ \\
- & Ascend 960PR$^\dagger$~\cite{huawei960roadmap}
- & 1.000 & 2.000 & 8.000 & $1:2:8$ \\
-\bottomrule
-\end{tabular*}
-\par\smallskip
-\parbox{\columnwidth}{\raggedright
-Ratios are normalized to BF16 peaks
-$\dagger$ denotes an R\&D roadmap target.}
-\endgroup
-\end{table}
+
 
 更高的低精度峰值需要额外乘法、对齐和规约资源，也会改变整核面积和逐模式功耗。因此，配比选择需要同时回答：单位成本能增加多少低精度吞吐，以及面积与功耗预算允许配置多少核心。本文以组合式微架构构造候选，以同工况测量建立成本，再将预算决定的绝对算力映射到 H/Q/E 负载组成，分析工业界已有选择和更大增配方案各自的优势区域。

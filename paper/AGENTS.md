@@ -1,5 +1,12 @@
 # 论文编辑授权范围（用户于 2026-11-16 更新）
 
+## 当前正式稿（2026-11-16 提升）
+
+用户已明确授权将当前 `main_temp.tex` 提升到 `main.tex`，本轮正式同步 Table I/IV 的原工艺比较、第四章 C 带宽分析、面积/功耗联合 DSE 与结论。正式引用使用 `tables/related_ppa_native.tex`、`figures/dse_fixed_budget_v2.pdf` 及 `references/references.bib`。工业芯片配比表 `tables/vendor_ratios.tex` 在首页右栏顶部，按源码顺序自动编号为 Table I；精度支持表为 Table II。不得手动设置 table counter，正文统一通过 label/ref 引用。
+
+本次提升是明确授权，不取消后续修改正式稿仍须用户要求的约定。作者摘要和引言表外正文保持原样；临时稿保留为提升前的审阅快照。后续复现正式展示使用 `make presentation`，默认 `make reproduce` 不再调用历史工艺归一化表生成器。最近关于 collector/L0 的讨论未写入正文或模型。
+
+
 本文件约束本目录及其子目录，以下用户最新要求优先于此前默认直接修改论文的工作方式。
 
 - 没有用户明确要求，不得修改正式稿 `main.tex` 及其引用的正文、图表、参考文献等内容。讨论、分析或实验请求本身不构成将结论写入正式论文的授权。

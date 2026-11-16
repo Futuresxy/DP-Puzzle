@@ -3,6 +3,7 @@
 Reads the existing six-scenario results without changing the model or official
 manuscript figures. Every candidate keeps one physical count across contexts.
 """
+import argparse
 import csv
 import hashlib
 import json
@@ -30,6 +31,13 @@ def read(name):
 
 
 def main():
+    global OUTPUT, FIGURE
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--official',action='store_true',help='Write the promoted official figure and a separate evidence batch')
+    args=parser.parse_args()
+    if args.official:
+        OUTPUT=ROOT/'data/evidence/dse_fixed_budget_main_20261116'
+        FIGURE=ROOT/'figures/dse_fixed_budget_v2.pdf'
     manifest = json.loads((SOURCE/'manifest.json').read_text())
     for name in ('metrics','deployments','evaluations','cases'):
         path = SOURCE/(name+'.csv')
@@ -158,7 +166,7 @@ def main():
     inputs=[Path(__file__),ROOT/'scripts/hardware_cost.py',ROOT/'scripts/v41_portfolio.py',
             SOURCE/'manifest.json',SOURCE/'metrics.csv',SOURCE/'deployments.csv',SOURCE/'evaluations.csv',SOURCE/'cases.csv',
             ROOT/'data/DP_area_power/dp11_area_power_fixed_20261116.csv',ROOT/'data/DP_area_power/dp11_area_power_fixed_20261116.sources.json']
-    result=dict(status='analytical_uncalibrated',scope='temporary manuscript only',
+    result=dict(status='analytical_uncalibrated',scope=('official manuscript' if args.official else 'temporary manuscript only'),
         parameters=dict(alpha=.3,beta=1,utilization='ideal',contexts=manifest['config']['contexts'],
                         weighting='Equal request probabilities over 11 log-spaced contexts; All additionally weights A-F equally',
                         speedup='Ratio of mean compute times for the same scenario, baseline/candidate',
@@ -170,7 +178,7 @@ def main():
         limitations=['DP-pool power ceiling, not full-chip measured TDP','C–F are precision migration scenarios, not model-quality validation',
                      'Ideal compute service; no new EDA or inference measurement'])
     (OUTPUT/'manifest.json').write_text(json.dumps(result,indent=2)+'\n')
-    print('Wrote temporary figure, 9 hardware rows, and 63 matched-workload comparisons (including 9 overall entries).')
+    print('Wrote '+('official' if args.official else 'temporary')+' figure, 9 hardware rows, and 63 matched-workload comparisons (including 9 overall entries).')
 
 
 if __name__=='__main__': main()

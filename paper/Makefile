@@ -1,5 +1,5 @@
 PYTHON ?= python3
-.PHONY: all pdf watch reproduce portfolio pdf-temp portfolio-stress reproduce-legacy petile17 diagrams cost-figures dp-share-figures check test test-legacy clean
+.PHONY: all pdf watch reproduce portfolio pdf-temp presentation portfolio-stress reproduce-legacy petile17 diagrams cost-figures dp-share-figures check test test-legacy clean
 all: pdf
 pdf-temp:
 	latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error main_temp.tex
@@ -7,8 +7,11 @@ pdf:
 	latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error main.tex
 reproduce:
 	$(PYTHON) scripts/reproduce_joint_dse.py
-	$(PYTHON) data/process_normalization/normalize_table.py
 	$(MAKE) portfolio
+	$(MAKE) presentation
+presentation:
+	$(PYTHON) scripts/build_related_native.py --official
+	$(PYTHON) scripts/plot_dse_fixed_budget.py --official
 portfolio:
 	$(PYTHON) scripts/v41_core.py
 portfolio-stress:

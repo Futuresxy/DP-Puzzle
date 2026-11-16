@@ -1,5 +1,5 @@
 % !TeX program = latexmk
-% Chinese review manuscript; English master and submission source: dp_puzzle.tex.
+% Official Chinese manuscript; promoted from main_temp.tex on 2026-11-16.
 % Engine and output directory are set by .latexmkrc (XeLaTeX, build/).
 \RequirePackage[T1]{fontenc}
 \documentclass[conference,10pt,letterpaper]{IEEEtran}
@@ -41,6 +41,11 @@
 \begin{document}
 \bstctlcite{DPBSTcontrol}
 \maketitle
+
+% Queue the industrial-ratio overview for the opening right column.
+% Captions are numbered automatically in source order.
+\suppressfloats[t]
+\input{tables/vendor_ratios}
 
 \input{sections/00_abstract}
 

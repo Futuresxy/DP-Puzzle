@@ -1,5 +1,17 @@
 # DAC 2027 论文
 
+## 正式稿提升与首页配比表（2026-11-16）
+
+当前 `main.tex` 已承接临时稿中的新版原工艺成本表、带宽分析、面积/功耗联合 DSE 和结论。工业芯片配比表位于第一页右栏顶部，按源码顺序自动编号为 **Table I**；精度支持表为 **Table II**，后续表与正文引用自动更新。摘要及作者引言表外文字保留。
+
+- `make pdf`：编译正式稿 `build/main.pdf`。
+- `make presentation`：重绘正式 DSE 图并生成原工艺成本表；不会恢复工艺归一化。
+- `make reproduce`：既有模型复现后调用正式展示生成入口。
+- `main_temp.tex` 保留审阅快照，后续正文修改仍按用户指定范围执行；collector/L0 讨论没有自动写入论文。
+- 提升范围与一致性检查见 [记录](data/evidence/main_promotion_20261116/README.md)。
+
+以下按时间保留此前临时稿与历史批次记录。
+
 ## 临时稿：Table I / IV 恢复原工艺（2026-11-16）
 
 按作者要求，Table IV 取消工艺归一化，删除 Formats / Evaluation 两行，增加 MiniFloats、更新 FPnew 2021 正式期刊引用；Table I 补齐相应精度范围。TransDot 面效由原图 1 GHz 约 6000 μm² 的单元面积估算并标 †，不混乘 12 nm 与 22 nm 的 FPnew 基线。用户截图中 MiniFloats 的能效/面效顺序已核对。仅临时稿使用新表，正式稿不改；[数据与复现说明](data/evidence/related_native_20261116/README.md)。临时稿现有独立引言副本仅改 Table I，表外文字保持复制时原文；硬件评价副本仅改比较小节。

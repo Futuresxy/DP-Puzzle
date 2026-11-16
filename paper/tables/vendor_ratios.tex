@@ -1,0 +1,34 @@
+% Opening-page industrial-ratio overview; automatic caption numbering.
+\begin{table}[t]
+\centering
+\caption{Per-device dense matrix peaks (PFLOP/s) and roadmap targets.}
+\label{tab:vendor_ratios}
+\begingroup\footnotesize\setlength{\tabcolsep}{2pt}
+\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}llrrrl@{}}
+\toprule
+Vendor & Product & BF16 & MXFP8 & MXFP4 & Ratio \\
+\midrule
+NVIDIA & B200 SXM~\cite{nvidiahgx}
+ & 2.250 & 4.500 & 9.000 & $1:2:4$ \\
+ & B300 SXM~\cite{nvidiahgx}
+ & 2.250 & 4.500 & 13.500 & $1:2:6$ \\
+ & Rubin GPU~\cite{nvidiaverarubin}
+ & 4.000 & 17.500 & 35.000 & $\approx 1:4:8$ \\
+\midrule
+AMD & MI355X~\cite{amdmi355x}
+ & 2.517 & 5.033 & 10.066 & $1:2:4$ \\
+ & MI455X~\cite{amdmi455x}
+ & 5.033 & 20.133 & 40.265 & $1:4:8$ \\
+\midrule
+Huawei & Ascend 950PR~\cite{huawei950}
+ & 0.432 & 0.865 & 1.730 & $1:2:4$ \\
+ & Ascend 960PR$^\dagger$~\cite{huawei960roadmap}
+ & 1.000 & 2.000 & 8.000 & $1:2:8$ \\
+\bottomrule
+\end{tabular*}
+\par\smallskip
+\parbox{\columnwidth}{\raggedright
+Ratios are normalized to BF16 peaks
+$\dagger$ denotes an R\&D roadmap target.}
+\endgroup
+\end{table}

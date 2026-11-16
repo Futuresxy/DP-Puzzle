@@ -7,27 +7,7 @@
 
 DP-Puzzle 将这一问题落实到可组合的点积单元。通过在共享后端前组合 Q、E 和 QE 专用 Group，构造九种完整支持目标格式的 DP 配比，并测量其面积和逐模式功耗。随后以面积与功耗预算共同决定可配置核心数，将单元增配映射为分精度绝对算力，再分析不同工作量组成下的延迟与能耗收益，并为跨上下文和精度迁移的负载集合选择固定芯片。
 % BEGIN INLINE TABLE: related_features
-\suppressfloats[t]
-\begin{table}[t]
-\centering
-\caption{精度支持与组合式配比配置能力。}
-\label{tab:related_features}
-\begingroup\footnotesize\setlength{\tabcolsep}{1pt}
-\def\Y{$\checkmark$}\def\N{$\times$}\def\E{$\triangle$}
-\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}l*{10}{c}@{}}\toprule
-Design & TF32 & FP16 & BF16 & \shortstack{MX\\FP8} & \shortstack{MX\\FP6} & \shortstack{MX\\FP4} & INT8 & \shortstack{NV\\FP4} & HiF4 & \shortstack{Multi\\Ratio} \\\midrule
-Ten-Four~\cite{rout2026tenfourv3} & \Y & \Y & \Y & \Y & \N & \N & \Y & \N & \N & \N \\
-MXDOTP~\cite{islamoglu2025mxdotp} & \N & \N & \N & \Y & \N & \N & \N & \N & \N & \N \\
-FPnew~\cite{mach2020fpnew} & \N & \Y & \Y & \E & \N & \N & \N & \N & \N & \N \\
-TransDot~\cite{transdot2026} & \N & \Y & \N & \E & \N & \E & \N & \N & \N & \N \\
-\midrule
-DP-Puzzle & \Y & \Y & \Y & \Y & \Y & \Y & \Y & \Y & \Y & \Y \\
-\bottomrule\end{tabular*}
-\par\smallskip
-\parbox{\columnwidth}{\raggedright
-$\checkmark$: supported; $\times$: absent in the reported configuration; $\triangle$: element arithmetic supported, integrated MX scaling not established; }
-\endgroup
-\end{table}
+\input{tables/related_features}
 % END INLINE TABLE: related_features
 本文的主要贡献如下：
 \begin{enumerate}

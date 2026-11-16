@@ -1,4 +1,5 @@
-% Scope: reported formats; MX element-only support is explicitly distinguished.
+% Promoted from the approved temporary manuscript.
+\suppressfloats[t]
 \begin{table}[t]
 \centering
 \caption{精度支持与组合式配比配置能力。}
@@ -6,18 +7,17 @@
 \begingroup\footnotesize\setlength{\tabcolsep}{1pt}
 \def\Y{$\checkmark$}\def\N{$\times$}\def\E{$\triangle$}
 \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}l*{10}{c}@{}}\toprule
-Design & TF32 & FP16 & BF16 & \shortstack{MX\\FP8} & \shortstack{MX\\FP6} & \shortstack{MX\\FP4} & INT8 & \shortstack{NV\\FP4} & HiF4 & \shortstack{Ratio\\comp.} \\\midrule
-Ten-Four~\cite{rout2026tenfourv2} & \Y & \Y & \Y & \Y & \N & \N & \Y & \N & \N & --- \\
-MPICC~\cite{huangMPICCMultiplePrecisionInterCombined2025} & \N & \N & \N & \E & \E & \E & \N & \N & \N & --- \\
-MXDOTP~\cite{islamoglu2025mxdotp} & \N & \N & \N & \Y & \N & \N & \N & \N & \N & --- \\
-FPnew~\cite{mach2020fpnew} & \N & \Y & \Y & \E & \N & \N & \N & \N & \N & --- \\
-TransDot~\cite{transdot2026} & \N & \Y & \N & \E & \N & \E & \N & \N & \N & --- \\
+Design & TF32 & FP16 & BF16 & \shortstack{MX\\FP8} & \shortstack{MX\\FP6} & \shortstack{MX\\FP4} & INT8 & \shortstack{NV\\FP4} & HiF4 & \shortstack{Multi\\Ratio} \\\midrule
+Ten-Four~\cite{rout2026tenfourv3} & \Y & \Y & \Y & \Y & \N & \N & \Y & \N & \N & \N \\
+MXDOTP~\cite{islamoglu2025mxdotp} & \N & \N & \N & \Y & \N & \N & \N & \N & \N & \N \\
+FPnew~\cite{mach2021fpnew} & \N & \Y & \Y & \E & \N & \N & \N & \N & \N & \N \\
+MiniFloats~\cite{bertaccini2024minifloats} & \N & \Y & \Y & \E & \N & \N & \N & \N & \N & \N \\
+TransDot~\cite{transdot2026} & \N & \Y & \N & \E & \N & \E & \N & \N & \N & \N \\
 \midrule
 DP-Puzzle & \Y & \Y & \Y & \Y & \Y & \Y & \Y & \Y & \Y & \Y \\
 \bottomrule\end{tabular*}
 \par\smallskip
 \parbox{\columnwidth}{\raggedright
-$\checkmark$: supported; $\times$: absent in the reported configuration; $\triangle$: element arithmetic supported, integrated MX scaling not established; ---: not reported.
-Ratio comp.: varying throughput ratios by adding specialized low-precision Groups within a shared DP. FPnew uses SIMD FMA.}
+$\checkmark$: supported; $\times$: absent in the reported configuration; $\triangle$: element arithmetic supported, integrated MX scaling not established. FPnew and MiniFloats also support FP32/FP64; MiniFloats uses FP8 E5M2/E4M3 and BF16-encoded FP16alt.}
 \endgroup
 \end{table}
