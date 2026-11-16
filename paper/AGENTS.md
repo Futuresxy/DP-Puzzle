@@ -1,5 +1,9 @@
 # 论文编辑授权范围（用户于 2026-11-16 更新）
 
+## 共享表格（2026-11-16）
+
+用户要求中英文稿共用每张表的单一文件，并统一使用英文表题、表头和注释。共用入口为 `tables/vendor_ratios.tex`、`tables/related_features.tex`、`tables/precision_families.tex` 和 `tables/related_ppa_native.tex`；不再向英文正文内复制表体。英文旧章节专用表放在 `tables/legacy/`，保留现有引用；不据此扩大正文改写范围。临时审阅稿仍保留为历史快照。
+
 ## 当前正式稿（2026-11-16 提升）
 
 用户已明确授权将当前 `main_temp.tex` 提升到 `main.tex`，本轮正式同步 Table I/IV 的原工艺比较、第四章 C 带宽分析、面积/功耗联合 DSE 与结论。正式引用使用 `tables/related_ppa_native.tex`、`figures/dse_fixed_budget_v2.pdf` 及 `references/references.bib`。工业芯片配比表 `tables/vendor_ratios.tex` 在首页右栏顶部，按源码顺序自动编号为 Table I；精度支持表为 Table II。不得手动设置 table counter，正文统一通过 label/ref 引用。

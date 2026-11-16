@@ -15,30 +15,7 @@ DP-Puzzle 采用 Lane、Group 和 DP 三层组合式架构（图~\ref{fig:dp_arc
 
 表~\ref{tab:precision_families} 统一定义精度简称、定点格式和并行度记号。一个 Lane 支持 T1H2Q4E8；两个 Lane 构成 Group，四个 Group 构成 T8H16Q32E64 基线。此外，每个 Lane 支持四路 INT8 乘法，DP 支持 INT32 累加。各模式采用八级流水，每拍接收一笔独立请求。
 
-\begin{table}[t]
-\centering
-\caption{精度简称、定点格式与计算并行度记号。Q 格式采用整数位不含符号位的约定~\cite{ti2003qformat}。}
-\label{tab:precision_families}
-\begingroup
-\footnotesize
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.0}
-\begin{tabular}{@{}p{0.29\columnwidth}p{0.68\columnwidth}@{}}
-\toprule
-记号 & 含义 \\
-\midrule
-T & TF32 \\
-H & FP16、BF16 \\
-Q & MXFP8（E4M3/E5M2）、MXFP6（E2M3/E3M2） \\
-E & MXFP4、NVFP4、HiF4 \\
-\midrule
-$\mathrm{Q}I.F$ & 有符号补码：$I$ 位整数（不含符号位）、$F$ 位小数，总宽度 $1+I+F$。 \\
-$\mathrm{UQ}I.F$ & 无符号定点数：$I$ 位整数、$F$ 位小数，总宽度 $I+F$；如 UQ2.26 为 28 位。 \\
-T1H2Q4E8 & T/H/Q/E 浮点模式每拍分别计算 1/2/4/8 对元素的乘积；每对含一个 A 和一个 B，模式互斥。 \\
-\bottomrule
-\end{tabular}
-\endgroup
-\end{table}
+\input{tables/precision_families.tex}
 
 \begin{figure}[t]
 \centering

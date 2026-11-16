@@ -80,6 +80,14 @@ $\dagger$：TransDot 面积由原文图 7(a) 的 1\,ns 点估读，面效按表 
 '''
     if args.official:
         table=table.replace('temporary manuscript only','official manuscript')
+        table=table.replace('已有单元与 DP-Puzzle 的原工艺实现条件及效率。',
+                            'Implementation conditions and efficiency at the reported process nodes.')
+        table=table.replace(
+            r'均为原工艺数据，不做工艺归一化；支持范围见表~\ref{tab:related_features}。Ten-Four 为全格式 Q8/Q16；MiniFloats 取独立 wDotp FPU，非 cluster。',
+            r'All values use the reported process nodes without technology normalization; supported formats are listed in Table~\ref{tab:related_features}. Ten-Four uses full-format Q8/Q16 configurations; MiniFloats reports the standalone wDotp FPU, excluding the cluster.')
+        table=table.replace(
+            r'$\dagger$：TransDot 面积由原文图 7(a) 的 1\,ns 点估读，面效按表 II 吞吐计算；原文相对其 12\,nm FPnew 基线的平均 FP16/FP8 面效为 1.46$\times$/2.92$\times$，不与本表 22\,nm FPnew 值相乘。--- 表示无报告值或不适用。',
+            r'$\dagger$: TransDot cell area is estimated from the 1\,ns point in its Fig. 7(a), with area efficiency calculated using the throughput in its Table II. Its mean FP16/FP8 area-efficiency gains of 1.46$\times$/2.92$\times$ are relative to its own 12\,nm FPnew baseline and are not applied to the 22\,nm FPnew results here. --- denotes unreported or inapplicable values.')
         table=table.replace('mach2021fpnew_temp','mach2021fpnew').replace('bertaccini2024minifloats_temp','bertaccini2024minifloats')
     TABLE.parent.mkdir(parents=True,exist_ok=True);TABLE.write_text(table)
     OUT.mkdir(parents=True,exist_ok=True)

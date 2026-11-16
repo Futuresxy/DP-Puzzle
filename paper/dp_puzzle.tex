@@ -2,7 +2,7 @@
 % !TeX root = dp_puzzle.tex
 % English master manuscript. Edit this file directly after the initial assembly.
 % Chinese review counterpart: main.tex and sections/*.tex.
-% All chapters and table bodies are inline; figures and bibliography are shared.
+% Chapters are inline; tables, figures, and bibliography use shared sources.
 \RequirePackage[T1]{fontenc}
 \documentclass[conference,10pt,letterpaper]{IEEEtran}
 \usepackage[no-math]{fontspec}
@@ -29,6 +29,10 @@
 \bstctlcite{DPBSTcontrol}
 \maketitle
 
+% Queue Table I at the top of the first page's right column.
+\suppressfloats[t]
+\input{tables/vendor_ratios.tex}
+
 % BEGIN REVIEW PAIR: 00_abstract.tex
 \begin{abstract}
 Multi-precision tensor hardware must balance high- and low-precision throughput within a limited area budget. The same ratio can be realized by extending the reduction dimension K or by adding independent outputs along N, with different circuit and data-supply costs. DP-Puzzle shares arithmetic across a lane--group--DP hierarchy and uses specialized E and QE components to construct $1:2:6$, $1:2:8$, and $1:4:8$ ratios. Synthesis and activity-based power analysis of six DPs at 12\,nm and 1\,GHz show that K expansion reduces component area by 0.65\%--2.40\% and estimated low-precision active power by 2.02\%--3.97\% relative to N composition at matched peak throughput. Bandwidth analysis separates input reuse from accumulator capacity and output-port demand. Under a fixed core-area budget, all four K ratios occupy distinct latency- and energy-optimal regions of the H/Q/E workload space. Prefill workloads derived from three DeepSeek models favor $1:4:8$ under the reference W4A8 mapping, whereas FP4 experts and long contexts can shift some workloads toward $1:2:8$. These results connect dot-product circuit costs to mixed-precision compute demand for workload-driven ratio selection.
@@ -47,7 +51,7 @@ For a fixed input bit width, lower-precision formats allow more elements to be s
 
 We present DP-Puzzle to connect the hardware cost of throughput-ratio choices to their benefits for evolving model workloads. Tensor cores typically organize dot-product units into two-dimensional arrays with systolic~\cite{jouppi2017tpu} or broadcast dataflows. We therefore focus on dot-product units that support multiple formats and allow low-precision throughput to be increased independently. We characterize their area and power using Synopsys synthesis and power analysis at 12\,nm and 1\,GHz, then construct a chip-level throughput model under common area and power constraints. Six precision-migration scenarios represent possible changes in future workloads, allowing us to evaluate the estimated GEMM compute-latency benefits of nine throughput ratios.
 
-\input{tables/vendor_ratios.tex}
+\input{tables/related_features.tex}
 
 Our contributions are as follows:
 \begin{enumerate}
@@ -125,30 +129,7 @@ DP-Puzzle uses a composable Lane--Group--DP hierarchy (Fig.~\ref{fig:dp_architec
 
 Table~\ref{tab:precision_families} defines the precision families, fixed-point formats, and parallelism notation. One Lane supports T1H2Q4E8; two Lanes form a Group, and four Groups form the T8H16Q32E64 baseline. Each Lane also supports four INT8 multiplications, with INT32 accumulation at the DP level. All modes use an eight-stage pipeline that accepts one independent request per cycle.
 
-\begin{table}[t]
-\centering
-\caption{Precision, fixed-point, and parallelism notation. Integer widths in Q notation exclude the sign bit~\cite{ti2003qformat}.}
-\label{tab:precision_families}
-\begingroup
-\footnotesize
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.0}
-\begin{tabular}{@{}p{0.29\columnwidth}p{0.68\columnwidth}@{}}
-\toprule
-Notation & Meaning \\
-\midrule
-T & TF32 \\
-H & FP16, BF16 \\
-Q & MXFP8 (E4M3/E5M2), MXFP6 (E2M3/E3M2) \\
-E & MXFP4, NVFP4, HiF4 \\
-\midrule
-$\mathrm{Q}I.F$ & Two's-complement fixed point: $I$ integer bits excluding sign and $F$ fractional bits; $1+I+F$ bits in total. \\
-$\mathrm{UQ}I.F$ & Unsigned fixed point: $I$ integer and $F$ fractional bits; $I+F$ bits in total. UQ2.26 has 28 bits. \\
-T1H2Q4E8 & 1/2/4/8 element-pair products per cycle in mutually exclusive T/H/Q/E modes; each pair contains one A and one B element. \\
-\bottomrule
-\end{tabular}
-\endgroup
-\end{table}
+\input{tables/precision_families.tex}
 
 \begin{figure}[t]
 \centering
@@ -258,19 +239,7 @@ E extensions activate only in E mode, and QE extensions only in Q/E modes. Masks
 \label{fig:dp_csa_expansion}
 \end{figure}
 
-\begin{table}[t]
-\centering
-\caption{Target ratios and added resources. $N_{\mathrm{dp}}=mn$ is the DP count of the $1:2:4$ baseline array.}
-\label{tab:brick_compositions}
-\begingroup\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}cll@{}}\toprule
-H:Q:E & K: Groups added per DP & N: DPs added per array \\\midrule
-$1:2:6$ & $2\times$ E16 & $(N_{\mathrm{dp}}/2)\times$ E64 \\
-$1:2:8$ & $4\times$ E16 & $N_{\mathrm{dp}}\times$ E64 \\
-$1:4:8$ & $4\times$ Q8E16 & $N_{\mathrm{dp}}\times$ Q32E64 \\
-\bottomrule
-\end{tabular*}\endgroup
-\end{table}
+\input{tables/legacy/brick_compositions.tex}
 
 \subsection{Array Composition Along M/N}
 \label{sec:n_expansion}
@@ -296,45 +265,10 @@ All six DPs are synthesized with Synopsys Design Compiler at 12\,nm, TT, 0.7\,V,
 \label{sec:related_dp_evaluation}
 
 
-Table~\ref{tab:related_dp} uses DeepScaleTool~\cite{sarangi2021deepscaletool} to normalize 7, 22, and 28\,nm results to a 12\,nm process proxy. The MXFP8 area-efficiency proxies for Ten-Four's full-format Q8/Q16 configurations are 1.275/1.316\,TFLOP/s/mm$^2$. Our baseline achieves 3.01--3.10 times these values, and $1{:}4{:}8$ achieves 3.58--3.69 times. Q32E64's MXFP8 energy efficiency is 2.32 times that of MXDOTP, while E64's MXFP4 energy efficiency is 1.58 times MPICC's process-normalized FP4 value; area efficiencies are comparable within each pair. These comparisons indicate that DP-Puzzle combines multi-precision support with area and energy-efficiency benefits from low-precision specialization.
+Table~\ref{tab:related_dp} compares implementation conditions and efficiency at each design's reported process node, without technology normalization. The two DP-Puzzle columns represent the full-precision $1:2:4$ baseline and the low-precision-only $0:2:4$ implementation. TransDot area efficiencies are estimates derived from its reported throughput and figure-read cell area; its relative gains over FPnew refer to the original paper's 12\,nm comparison.
 
 
-% BEGIN INLINE TABLE: tables/related_ppa.tex
-% Sources and conversions: references/notes/dp_comparison.md.
-\begin{table*}[t]
-\centering
-\caption{Implementation conditions and process-normalized efficiency}
-\label{tab:related_dp}
-\begingroup\scriptsize\setlength{\tabcolsep}{2pt}
-\def\Eff#1{\begin{tabular}{@{}lr@{}}#1\end{tabular}}
-\def\Vals#1{\begin{tabular}{@{}r@{}}#1\end{tabular}}
-% BEGIN GENERATED DP AREA CELLS
-\def\DPAreas{16\,165.12 & 18\,863.27 & 21\,596.41 & 27\,191.14 & 5\,644.14 & 11\,695.21}
-% END GENERATED DP AREA CELLS
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}l*{11}{c}@{}}\toprule
-Metric & Ten-Four~\cite{rout2026tenfourv3} & MPICC~\cite{huangMPICCMultiplePrecisionInterCombined2025} & MXDOTP~\cite{islamoglu2025mxdotp} & FPnew~\cite{mach2020fpnew} & TransDot~\cite{transdot2026} & \multicolumn{6}{c}{DP-Puzzle (H:Q:E)} \\
-\cmidrule(lr){7-12}
- & & & & & & $1{:}2{:}4$ (base) & $1{:}2{:}6$ & $1{:}2{:}8$ & $1{:}4{:}8$ & $0{:}0{:}4$ & $0{:}2{:}4$ \\\midrule
-Structure & Fused DP & $n$-term MAC & MX DP & SIMD FMA & FMA / DP & \multicolumn{6}{c}{MX DP} \\
-Evaluation & Synthesis & Synthesis & Post-layout & Silicon & Post-layout & \multicolumn{6}{c}{Synthesis} \\
-Technology (nm) & 7 & 28 & 12 & 22 & 12 & \multicolumn{6}{c}{12} \\
-Voltage (V) & 0.7 & 0.9 & 0.8 & 0.8 & 0.8 & \multicolumn{6}{c}{0.7} \\
-Frequency (GHz) & 1.58 & 1.43 & 1.09 & 0.923 & 1.0 & \multicolumn{6}{c}{1.0} \\
-Area ($\mu$m$^2$) & 2400 / 4650 & 2295 & 3150 & 49\,000 & --- & \DPAreas \\
-Accumulation & FP32/INT32 & FP12/INT8 & FP32 & Per format & FP32 & \multicolumn{4}{c}{FP32/INT32} & \multicolumn{2}{c}{FP32} \\
-\midrule
-% BEGIN GENERATED EFFICIENCY ROWS
-% Generated by paper/data/process_normalization/normalize_table.py.
-\shortstack[l]{Energy efficiency\\(TFLOP/s/W)} & --- & \Eff{FP8 & 3.793\\FP4 & 11.548} & \Eff{MXFP8 & 2.035} & \Eff{FP16 & 0.786\\BF16 & 0.919\\FP8 & 1.966} & \Eff{FP16 & 0.556\\FP8 & 1.190\\FP4 & 2.439} & \Eff{BF16 & \textbf{2.088}\\MXFP8 & 4.000\\MXFP4 & 11.432} & \Vals{2.046\\3.913\\13.317} & \Vals{2.013\\3.851\\14.550} & \Vals{2.033\\4.446\\12.449} & \Vals{---\\---\\\textbf{18.192}} & \Vals{---\\\textbf{4.713}\\12.527} \\
-\midrule
-\shortstack[l]{Area efficiency\\(TFLOP/s/mm$^2$)} & \Eff{BF16 & 0.638 / 0.658\\MXFP8 & 1.275 / 1.316} & \Eff{FP8 & 6.089\\FP4 & 24.361} & \Eff{MXFP8 & 5.524} & \Eff{FP16 & 0.430\\BF16 & 0.430\\FP8 & 0.860} & --- & \Eff{BF16 & \textbf{1.980}\\MXFP8 & 3.959\\MXFP4 & 7.918} & \Vals{1.696\\3.393\\10.179} & \Vals{1.482\\2.963\\11.854} & \Vals{1.177\\4.707\\9.415} & \Vals{---\\---\\\textbf{22.678}} & \Vals{---\\\textbf{5.472}\\10.945} \\
-% END GENERATED EFFICIENCY ROWS
-\bottomrule\end{tabular*}
-\par\smallskip
-\parbox{\textwidth}{\raggedright Implementation conditions are native. DeepScaleTool~\cite{sarangi2021deepscaletool} uses 14\,nm as a proxy for 12\,nm and preserves native 12\,nm results. Bold marks the best DP-Puzzle ratio for each precision and metric. Dashes indicate unavailable results or unsupported modes.}
-\endgroup
-\end{table*}
-% END INLINE TABLE: tables/related_ppa.tex
+\input{tables/related_ppa_native.tex}
 
 Fig.~\ref{fig:six_dp_costs} compares area and power across the six DPs. Removing high-precision paths reduces E64/Q32E64 area to 34.92\%/72.35\% of the baseline. K-expanded $1{:}2{:}6$ and $1{:}2{:}8$ increase area by 16.69\%/33.60\% for 50\%/100\% more E throughput. The $1{:}4{:}8$ design doubles Q/E throughput; Q-mode power reaches 28.789\,mW, the highest among its modes. Power changes across precisions are not proportional to area growth.
 
@@ -352,22 +286,7 @@ Fig.~\ref{fig:six_dp_costs} compares area and power across the six DPs. Removing
 
 Table~\ref{tab:kn_costs} compares matched per-precision peaks, normalizing costs by the number of baseline DPs. The model sums only complete-DP area and active power, excluding storage, interconnect, and peripheral logic. In N composition, inactive added DPs are assumed to be ideally power-gated: their area is retained, but dynamic power, leakage, and power-down/wakeup overheads are omitted. K expansion shares the alignment and accumulation backend, reducing area by 0.65\%--2.40\% and power by 2.02\%--3.97\% in modes that use the added units. DP costs are close for the two organizations, with reuse of floating-point and integer output circuitry giving K expansion a modest area and energy-efficiency advantage.
 
-% BEGIN INLINE TABLE: tables/kn_costs.tex
-% Generated by paper/data/kn_comparison/calculate.py from retained DP measurements.
-\begin{table}[t]
-\centering
-\caption{Modeled costs per baseline DP (K / N). Area: $10^3\,\mu$m$^2$; power: mW}
-\label{tab:kn_costs}
-\begingroup\footnotesize\setlength{\tabcolsep}{2pt}
-\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lcccc@{}}\toprule
-Ratio & Area (K / N) & $P_H$ (K / N) & $P_Q$ (K / N) & $P_E$ (K / N) \\\midrule
-$1:2:6$ & 18.863/18.987 & 15.637/15.328 & 16.354/16.002 & 14.417/14.715 \\
-$1:2:8$ & 21.596/21.809 & 15.893/15.328 & 16.620/16.002 & 17.595/18.233 \\
-$1:4:8$ & 27.191/27.860 & 15.744/15.328 & 28.789/29.582 & 20.563/21.414 \\
-\bottomrule
-\end{tabular*}\endgroup
-\end{table}
-% END INLINE TABLE: tables/kn_costs.tex
+\input{tables/legacy/kn_costs.tex}
 
 \subsection{Bandwidth Requirements of K/N Expansion}
 
@@ -424,23 +343,7 @@ P_{j,d}=256n_jp_{j,d}.
 
 The fixed area budget accommodates 36, 34, 32, and 29 cores for the four ratios, respectively (Table~\ref{tab:k4_absolute}). Low-precision expansion raises per-core throughput but reduces deployment density; its net benefit depends on whether low-precision acceleration offsets the loss of H throughput.
 
-\begin{table}[!t]
-\centering
-\caption{Area-constrained N12 deployment. $A_C$: core area (mm$^2$); $C$: TFLOP/s; $P$: DP-only power (W).}
-\label{tab:k4_absolute}
-\begingroup\footnotesize\setlength{\tabcolsep}{3pt}
-% BEGIN INLINE TABLE: tables/hardware_compact_table.tex
-% Generated by scripts/reproduce.py.
-\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrcc@{}}\toprule
-Ratio & $A_C$ & $n$ & $C_H/C_Q/C_E$ & $P_H/P_Q/P_E$ \\\midrule
-$1:2:4$ & 13.794 & 36 & 294.9/589.8/1179.6 & 141.3/147.5/103.2 \\
-$1:2:6$ & 14.485 & 34 & 278.5/557.1/1671.2 & 136.1/142.3/125.5 \\
-$1:2:8$ & 15.185 & 32 & 262.1/524.3/2097.2 & 130.2/136.2/144.1 \\
-$1:4:8$ & 16.617 & 29 & 237.6/950.3/1900.5 & 116.9/213.7/152.7 \\
-\bottomrule\end{tabular*}
-% END INLINE TABLE: tables/hardware_compact_table.tex
-\endgroup
-\end{table}
+\input{tables/legacy/area_deployment.tex}
 
 \subsection{Optimal Regions for Mixed-Precision Workloads}
 \label{sec:k4_simplex}

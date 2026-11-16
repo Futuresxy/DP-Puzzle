@@ -15,9 +15,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def expand_tables(text):
+    def expand(match):
+        path = ROOT / match[1]
+        if not path.suffix:
+            path = path.with_suffix(".tex")
+        return expand_tables(path.read_text())
+
     return re.sub(
         r"\\input\{(tables/[^}]+)\}",
-        lambda match: (ROOT / match[1]).read_text(),
+        expand,
         text,
     )
 
@@ -56,8 +62,8 @@ def main():
     errors = []
     if re.search(r"[\u4e00-\u9fff]", english):
         errors.append("English master contains Chinese characters")
-    if re.search(r"\\(?:input|include)\{", english):
-        errors.append("English chapters and table bodies must remain inline")
+    if re.search(r"\\(?:input|include)\{(?!tables/)", english):
+        errors.append("English chapters must remain inline; shared table inputs are allowed")
     pairs = re.findall(
         r"% BEGIN REVIEW PAIR: ([^\n]+)\n(.*?)% END REVIEW PAIR: \1", english, re.S
     )
@@ -65,8 +71,12 @@ def main():
     if [name for name, _ in pairs] != expected:
         errors.append("Missing, duplicated, or reordered review-pair markers")
     for name, en_text in pairs:
-        zh_text = expand_tables((ROOT / "sections" / name).read_text())
-        en_sig, zh_sig = signatures(en_text), signatures(zh_text)
+        zh_path = ROOT / "sections" / name
+        if not zh_path.exists():
+            errors.append(f"{name}: Chinese chapter has been reorganized; no paired file")
+            continue
+        zh_text = expand_tables(zh_path.read_text())
+        en_sig, zh_sig = signatures(expand_tables(en_text)), signatures(zh_text)
         for field in en_sig:
             if en_sig[field] != zh_sig[field]:
                 errors.append(f"{name}: {field} differ")
