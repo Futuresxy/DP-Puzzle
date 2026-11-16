@@ -1,17 +1,16 @@
 PYTHON ?= python3
-.PHONY: all pdf watch reproduce portfolio power-sweep portfolio-stress reproduce-legacy petile17 diagrams cost-figures dp-share-figures check test test-legacy clean
+.PHONY: all pdf watch reproduce portfolio pdf-temp portfolio-stress reproduce-legacy petile17 diagrams cost-figures dp-share-figures check test test-legacy clean
 all: pdf
+pdf-temp:
+	latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error main_temp.tex
 pdf:
 	latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error main.tex
 reproduce:
 	$(PYTHON) scripts/reproduce_joint_dse.py
 	$(PYTHON) data/process_normalization/normalize_table.py
 	$(MAKE) portfolio
-	$(MAKE) power-sweep
 portfolio:
 	$(PYTHON) scripts/v41_core.py
-power-sweep:
-	$(PYTHON) scripts/v41_power_sweep.py
 portfolio-stress:
 	$(PYTHON) scripts/v41_portfolio.py
 reproduce-legacy:
@@ -29,7 +28,6 @@ test:
 	$(PYTHON) -m unittest discover -s scripts -p 'test_joint_dse.py' -v
 	$(PYTHON) -m unittest discover -s scripts -p 'test_v41_portfolio.py' -v
 	$(PYTHON) -m unittest discover -s scripts -p 'test_v41_core.py' -v
-	$(PYTHON) -m unittest discover -s scripts -p 'test_v41_power_sweep.py' -v
 test-legacy:
 	$(PYTHON) scripts/test_parameters.py
 clean:

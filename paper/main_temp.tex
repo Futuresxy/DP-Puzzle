@@ -1,0 +1,234 @@
+% Temporary manuscript: author review only. Do not edit the shared abstract/introduction.
+% !TeX program = latexmk
+% Chinese review manuscript; English master and submission source: dp_puzzle.tex.
+% Engine and output directory are set by .latexmkrc (XeLaTeX, build/).
+\RequirePackage[T1]{fontenc}
+\documentclass[conference,10pt,letterpaper]{IEEEtran}
+\usepackage[no-math]{fontspec}
+\usepackage{xeCJK}
+\setmainfont{TeX Gyre Termes}
+\setsansfont{TeX Gyre Heros}
+\setmonofont{TeX Gyre Cursor}
+\setCJKmainfont{FandolSong-Regular.otf}[
+  BoldFont=FandolSong-Bold.otf,
+  ItalicFont=FandolKai-Regular.otf,
+  ItalicFeatures={FakeSlant=0.15},
+  SmallCapsFont=FandolSong-Regular.otf]
+\setCJKsansfont{FandolHei-Regular.otf}[BoldFont=FandolHei-Bold.otf]
+\setCJKmonofont{FandolFang-Regular.otf}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage[caption=false,font=footnotesize]{subfig}
+\usepackage{booktabs}
+\usepackage{cite}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{figures/}}
+
+
+\newcommand{\PaperTitle}{DP-Puzzle: Exploring Multi-Precision Throughput Ratios in Tensor Cores through Composable Dot-Product Units}
+\title{\PaperTitle}
+\author{\IEEEauthorblockN{Anonymous Submission}}
+\hypersetup{
+  pdfauthor={},
+  pdftitle={\PaperTitle},
+  pdfsubject={Chinese working draft}}
+
+\newcounter{DACreferencepage}
+\AtEndDocument{%
+  \ifnum\value{page}>\value{DACreferencepage}\relax
+    \PackageWarningNoLine{DAC2027}{References exceed one page}%
+  \fi}
+
+\begin{document}
+\bstctlcite{DPBSTcontrol}
+\maketitle
+
+\input{sections/00_abstract}
+
+\input{sections/01_introduction}
+
+\input{sections/02_background}
+
+\input{sections/03_architecture}
+
+\input{sections/04_evaluation}
+
+% BEGIN independent DSE draft; copied from 740da79 after authorized rollback.
+% Edit this block only; promotion to the official section is performed by the author.
+\section{面积与功耗约束下的算力配比探索}
+\label{sec:workload}
+
+\begin{table*}[t]
+\centering
+\caption{九种配比的双预算部署，$\alpha=0.3$。$A_C$ 为整核面积（mm$^2$），$N_A$ 为仅面积约束核数，$N_{\beta}$ 为双约束核数，$C$ 为绝对峰值算力（TFLOP/s）。$\beta_{\rm full}$ 表示面积所容纳的全部核心均可运行所需的最低预算倍率。}
+\label{tab:k4_absolute}
+\begingroup\footnotesize\setlength{\tabcolsep}{3pt}
+\input{tables/hardware_joint_table.tex}
+\endgroup
+\end{table*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{joint_dse_regions.pdf}
+\caption{九候选在 H/Q/E 工作量三角域中的优势区域，$\alpha=0.3$。(a)--(c) 分别为 $\beta=1,1.5,2.1$ 的最低计算延迟区域；(d) 为最低 DP 能耗区域。顶点分别表示纯 H、Q、E 工作量，区域数字对应下方配比图例。}
+\label{fig:k4_time_prefill}
+\end{figure*}
+
+本节将九种 DP 的综合面积、原生点积长度和逐模式功耗映射为整核部署成本，以基准阵列面积占比 $\alpha$ 和功耗预算倍率 $\beta$ 联合约束绝对算力，再求解不同 H/Q/E 工作量下的延迟与 DP 能耗最优配比。模型采用固定频率、充分供数和各精度阶段顺序执行的计算场景。
+
+\subsection{从单 DP 成本到整核部署}
+\label{sec:k4_area}
+
+每个 SM 配置 $m=n=16$ 的 DP 阵列，共 $D=mn=256$ 个 DP。以 $1:2:4$ 为基准，取 $N_0=36$ 个 SM；$\alpha$ 表示基准计算阵列占整核的面积比例。令候选 $j$ 的单 DP 面积为 $a_j$，则固定的每核外围面积 $A_O$、共同面积预算及候选整核面积为
+\begin{equation}
+\begin{aligned}
+A_O&=Da_0(\alpha^{-1}-1),\quad
+A_{\mathrm{bud}}=N_0Da_0/\alpha,\\
+A_{C,j}&=A_O+Da_j.
+\end{aligned}
+\label{eq:k4_area_definition}
+\end{equation}
+这里固定外围存储与控制的每核面积，增配成本由 DP 测量决定。$\alpha$ 仅标定基准核，候选的阵列面积占比随 $a_j$ 改变；每个 $\alpha$ 场景内，所有候选共享同一面积预算。
+
+以 $p\in\{H,Q,E\}$ 表示精度，$p_{j,p}$ 为单 DP 的测量总功耗。用原基准部署的最大模式功耗归一化预算：
+\begin{equation}
+P_{\mathrm{ref}}=N_0D\max_p p_{0,p},\qquad
+P_{\mathrm{bud}}=\beta P_{\mathrm{ref}}.
+\label{eq:power_budget}
+\end{equation}
+$\beta$ 表示相对基准可分配给 DP 计算池的功耗倍率，在所有候选和模式间保持一致。要求已配置 SM 在各模式下均可全部开启，则实际配置核数为
+\begin{equation}
+n_j=\min\!\left\{
+\left\lfloor\frac{A_{\mathrm{bud}}}{A_{C,j}}\right\rfloor,
+\left\lfloor\frac{P_{\mathrm{bud}}}{D\max_p p_{j,p}}\right\rfloor
+\right\}.
+\label{eq:core_area_budget}
+\end{equation}
+两项分别给出面积与功耗允许的整数核数。$n_j$ 是设计阶段确定的物理数量，在 H/Q/E 模式间保持不变。对于单 DP 的原生点积长度 $K_{j,p}$，在 $f=1$\,GHz、II=1 下，分精度绝对峰值算力与 DP 功耗为
+\begin{equation}
+C_{j,p}=2fDn_jK_{j,p},\qquad
+P_{j,p}=Dn_jp_{j,p}.
+\label{eq:k4_capacity_power}
+\end{equation}
+
+取 $\alpha\in\{0.2,0.3,0.4\}$、$\beta\in\{1,1.5,2.1\}$ 联合扫描。$\alpha=0.3$ 时，面积预算为 496.59\,mm$^2$，$P_{\mathrm{ref}}=147.47$\,W。表~\ref{tab:k4_absolute} 中，$1:8:16$ 的面积可容纳 22 核，但 $\beta=1$ 时功耗只允许配置 10 核，E 算力由仅面积约束的 2883.6 降至 1310.7\,TFLOP/s。其全核运行门槛为 $\beta=2.018$。相比之下，$1:2:8$ 的 32 核在 $\beta=1$ 下即可全部工作，提供 2097.2\,TFLOP/s 的 E 算力。
+
+\textbf{观察二：单 DP 的增配幅度不决定预算内的绝对算力。} 面积限制部署密度，功耗进一步限制可配置规模。$\alpha$ 刻画增配资源在整核成本中的权重，$\beta$ 刻画供给这些资源的功耗余量；两者共同决定更大点积容量何时能够转化为系统吞吐。
+
+\subsection{混合精度负载与优势区域}
+\label{sec:k4_simplex}
+
+令 $F_p$ 为精度 $p$ 的 GEMM 工作量，$F=\sum_pF_p$，$x_p=F_p/F$。各精度阶段充分利用已配置核心，计算时间与 DP 能耗为
+\begin{align}
+T_j&=F\sum_p\frac{x_p}{C_{j,p}},\label{eq:k4_time}\\
+\mathcal E_j&=F\sum_p x_p\frac{P_{j,p}}{C_{j,p}}.\label{eq:k4_energy}
+\end{align}
+$x_p$ 是 FLOP 占比，三者和为 1。每个预算场景以 1 个百分点的间隔扫描 5,151 种组成，分别求最短延迟与最低能耗。两项目标对 $\boldsymbol x$ 均为线性函数，配比间等成本条件形成直线，可进一步求得精确区域边界。
+
+图~\ref{fig:k4_time_prefill} 显示，$\beta=1$ 时 $1:2:4$ 覆盖 56.77\% 的延迟最优区域，$1:2:6$ 和 $1:2:8$ 分别覆盖 20.02\% 和 17.78\%。放宽到 $\beta=1.5$ 后，$1:4:4$ 和 $1:4:8$ 的区域分别扩大至 20.03\% 和 29.49\%；$\beta=2.1$ 时，$1:6:12$ 和 $1:8:16$ 分别取得 10.70\% 和 20.93\%。区域占比衡量工作量组成空间的几何覆盖。
+
+在本模型中，$P_{j,p}/C_{j,p}=p_{j,p}/(2fK_{j,p})$，配置核数在单位工作量能耗中抵消。因此，改变预算会移动延迟边界，而 DP 能耗区域保持不变；$1:8:16$ 覆盖 40.81\% 的能耗最优区域，却在紧功耗预算下没有非零面积的延迟最优区域。更低功耗、更短时间和更低能耗由不同条件决定，需要分别评价。
+
+\subsection{V4.1-Flash 的上下文与算子精度}
+\label{sec:workload_extraction}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{v41_core_scenarios.pdf}
+\caption{六种核心算子精度迁移场景，$\alpha=0.3$、$\beta=1.5$。各面板上部为 H/Q/E GEMM 工作量占比，下部为九种固定芯片相对该负载点最优芯片的减速；上下文轴为对数刻度，下部纵轴按场景独立取值。粗线及标注为跨上下文最坏损失最小的配比。场景定义见正文，D 从 B 分支，E 合并 C/D，F 进一步降低核心 GEMM 精度。}
+\label{fig:v41_fixed}
+\end{figure*}
+
+以 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 为主要负载，固定 batch=1，按 CED 调度统计冷启动 prefill，覆盖编码器计算、解码器缓存构建与窗口重放。上下文 $L$ 从 1K 至 1M 逐次翻倍，共 11 点。依据算子形状、调用次数、激活专家数和有效注意力配对数计算 FLOP，再按乘法精度汇总为 $F_p(L,z)$；$z$ 表示精度场景，W4A8 专家归入 Q。
+
+迁移变量保留五类主要算子：路由专家、共享专家、Q-up/O-up 投影、主 SWA/CSA2 QK/PV、Grouped O-down。它们与已经采用 E 的索引点积合计覆盖 93.22\%--95.02\% 的已统计 GEMM FLOP。1K 时路由专家占 50.82\%，Q-up/O-up 占 20.08\%；1M 时两者分别为 35.72\% 和 14.11\%，索引点积则增长到 27.10\%。其余算子保持原精度并计入工作量；FP32 部分单列。
+
+图~\ref{fig:v41_fixed} 对应六个固定场景：A 保持原始映射；B 将路由专家改为 W4A4；C 在 B 上将共享专家和 Q-up/O-up 改为 E；D 从 B 分支，将主注意力与 Grouped O 改为 Q；E 合并 C、D；F 在 E 上进一步将主注意力与 Grouped O 改为 E。原生 E 索引点积在所有场景中保留。B 对应已发布的专家 W4A4 路径~\cite{nvidiav41routed2026}；FP8 attention~\cite{flashattention3} 和 FP4 attention~\cite{sageattention3} 提供更低精度执行的机制依据，C--F 用于探索核心算子的精度迁移。
+
+\subsection{路由专家利用率的独立敏感性}
+\label{sec:routed_utilization}
+
+专家按接收 token 组成 grouped GEMM，批内聚合与不规则工作量调度影响矩阵单元利用率~\cite{megablocks2023}。设一轮共同调度的 token 数为 $B L_g$，每 token 激活 $k=6$ 个专家，总专家数 $E=384$，则平均每专家接收
+\begin{equation}
+\overline M_e=\frac{kBL_g}{E}=\frac{BL_g}{64}.
+\end{equation}
+单请求完整 1K、64K prefill 分别对应平均 16、1024 个 token；128-token 解码器重放段只有 2 个。$L_g$ 是实际分组计算长度，分块 prefill 时不等于完整上下文长度。$k/E$ 表示专家选择稀疏度，已通过激活专家数计入工作量，不能再次用作阵列利用率。
+
+主分析取充分利用的计算服务时间。另以 $\eta_p$ 表示路由专家在精度 $p$ 下的有效算力系数：
+\begin{equation}
+T_j=\sum_p\left(\frac{F_{\mathrm{other},p}}{C_{j,p}}+
+\frac{F_{\mathrm{routed},p}}{\eta_p C_{j,p}}\right).
+\label{eq:routed_utilization}
+\end{equation}
+分别检查 Q/E 同时取 0.75、0.5，以及 Q=1、E 取 0.75、0.5 的场景。系数在候选间保持一致，用于分离路由专家共同降效与 FP4 额外降效的影响；有用 FLOP 和物理核数保持不变。能耗比较使用 $\eta=1$ 的活动功耗口径。
+
+\subsection{跨上下文的固定芯片评价}
+\label{sec:fixed_design}
+
+芯片在设计阶段确定一个配比 $j$，运行中改变上下文与精度模式。单点最优 $T^*(L,z)=\min_kT_k(L,z)$ 用于衡量固定芯片距该点理想选择的差距。对目标负载集合 $\mathcal S$，定义相对减速与最坏损失：
+\begin{equation}
+s_j(L,z)=\frac{T_j(L,z)}{T^*(L,z)},\qquad
+R_j=\max_{(L,z)\in\mathcal S}\{s_j(L,z)-1\}.
+\label{eq:portfolio_regret}
+\end{equation}
+采用 $j^*\in\arg\min_j R_j$ 选择最坏相对损失最小的固定配比。已确定精度方案时，$\mathcal S$ 包含该方案的所有上下文；需要覆盖软件精度迁移时，$\mathcal S$ 包含多个方案。该标准直接回答同一芯片在目标范围内最差会比逐点最优慢多少。
+
+均衡评测为每个对数间隔上下文分配相同权重，并分别报告平均相对减速 $\overline{s}_j$、平均请求计算时间 $\overline{T}_j$ 与 DP 能耗 $\overline{\mathcal E}_j$。给定请求分布 $q_{L,z}$、$\sum q_{L,z}=1$，有
+\begin{equation}
+(\overline{s}_j,\overline{T}_j,\overline{\mathcal E}_j)
+=\sum_{L,z}q_{L,z}(s_j,T_j,\mathcal E_j).
+\label{eq:portfolio_means}
+\end{equation}
+平均相对减速使不同规模负载具有相同的比较基准；平均时间衡量请求集合消耗的总计算服务时间，长请求会占用更多时间。三者分别展示，并对 $(R_j,\overline{T}_j,\overline{\mathcal E}_j)$ 给出 Pareto 候选。若应用规定可容忍损失 $\epsilon$，也可在 $R_j\le\epsilon$ 的候选中最小化平均时间。
+
+在充分供数模型下，加权时间等价于先合并 FLOP 再评价一个工作量点：
+\begin{equation}
+\overline{F}_p=\sum_{L,z}q_{L,z}F_p(L,z),\qquad
+x_p^{\mathrm{eff}}=\frac{\overline{F}_p}{\sum_r\overline{F}_r}.
+\label{eq:effective_workload}
+\end{equation}
+因此，优势区域图可用于解释平均时间选择，但应投入加权总工作量，而非直接平均精度占比或统计单点获胜次数；最坏损失仍需保留整个负载集合。
+
+\subsection{固定配比选择与迁移适应性}
+\label{sec:k4_prefill}
+
+\begin{table}[t]
+\centering
+\caption{六场景下的固定配比选择，$\alpha=0.3$、$\beta=1.5$、$\eta=1$。每个单场景覆盖 11 个上下文，集合行进一步覆盖所列场景；均衡平均对上下文及场景等权。Speedup 为相对同场景 $1:2:4$ 的平均时间加速比。}
+\label{tab:v41_fixed}
+\begingroup\footnotesize
+\input{tables/v41_core_choice.tex}
+\endgroup
+\end{table}
+
+表~\ref{tab:v41_fixed} 表明，原始场景 A 跨上下文选择 $1:4:4$，最坏损失 3.91\%；路由专家转为 E 后，B 的选择为 $1:4:8$。C 保留主注意力的 H 计算，同时将主要线性工作迁移到 E，选择转为 $1:2:16$，最坏损失仅 0.48\%。D/E 的 H 工作减少、Q/E 并存，选择 $1:8:16$；F 进一步减少 Q 工作后，$1:2:16$ 又取得优势。因此，精度迁移不会使最优配比简单地沿更大 Q/E 容量单向移动。
+
+固定芯片所覆盖的场景集合也改变选型。覆盖 A/B 时，$1:4:8$ 的最坏损失为 6.87\%；覆盖 A--E 时仍选择 $1:4:8$，损失为 16.85\%。将进取场景 F 纳入后，选择变为 $1:6:12$，最坏损失达到 49.29\%。若将预算放宽到 $\beta=2.1$，覆盖 A--F 的选择变为 $1:8:16$，损失降至 16.70\%。覆盖范围和功耗余量应一并报告。
+
+不同评价目标保留各自结论。在均衡场景集合 A--E 上，平均时间、最坏损失与 DP 能耗分别衡量总体计算成本、跨负载适应性和单位活动成本。单场景 E 的最短平均时间选择为 $1:8:16$，最低平均 DP 能耗选择为 $1:2:16$，两者均位于 Pareto 集合；C 则由 $1:2:16$ 同时取得最低平均时间与能耗。
+
+利用率敏感性显示，在 $\alpha=0.3$、$\beta=1.5$ 时，B 的跨上下文选择在五组系数下均为 $1:4:8$。当路由专家 E 利用率降至 0.5 时，E 的选择由 $1:8:16$ 转为 $1:2:16$，后者最坏损失为 1.84\%。这说明降效会改变工作量在总服务时间中的权重，其影响取决于迁移后仍需服务的精度组合。
+
+\textbf{观察三：固定芯片应覆盖明确的核心负载范围。} 主要算子的迁移决定工作量如何跨越 H/Q/E 优势区域；预算和路由利用率决定这些需求能获得多少有效吞吐。逐场景结果解释变化原因，跨场景最坏损失、平均时间和能耗则共同评价固定芯片的整体表现。
+
+\textit{作者补充：补入满足质量要求的算子/层迁移集合、实际 grouped GEMM 利用率和请求分布；按目标芯片确定 $\alpha$、$\beta$。当前工作采用充分供数及固定每核外围面积，计算功耗范围为 DP 池；外围、精度转换和非满利用率功耗曲线由作者补充。}
+% END independent DSE draft.
+
+
+\input{sections/06_conclusion}
+
+\section*{Content Generated by AI}
+本研究使用 OpenAI Codex 辅助 EDA 脚本生成、源码与微架构说明梳理，以及实验建模、数据分析、图表脚本和全文结构与文字草稿的整理。作者对采用的脚本、结果及全部论述承担责任。
+
+
+
+\clearpage
+\setcounter{DACreferencepage}{\value{page}}
+\ifnum\value{DACreferencepage}>7\relax
+  \PackageWarningNoLine{DAC2027}{Main text exceeds six pages}%
+\fi
+\typeout{DAC2027: References start on page \thepage}
+\bibliographystyle{IEEEtran}
+\bibliography{references/references}
+
+\end{document}
