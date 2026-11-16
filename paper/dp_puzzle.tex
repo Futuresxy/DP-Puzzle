@@ -47,31 +47,7 @@ For a fixed input bit width, lower-precision formats allow more elements to be s
 
 We present DP-Puzzle to connect the hardware cost of throughput-ratio choices to their benefits for evolving model workloads. Tensor cores typically organize dot-product units into two-dimensional arrays with systolic~\cite{jouppi2017tpu} or broadcast dataflows. We therefore focus on dot-product units that support multiple formats and allow low-precision throughput to be increased independently. We characterize their area and power using Synopsys synthesis and power analysis at 12\,nm and 1\,GHz, then construct a chip-level throughput model under common area and power constraints. Six precision-migration scenarios represent possible changes in future workloads, allowing us to evaluate the estimated GEMM compute-latency benefits of nine throughput ratios.
 
-% BEGIN INLINE TABLE: tables/related_features.tex
-% English translation; numerical entries, support markers, and citations match the Chinese table.
-\suppressfloats[t]
-\begin{table}[t]
-\centering
-\caption{Precision support and composable throughput-ratio configuration.}
-\label{tab:related_features}
-\begingroup\footnotesize\setlength{\tabcolsep}{1pt}
-\def\Y{$\checkmark$}\def\N{$\times$}\def\E{$\triangle$}
-\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}l*{10}{c}@{}}\toprule
-Design & TF32 & FP16 & BF16 & \shortstack{MX\\FP8} & \shortstack{MX\\FP6} & \shortstack{MX\\FP4} & INT8 & \shortstack{NV\\FP4} & HiF4 & \shortstack{Multi\\Ratio} \\\midrule
-Ten-Four~\cite{rout2026tenfourv3} & \Y & \Y & \Y & \Y & \N & \N & \Y & \N & \N & \N \\
-MXDOTP~\cite{islamoglu2025mxdotp} & \N & \N & \N & \Y & \N & \N & \N & \N & \N & \N \\
-FPnew~\cite{mach2021fpnew} & \N & \Y & \Y & \E & \N & \N & \N & \N & \N & \N \\
-MiniFloats~\cite{bertaccini2024minifloats} & \N & \Y & \Y & \E & \N & \N & \N & \N & \N & \N \\
-TransDot~\cite{transdot2026} & \N & \Y & \N & \E & \N & \E & \N & \N & \N & \N \\
-\midrule
-DP-Puzzle & \Y & \Y & \Y & \Y & \Y & \Y & \Y & \Y & \Y & \Y \\
-\bottomrule\end{tabular*}
-\par\smallskip
-\parbox{\columnwidth}{\raggedright
-$\checkmark$: supported; $\times$: absent in the reported configuration; $\triangle$: element arithmetic supported, integrated MX scaling not established. FPnew and MiniFloats also support FP32/FP64; MiniFloats uses FP8 E5M2/E4M3 and BF16-encoded FP16alt.}
-\endgroup
-\end{table}
-% END INLINE TABLE: tables/related_features.tex
+\input{tables/vendor_ratios.tex}
 
 Our contributions are as follows:
 \begin{enumerate}
@@ -135,29 +111,7 @@ Design-space exploration also connects numerical formats to hardware costs. Craf
 
 Table~\ref{tab:vendor_ratios} summarizes representative products and development roadmaps. Normalized to each product's 16-bit matrix peak, ratios extend from $1:2:4$ to $1:2:6$, approximately $1:4:8$, and a roadmap target of $1:2:8$. This diversity makes low-precision provisioning an explicit architectural choice. Given the different development timescales of chips and models, provisioning must address both current workloads and future low-precision demand.
 
-\begin{table}[t]
-\centering
-\caption{Per-device matrix peaks (PFLOP/s) and roadmap target}
-\label{tab:vendor_ratios}
-\begingroup\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lrrrl@{}}\toprule
-Product & 16-bit & 8-bit & 4-bit & Ratio \\\midrule
-B200 SXM~\cite{nvidiahgx} & 2.250 & 4.500 & 9.000 & $1:2:4$ \\
-MI355X~\cite{amdmi355x} & 2.517 & 5.033 & 10.066 & $1:2:4$ \\
-Ascend 950PR~\cite{huawei950} & 0.432 & 0.865 & 1.730 & $1:2:4$ \\
-\midrule
-B300 SXM~\cite{nvidiahgx} & 2.250 & 4.500 & 13.500 & $1:2:6$ \\
-\midrule
-Rubin GPU~\cite{nvidiaverarubin} & 4.000 & 17.500 & 35.000 & $\approx 1:4:8$ \\
-MI455X~\cite{amdmi455x} & 5.033 & 20.133 & 40.265 & $1:4:8$ \\
-\midrule
-Ascend 960PR$^\dagger$~\cite{huawei960roadmap} & 1.000 & 2.000 & 8.000 & $1:2:8$ \\
-\bottomrule
-\end{tabular*}
-\par\smallskip
-\parbox{\columnwidth}{\raggedright Product rows use dense matrix peaks; $\dagger$ R\&D roadmap target.}
-\endgroup
-\end{table}
+
 
 Two questions follow. First, how can shared arithmetic, specialized low-precision components, and DP composition realize a target ratio? Second, at matched absolute peak throughput for every precision, how do internal expansion along $K$ and array-level expansion along $M/N$ differ in area, power, bandwidth, and usable throughput? K expansion increases reduction parallelism for one output, whereas M/N expansion increases independent outputs, changing backend sharing and data-supply requirements. A composable DP and a common PPA and bandwidth model make these alternatives concrete and comparable. Section~\ref{sec:architecture} establishes the shared baseline; Section~\ref{sec:expansion} describes specialization and the two composition methods.
 % END REVIEW PAIR: 02_background.tex
