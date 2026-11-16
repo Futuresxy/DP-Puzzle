@@ -93,7 +93,7 @@ $\checkmark$: supported; $\times$: absent in the reported configuration; $\trian
 
 \input{sections/03_architecture}
 
-% BEGIN independent evaluation snapshot; only related-work comparison changed.
+% BEGIN independent evaluation snapshot; related-work comparison and bandwidth analysis revised.
 % !TeX root = ../main.tex
 \section{算力配比的硬件成本表征}
 \label{sec:evaluation}
@@ -124,22 +124,13 @@ $1:4:8$ 将 Q/E 算力同时翻倍，面积增加 68.21\%；Q 和 E 模式功耗
 \subsection{持续供数所需的带宽}
 \label{sec:ratio_bandwidth}
 
-在固定的 $m\times n$ 阵列中，增配 Group 增大低精度点积长度，但不增加每拍的输出数量。考虑 A 沿行、B 沿列广播，令 $V_{A,j,p}$、$V_{B,j,p}$ 为配比 $j$ 在精度 $p$ 下含尺度的单向量位宽，$R_A$、$R_B$ 为输入在本地缓冲中的时间复用次数。若每个输出的 $c$ 位部分和每 $\tau_C$ 次累加与上一级存储交换一次，则稳态平均接口带宽为
+考虑固定的 $m\times n$ DP 阵列：A 沿行广播并在本地寄存器中复用 $x$ 个周期，B 沿列广播且每周期更新。每个 DP 每拍处理 $K$ 项乘积，频率为 $f$，同一精度下每元素占 $b$ 位（含均摊尺度开销），则 shared memory 向阵列提供输入的稳态平均带宽需求为
 \begin{equation}
-\begin{aligned}
-B_{\mathrm{in},j,p}&=f\left(\frac{mV_{A,j,p}}{R_A}+\frac{nV_{B,j,p}}{R_B}\right),\\
-B_{\mathrm{cd}}&=\frac{2fmnc}{\tau_C},\qquad
-B_{j,p}=B_{\mathrm{in},j,p}+B_{\mathrm{cd}}.
-\end{aligned}
+B_{\mathrm{in}}(K,x)=fbK\left(\frac{m}{x}+n\right),\qquad
+\frac{B_{\mathrm{in}}(K_j,x)}{B_{\mathrm{in}}(K_0,x)}=\frac{K_j}{K_0}.
 \label{eq:ratio_bandwidth}
 \end{equation}
-该模型计入行列间空间复用和缓冲内时间复用，省略填充、排空与边界浪费。设 $r_{j,p}=K_{j,p}/K_{0,p}$。当缩放块完整、向量位宽随点积长度等比例增长，且复用参数不变时，
-\begin{equation}
-\frac{B_{j,p}}{B_{0,p}}
-=1+(r_{j,p}-1)\frac{B_{\mathrm{in},0,p}}{B_{\mathrm{in},0,p}+B_{\mathrm{cd}}}.
-\label{eq:ratio_bandwidth_growth}
-\end{equation}
-因此，$1:2:6$ 的 E 输入带宽为基线的 1.5 倍，$1:2:8$ 的 E 以及 $1:4:8$ 的 Q/E 输入带宽为 2 倍；相同驻留条件下，输出交换带宽不变。总接口带宽增幅位于 1 与 $r_{j,p}$ 之间：输入流量占主导时接近 $r_{j,p}$，输出交换占比较高时较小。增加输入驻留复用可降低前者，提高部分和驻留次数则降低后者。这里比较的是维持峰值吞吐的每秒供数需求，不代表同一 GEMM 的总传输量按相同比例增加；后续配比分析以该接口充分供数为条件。
+这里固定阵列尺寸、频率及复用周期，并假设完整缩放块下输入位数随 $K$ 同比增长。A 的复用降低了重复读取开销，但每周期更新的 B 仍需持续供给。因此，相比 $1:2:4$，$1:2:8$ 的 E 模式、$1:4:8$ 的 Q/E 模式在满吞吐下均需要约两倍输入带宽。增配低精度算力时，需要同时考虑 shared memory 的供给是否跟得上阵列消费；后续 DSE 仍以供数充分为前提，不加入 shared memory 带宽约束。
 
 \subsection{与同类多精度单元比较}
 \label{sec:related_dp_evaluation}
