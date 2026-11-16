@@ -1,20 +1,40 @@
 # DAC 2027 论文
 
-## 当前中文稿：九配比与双预算 DSE（2026-11-16）
+## V4.1-Flash：跨上下文与精度迁移的固定芯片选型（2026-11-16）
+
+中文稿现在以 DeepSeek-V4.1-Flash 为主要负载。保持一个物理芯片配置，评估 1K–1M 的 11 个逐次翻倍上下文与 32 个算子精度方案。五个独立开关依次为路由专家 Q→E、共享专家 Q→E、注意力线性投影 Q→E、主注意力 QK/PV H→Q、分组输出投影 H→Q；未选算子保持原精度。`P10000` 表示仅路由专家迁移，`P11111` 表示全部开关启用。策略不随上下文改变；这些开关定义计算需求探索，模型质量可接受的子集由作者确定。
+
+评价分成两层：每个精度方案内跨上下文选型，以及一个芯片覆盖全部精度方案。主准则是最小化 **最坏相对延迟损失** `max(T_j/min_k(T_k)-1)`；均衡基准对上下文等权，另报告平均相对减速、平均请求计算时间、DP 能耗和三目标 Pareto 候选。不会用获胜次数选芯片，也不会在每个上下文重新选择硬件。所有预算分别评价，不跨 α/β 混合排名。
+
+用户确认先做均衡评测，再做分布敏感性。偏短和偏长场景分别用请求概率 ∝ `1/L` 和 `L`；这些是合成流量假设。全方案平均值对精度方案也等权；最坏损失仅取决于目标负载集合，不依赖这些权重。均衡基准的平均时间仍会受到大请求计算量的影响，所以同时报告等权平均相对减速。加权时间的有效 HQE 点由加权 **FLOP 总量** 归一化得到，不平均每点的精度占比。
+
+```bash
+MPLCONFIGDIR=/tmp/dp-paper-mpl make portfolio  # 仅重算 V4.1 固定配比框架、图、表
+MPLCONFIGDIR=/tmp/dp-paper-mpl make test       # 20 项测试
+make pdf
+```
+
+输入：[data/inputs/v41_portfolio.json](data/inputs/v41_portfolio.json)。输出索引：[manifest.json](data/evidence/v41_portfolio_20261116/manifest.json)；`operator_work.csv` 为按算子归并的原始 FLOP 账本，`policies.csv` 为策略开关，`cases.csv` 为 352 个负载点，`evaluations.csv` 为 28,512 项候选计算结果，`metrics.csv` 为固定配比评价，`aggregate_points.csv` 为加权有效 HQE 点。精度迁移守恒、原始/专家迁移与旧模型一致性、请求加权、最坏损失与连续迁移端点界均有检查。
+
+α=0.3、β=1.5 时，原始方案的最小最坏损失配比为 **1:4:4（3.91%）**，仅路由专家迁移时为 **1:4:8（0%）**，覆盖全部 32 个方案时为 **1:4:8（20.05%）**。原始方案的最低平均时间选择会随请求分布从偏短的 1:4:4 变为均衡/偏长的 1:4:8。因而“均衡表现”“最坏损失”“平均时间”是不同指标。连续迁移界只针对已采样上下文、固定容量和仿射工作量，不含精度转换成本。
+
+图为 [v41_fixed_ratio.pdf](figures/v41_fixed_ratio.pdf)，正文表为 `tables/v41_fixed_choice.tex`。当前 PDF 正文 8 页、参考文献 1 页，仍需压缩正文；本轮检查见 [review.json](data/evidence/v41_portfolio_20261116/review.json)。英文稿未同步，三模型的历史对照结果保留。
+
+## 九配比与双预算 DSE 基础批次（2026-11-16）
 
 本轮在作者工作区稿件上更新九种全精度 DP 的组合说明、设计动机、硬件成本与 DSE。`main.tex` 为中文入口；英文 `dp_puzzle.tex` 保留历史版本。当前正文使用 `scripts/reproduce_joint_dse.py` 和 `data/inputs/joint_dse.json`，从固定 11 设计数据中选取九种完整 HQE 候选。低精度 `0:2:4` 仅用于相关工作表，与共享基线并列；独立 E/QE 不参与全精度负载扫描。
 
 ```bash
 MPLCONFIGDIR=/tmp/dp-paper-mpl make reproduce  # 九配比部署、区域、模型点评估与对比表
-MPLCONFIGDIR=/tmp/dp-paper-mpl make test       # 12 项成本/区域/工作量一致性测试
+MPLCONFIGDIR=/tmp/dp-paper-mpl make test       # 当前为 20 项测试
 make pdf                                    # build/main.pdf
 ```
 
 结果索引为 [data/evidence/joint_dse_20261116/manifest.json](data/evidence/joint_dse_20261116/manifest.json)：9 个 α×β 场景、每场景 5,151 个 HQE 组成、42 个模型/迁移负载点和 3,402 次候选评估。部署、区域份额、模型点与候选评估为受控 CSV/JSON；完整 92,718 行双目标网格及算子账本放在被忽略的 `data/results/joint_dse_20261116/`。图为矢量 PDF `figures/joint_dse_regions.pdf`，表为 `tables/hardware_joint_table.tex`。作者提供的九配比成本图 `figures/dp_ratio_area_power.pdf` 保留原稿。
 
-正文已更新为九候选实际结果：α=0.3、β=1.5 时 W4A8 21 点中 16 点选择 1:4:4，5 点选择 1:4:8；不能继续沿用四候选的“全部点选择 1:4:8”。当前模型中配置数量同时缩放吞吐和功耗，预算改变延迟区域，DP 单位工作能耗排序保持不变。旧四候选流程以 `make reproduce-legacy`、`make test-legacy` 保留。
+该三模型对照批次中，α=0.3、β=1.5 时 W4A8 21 点有 16 点选择 1:4:4、5 点选择 1:4:8；现稿主线已进一步转为上方 V4.1 固定芯片评价。当前模型中配置数量同时缩放吞吐和功耗，预算改变延迟区域，DP 单位工作能耗排序保持不变。旧四候选流程以 `make reproduce-legacy`、`make test-legacy` 保留。
 
-作者待补内容用可见斜体集中在 III、IV、V 章末尾，不将未核验内容补写为结果。新计算依据固定硬件记录与既有模型结构分析，未新增 EDA 或推理测量。当前工作稿为正文 7 页、参考文献 2 页；投稿前还需按页面要求压缩。待补清单和数字核对记录见 `data/evidence/joint_dse_20261116/manuscript_review.json`。
+作者待补内容用可见斜体集中在 III、IV、V 章末尾，不将未核验内容补写为结果。新计算依据固定硬件记录与既有模型结构分析，未新增 EDA 或推理测量。该基础批次稿件为正文 7 页、参考文献 2 页；这是历史版面记录。该批次待补清单和数字核对记录见 `data/evidence/joint_dse_20261116/manuscript_review.json`。
 
 ## 面积与功耗联合硬件成本模型（2026-11-16）
 
@@ -116,7 +136,7 @@ make reproduce-legacy   # 重算旧四候选部署、负载、三角分区、两
 # make diagrams         # 历史示意图入口；本轮不调用，架构图由作者维护
 make cost-figures       # 按可编辑 CSV 重绘 select8 面积/功耗和 H16Q32E64 面积占比
 make check              # 重算九配比结果并核验部署、区域与时间/能耗
-make test               # 12 项联合成本与区域一致性测试
+make test               # 20 项成本、区域与固定配比评价测试
 ```
 
 `make` 不会自动覆盖图表。可先运行 `make reproduce` 检查新结果，再 `make` 更新 PDF。编译和分析均不依赖原工程、网络或 GPU。

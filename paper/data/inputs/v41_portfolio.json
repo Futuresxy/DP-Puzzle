@@ -1,0 +1,21 @@
+{
+  "model": "DeepSeek-V4.1-Flash",
+  "phase": "cold_prefill_ced",
+  "batch": 1,
+  "contexts": [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576],
+  "alphas": ["0.2", "0.3", "0.4"],
+  "betas": ["1", "1.5", "2.1"],
+  "baseline_sms": 36,
+  "dp_per_sm": 256,
+  "report_alpha": "0.3",
+  "report_beta": "1.5",
+  "distributions": ["balanced", "short", "long"],
+  "representative_policies": ["P00000", "P10000", "P11000", "P11100", "P11110", "P11111"],
+  "precision_switches": [
+    {"name": "routed_experts", "prefix": "moe.routed.", "from": "FP8", "to": "FP4"},
+    {"name": "shared_experts", "prefix": "moe.shared.", "from": "FP8", "to": "FP4"},
+    {"name": "attention_linear", "kernels": ["q_down", "q_up", "swa_kv", "o_final"], "from": "FP8", "to": "FP4"},
+    {"name": "attention_qk_pv", "kernels": ["swa.qk", "swa.pv", "global.qk", "global.pv"], "from": "BF16", "to": "FP8"},
+    {"name": "output_group", "kernels": ["o_group"], "from": "BF16", "to": "FP8"}
+  ]
+}

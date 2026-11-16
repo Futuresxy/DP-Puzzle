@@ -2,6 +2,22 @@
 \section{面积与功耗约束下的算力配比探索}
 \label{sec:workload}
 
+\begin{table*}[t]
+\centering
+\caption{九种配比的双预算部署，$\alpha=0.3$。$A_C$ 为整核面积（mm$^2$），$N_A$ 为仅面积约束核数，$N_{\beta}$ 为双约束核数，$C$ 为绝对峰值算力（TFLOP/s）。$\beta_{\rm full}$ 表示面积所容纳的全部核心均可运行所需的最低预算倍率。}
+\label{tab:k4_absolute}
+\begingroup\footnotesize\setlength{\tabcolsep}{3pt}
+\input{tables/hardware_joint_table.tex}
+\endgroup
+\end{table*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{joint_dse_regions.pdf}
+\caption{九候选在 H/Q/E 工作量三角域中的优势区域，$\alpha=0.3$。(a)--(c) 分别为 $\beta=1,1.5,2.1$ 的最低计算延迟区域；(d) 为最低 DP 能耗区域。顶点分别表示纯 H、Q、E 工作量，区域数字对应下方配比图例。}
+\label{fig:k4_time_prefill}
+\end{figure*}
+
 本节将九种 DP 的综合面积、原生点积长度和逐模式功耗映射为整核部署成本，以基准阵列面积占比 $\alpha$ 和功耗预算倍率 $\beta$ 联合约束绝对算力，再求解不同 H/Q/E 工作量下的延迟与 DP 能耗最优配比。模型采用固定频率、充分供数和各精度阶段顺序执行的计算场景。
 
 \subsection{从单 DP 成本到整核部署}
@@ -39,15 +55,6 @@ P_{j,p}=Dn_jp_{j,p}.
 \label{eq:k4_capacity_power}
 \end{equation}
 
-\begin{table*}[t]
-\centering
-\caption{九种配比的双预算部署，$\alpha=0.3$。$A_C$ 为整核面积（mm$^2$），$N_A$ 为仅面积约束核数，$N_{\beta}$ 为双约束核数，$C$ 为绝对峰值算力（TFLOP/s）。$\beta_{\rm full}$ 表示面积所容纳的全部核心均可运行所需的最低预算倍率。}
-\label{tab:k4_absolute}
-\begingroup\footnotesize\setlength{\tabcolsep}{3pt}
-\input{tables/hardware_joint_table.tex}
-\endgroup
-\end{table*}
-
 取 $\alpha\in\{0.2,0.3,0.4\}$、$\beta\in\{1,1.5,2.1\}$ 联合扫描。$\alpha=0.3$ 时，面积预算为 496.59\,mm$^2$，$P_{\mathrm{ref}}=147.47$\,W。表~\ref{tab:k4_absolute} 中，$1:8:16$ 的面积可容纳 22 核，但 $\beta=1$ 时功耗只允许配置 10 核，E 算力由仅面积约束的 2883.6 降至 1310.7\,TFLOP/s。其全核运行门槛为 $\beta=2.018$。相比之下，$1:2:8$ 的 32 核在 $\beta=1$ 下即可全部工作，提供 2097.2\,TFLOP/s 的 E 算力。
 
 \textbf{观察二：单 DP 的增配幅度不决定预算内的绝对算力。} 面积限制部署密度，功耗进一步限制可配置规模。$\alpha$ 刻画增配资源在整核成本中的权重，$\beta$ 刻画供给这些资源的功耗余量；两者共同决定更大点积容量何时能够转化为系统吞吐。
@@ -62,38 +69,69 @@ T_j&=F\sum_p\frac{x_p}{C_{j,p}},\label{eq:k4_time}\\
 \end{align}
 $x_p$ 是 FLOP 占比，三者和为 1。每个预算场景以 1 个百分点的间隔扫描 5,151 种组成，分别求最短延迟与最低能耗。两项目标对 $\boldsymbol x$ 均为线性函数，配比间等成本条件形成直线，可进一步求得精确区域边界。
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{joint_dse_regions.pdf}
-\caption{九候选在 H/Q/E 工作量三角域中的优势区域，$\alpha=0.3$。(a)--(c) 分别为 $\beta=1,1.5,2.1$ 的最低计算延迟区域；(d) 为最低 DP 能耗区域。顶点分别表示纯 H、Q、E 工作量，区域数字对应下方配比图例。}
-\label{fig:k4_time_prefill}
-\end{figure*}
-
 图~\ref{fig:k4_time_prefill} 显示，$\beta=1$ 时 $1:2:4$ 覆盖 56.77\% 的延迟最优区域，$1:2:6$ 和 $1:2:8$ 分别覆盖 20.02\% 和 17.78\%。放宽到 $\beta=1.5$ 后，$1:4:4$ 和 $1:4:8$ 的区域分别扩大至 20.03\% 和 29.49\%；$\beta=2.1$ 时，$1:6:12$ 和 $1:8:16$ 分别取得 10.70\% 和 20.93\%。区域占比衡量工作量组成空间的几何覆盖。
 
 在本模型中，$P_{j,p}/C_{j,p}=p_{j,p}/(2fK_{j,p})$，配置核数在单位工作量能耗中抵消。因此，改变预算会移动延迟边界，而 DP 能耗区域保持不变；$1:8:16$ 覆盖 40.81\% 的能耗最优区域，却在紧功耗预算下没有非零面积的延迟最优区域。更低功耗、更短时间和更低能耗由不同条件决定，需要分别评价。
 
-\subsection{模型工作量与执行精度映射}
+\subsection{V4.1-Flash 的上下文与算子精度}
 \label{sec:workload_extraction}
 
-工作量统计以 GEMM 算子为单位。依据模型配置与计算规则确定各投影、注意力和专家算子的 $M,N,K$ 与调用次数，再按 $2MNK$ 汇总。MoE 计入激活专家，稀疏和压缩注意力按有效计算结构统计。各算子按执行精度归入 H/Q/E；例如专家权重采用 4 位存储、以 W4A8 执行时归入 Q，采用 W4A4 时归入 E。
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{v41_fixed_ratio.pdf}
+\caption{V4.1-Flash 的固定芯片相对减速，$\alpha=0.3$、$\beta=1.5$，上下文轴采用对数刻度。(a) 原始算子精度；(b) 仅路由专家迁移到 E；(c) 每个上下文取全部 32 个精度方案的最坏相对减速。每条线始终对应同一芯片配比，粗线为该面板的最小最坏损失选择，标注给出其配比及损失上限。}
+\label{fig:v41_fixed}
+\end{figure*}
 
-依据官方配置~\cite{deepseekv4,deepseekv4flashsource,deepseekv4prosource,deepseekv41source}，统计 V4-Flash、V4-Pro、V4.1-Flash 在 batch=1、1K--1M 七种上下文下的冷启动 prefill。另构造仅将路由专家由 W4A8 改为 NVFP4 W4A4 的迁移场景，其余算子保持不变。两组映射各含 21 个负载点，H/Q/E 覆盖 GEMM 工作量的 97.11\%--99.37\%。计算能耗采用 Qwen 活动功耗作为算子活动代理，NVFP4 采用 MXFP4 的功耗数据。
+以 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 为主要负载，固定 batch=1，按 CED 调度统计冷启动 prefill，覆盖编码器计算、解码器缓存构建与窗口重放。上下文 $L$ 从 1K 至 1M 逐次翻倍，共 11 点。依据各算子的形状、调用次数、激活专家数和有效注意力配对数计算 FLOP，再按实际乘法精度汇总为 $F_p(L,z)$；$z$ 表示算子精度方案。权重存储位宽与执行精度分别记录，例如 W4A8 专家归入 Q。
 
-\subsection{负载迁移与预算共同决定配比选择}
+设置五个独立的精度迁移开关：路由专家 Q$\to$E、共享专家 Q$\to$E、注意力线性投影 Q$\to$E、主注意力 QK/PV H$\to$Q、分组输出投影 H$\to$Q。其余算子保持原映射，包括原生 E 索引点积。组合形成 32 个精度方案、352 个上下文--方案负载点。每个方案固定算子形状和总工作量，迁移仅改变精度归属。H/Q/E 以外的计算单列；能耗继续使用 Qwen 活动功耗代理。
+
+\subsection{跨上下文的固定芯片评价}
+\label{sec:fixed_design}
+
+芯片在设计阶段确定一个配比 $j$，运行中改变上下文与精度模式。单点最优 $T^*(L,z)=\min_kT_k(L,z)$ 用于衡量固定芯片距该点理想选择的差距。对目标负载集合 $\mathcal S$，定义相对减速与最坏损失：
+\begin{equation}
+s_j(L,z)=\frac{T_j(L,z)}{T^*(L,z)},\qquad
+R_j=\max_{(L,z)\in\mathcal S}\{s_j(L,z)-1\}.
+\label{eq:portfolio_regret}
+\end{equation}
+采用 $j^*\in\arg\min_j R_j$ 选择最坏相对损失最小的固定配比。已确定精度方案时，$\mathcal S$ 包含该方案的所有上下文；需要覆盖软件精度迁移时，$\mathcal S$ 包含多个方案。该标准直接回答同一芯片在目标范围内最差会比逐点最优慢多少。
+
+均衡评测为每个对数间隔上下文分配相同权重，并分别报告平均相对减速 $\overline{s}_j$、平均请求计算时间 $\overline{T}_j$ 与 DP 能耗 $\overline{\mathcal E}_j$。给定请求分布 $q_{L,z}$、$\sum q_{L,z}=1$，有
+\begin{equation}
+(\overline{s}_j,\overline{T}_j,\overline{\mathcal E}_j)
+=\sum_{L,z}q_{L,z}(s_j,T_j,\mathcal E_j).
+\label{eq:portfolio_means}
+\end{equation}
+平均相对减速使不同规模负载具有相同的比较基准；平均时间衡量请求集合消耗的总计算服务时间，长请求会占用更多时间。三者分别展示，并对 $(R_j,\overline{T}_j,\overline{\mathcal E}_j)$ 给出 Pareto 候选。若应用规定可容忍损失 $\epsilon$，也可在 $R_j\le\epsilon$ 的候选中最小化平均时间。
+
+在充分供数模型下，加权时间等价于先合并 FLOP 再评价一个工作量点：
+\begin{equation}
+\overline{F}_p=\sum_{L,z}q_{L,z}F_p(L,z),\qquad
+x_p^{\mathrm{eff}}=\frac{\overline{F}_p}{\sum_r\overline{F}_r}.
+\label{eq:effective_workload}
+\end{equation}
+因此，优势区域图可用于解释平均时间选择，但应投入加权总工作量，而非直接平均精度占比或统计单点获胜次数；最坏损失仍需保留整个负载集合。
+
+\subsection{固定配比选择与迁移适应性}
 \label{sec:k4_prefill}
 
-在 $\alpha=0.3$ 下，W4A8 的 21 个负载点在 $\beta=1$ 时有 19 个选择 $1:2:4$、2 个选择 $1:2:6$；$\beta=1.5$ 时有 16 个选择 $1:4:4$、5 个选择 $1:4:8$。只增加 Q 的候选在 Q 工作量占主导时保留较高部署密度，因此扩大探索空间会改变仅比较既有四配比时的选择。
+\begin{table}[t]
+\centering
+\caption{V4.1-Flash 在 11 个上下文上的固定配比选择，$\alpha=0.3$、$\beta=1.5$。按最小最坏损失选型；各 ``+'' 行在上一行基础上追加迁移。最后一行同时覆盖全部 32 个方案，平均值对方案和上下文均等权。}
+\label{tab:v41_fixed}
+\begingroup\footnotesize
+\input{tables/v41_fixed_choice.tex}
+\endgroup
+\end{table}
 
-专家迁移至 W4A4 后，$\beta=1.5$ 时有 20 个点选择 $1:4:8$，V4-Flash 的 1M 点选择 $1:2:12$；$\beta=2.1$ 时，$1:6:12$ 成为 15 个点的最低延迟选择。迁移降低 Q 工作量并增加 E 工作量，而最优增配幅度同时取决于可用功耗预算。
+表~\ref{tab:v41_fixed} 和图~\ref{fig:v41_fixed} 表明，原始精度方案下固定选择 $1:4:4$，在全部 11 个上下文上的最坏损失为 3.91\%，平均损失仅为 0.36\%。仅将路由专家迁移到 E 后，$1:4:8$ 在所有采样上下文均最优。若同一芯片同时服务全部 32 个精度方案，固定 $1:4:8$ 的最坏损失为 20.05\%、平均损失为 4.36\%。这一区别反映了针对确定软件配置优化与覆盖多种精度迁移的不同目标。
 
-进一步令 Q 工作量中比例 $\lambda$ 转为 E，保持算子形状与总工作量不变：
-\begin{equation}
-\boldsymbol x(\lambda)=\bigl(x_H,(1-\lambda)x_Q,x_E+\lambda x_Q\bigr),\quad 0\le\lambda\le1.
-\label{eq:precision_migration}
-\end{equation}
-将该路径代入式~\eqref{eq:k4_time} 和式~\eqref{eq:k4_energy}，可在每个 $(\alpha,\beta)$ 场景求解配比切换点。
+以请求频率正比于 $L^{-1}$ 和 $L$ 分别构造偏短与偏长的分布敏感性场景，方案权重保持不变。原始精度下，最小平均时间的选择从偏短分布的 $1:4:4$ 变为均衡及偏长分布的 $1:4:8$；覆盖全部方案时，三种分布的最小平均时间选择均为 $1:4:8$。其最低平均 DP 能耗选择则为 $1:8:16$，体现性能与能耗目标的差异。
 
-\textbf{观察三：配比探索应同时扫描工作量组成和硬件预算。} Q/E 需求决定新增算力被使用的比例，面积和功耗决定这些算力能部署多少。只增强 Q、只增强 E 和共同增强 Q/E 分别对应不同区域；更大的低精度配置需要相应预算才能发挥延迟优势，其能耗优势也不必与延迟优势重合。
+迁移也可按算子族中的 FLOP 比例连续取值。固定上下文和硬件预算时，$T_j$ 对各迁移比例为仿射函数，$T_j/T_k$ 为正分母的线性分式函数，最大值可在迁移区间的顶点取得。由 $s_j=\max_kT_j/T_k$，32 个二值端点便给出五个连续迁移比例在每个采样上下文下的最坏损失界。
 
-\textit{作者补充：补入实际算子执行轨迹和专家 W4A4 的模型质量结果；按目标芯片确定 $\alpha$、$\beta$ 的取值依据。当前计算场景采用充分供数与固定每核外围面积，功耗范围为 DP 计算池；外围存储、互连、格式转换和输入寄存器增量的系统表征由作者补充。}
+\textbf{观察三：配比应针对负载集合设计。} 上下文轨迹跨越多个优势区，表示单点最优变化；固定芯片的选择取决于可接受的最坏损失、请求分布和能耗目标。增加探索配比后，既可选择贴合确定精度方案的配置，也可量化覆盖未来精度迁移所付出的性能代价。
+
+\textit{作者补充：确定满足模型质量要求的算子精度方案集合，并补入实际执行轨迹；按目标应用补充请求分布、损失容限以及 $\alpha$、$\beta$ 的取值依据。当前模型采用充分供数、固定每核外围面积和 DP 计算池功耗；外围存储、互连、精度转换与输入寄存器增量由作者补充系统表征。}

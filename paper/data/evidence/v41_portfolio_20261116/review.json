@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-16",
+  "human_author_review": "pending",
+  "checks": {
+    "input_and_output_hashes": "passed",
+    "tests_passed": 20,
+    "work_conservation": "passed",
+    "reference_mapping_regression": "passed",
+    "operator_switch_isolation": "passed",
+    "continuous_regret_endpoint_bound": "passed",
+    "request_aggregation_equivalence": "passed",
+    "manuscript_claims": "passed",
+    "latex": "passed",
+    "unresolved_references": false,
+    "overfull_boxes": false
+  },
+  "quantitative_claims": [
+    {
+      "portfolio": "P00000",
+      "ratio": "1:4:4",
+      "worst_regret": 0.03911418223198382,
+      "mean_slowdown": 1.0035558347483622
+    },
+    {
+      "portfolio": "P10000",
+      "ratio": "1:4:8",
+      "worst_regret": 0.0,
+      "mean_slowdown": 1.0
+    },
+    {
+      "portfolio": "all_policies",
+      "ratio": "1:4:8",
+      "worst_regret": 0.2005075377280765,
+      "mean_slowdown": 1.0436024689690306
+    }
+  ],
+  "figure": {
+    "path": "figures/v41_fixed_ratio.pdf",
+    "font": "Embedded Times New Roman TrueType",
+    "raster_objects": 0,
+    "visual_review": "Rendered labels, curves, legend, axes and manuscript table inspected"
+  },
+  "manuscript": {
+    "path": "build/main.pdf",
+    "body_pages": 8,
+    "reference_pages": 1,
+    "page_limit": "Body remains above the six-page template limit"
+  },
+  "assumptions": [
+    "Cold CED prefill; fixed physical design per workload portfolio",
+    "11 sampled contexts; no guarantee between context samples",
+    "32 precision scenarios define a compute-demand envelope; quality-feasible subset requires author evidence",
+    "Balanced contexts and equal policy weights are benchmark conventions; short/long distributions are synthetic",
+    "DP activity power proxy, ideal compute service times; no new inference or EDA measurements"
+  ],
+  "author_items": [
+    "Quality-valid precision policy subset and measured execution traces",
+    "Request frequencies and optional tolerated regret",
+    "Hardware alpha/beta calibration and peripheral/precision-conversion costs"
+  ],
+  "fixed_csv_sha256": "56e04ca93c9dd4b27edf9e90d35fe346339bac8dace5554bd6232908061770fd"
+}
