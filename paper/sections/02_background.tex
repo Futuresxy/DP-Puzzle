@@ -5,14 +5,15 @@
 \subsection{浮点精度与微缩放格式}
 \label{sec:formats}
 
-BF16/FP16 由逐元素的指数与有效数确定动态范围和精度~\cite{burgess2019bfloat16}；微缩放格式则将低位宽元素与共享尺度共同编码（图~\ref{fig:fpformats}）。OCP MXFP8/6/4 每 32 个元素共享一个 E8M0 尺度~\cite{ocpmx2023}；NVFP4 使用 16 元素一组的 E4M3 尺度~\cite{nvidia2024nvfp4}；HiF4 使用 64 元素一组的无符号 E6M2 基础尺度，并为每 8、4 个元素分别配置一位微指数~\cite{hifloat4}。元素编码、分组粒度和尺度编码分别决定解包、局部规约与尺度融合的硬件需求。
+BF16/FP16 由逐元素的指数与有效数确定动态范围和精度~\cite{burgess2019bfloat16}；微缩放格式则将低位宽元素与共享尺度共同编码。OCP MXFP8/6/4 每 32 个元素共享一个 E8M0 尺度~\cite{ocpmx2023}；NVFP4 使用 16 元素一组的 E4M3 尺度~\cite{nvidia2024nvfp4}；HiF4 使用 64 元素一组的无符号 E6M2 基础尺度，并为每 8、4 个元素分别配置一位微指数~\cite{hifloat4}。元素编码、分组粒度和尺度编码分别决定解包、局部规约与尺度融合的硬件需求。
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fp_format.png}
-\caption{元素编码与共享尺度~\cite{ocpmx2023,nvidia2024nvfp4,hifloat4}。字段标注为位宽，$g$ 为缩放组大小。}
-\label{fig:fpformats}
-\end{figure}
+%不需要解释详细的格式了
+% \begin{figure}[t]
+% \centering
+% \includegraphics[width=\columnwidth]{fp_format.png}
+% \caption{元素编码与共享尺度~\cite{ocpmx2023,nvidia2024nvfp4,hifloat4}。字段标注为位宽，$g$ 为缩放组大小。}
+% \label{fig:fpformats}
+% \end{figure}
 
 
 \subsection{张量计算与点积单元}

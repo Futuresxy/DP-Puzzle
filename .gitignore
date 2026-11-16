@@ -39,6 +39,7 @@ ratio_dse/results/*
 hw/dc_syn/config.tcl
 hw/power/config.tcl
 
+llmcompass_puzzle
 # Disposable simulation, EDA, profiling and editor products
 *.vcd
 *.fst
