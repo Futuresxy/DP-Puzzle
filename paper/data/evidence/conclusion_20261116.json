@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-16",
+  "scope": "Independent conclusion in main_temp.tex only; other manuscript text unchanged",
+  "protected_files_unchanged": {
+    "main.tex": true,
+    "sections/00_abstract.tex": true,
+    "sections/01_introduction.tex": true,
+    "sections/06_conclusion.tex": true
+  },
+  "claims": {
+    "nine_full_precision_ratios": 9,
+    "cost_source": "data/DP_area_power/dp11_area_power_fixed_20261116.csv",
+    "1:2:8_vs_1:2:4": {
+      "mxfp4_throughput_ratio": 2,
+      "area_increase_percent": 33.598779546840916,
+      "mxfp4_area_efficiency_increase_percent": 49.70196634908497,
+      "mxfp4_energy_efficiency_increase_percent": 27.271862990092764
+    },
+    "deployment_source": "data/evidence/dse_fixed_budget_v2_20261116/workload_gains.csv",
+    "portfolio": {
+      "alpha": 0.3,
+      "beta": 1,
+      "budget_scope": "area and maximum-mode DP-pool power",
+      "utilization": 1,
+      "contexts": "11 doubling lengths 1K-1M",
+      "scenarios": "A-F equal request weights",
+      "objective": "minimum mean compute service time",
+      "winner": "1:2:8",
+      "speedup": 1.1473184141149966
+    }
+  },
+  "validation": {
+    "numerical_claims_recomputed": true,
+    "only_conclusion_changed": true,
+    "latex_build": "passed",
+    "body_pages": 6,
+    "reference_pages": 1,
+    "visual_review": "Conclusion on page 6 inspected; no overlap",
+    "overfull_boxes": false,
+    "undefined_references": false
+  },
+  "main_temp_sha256": "532dc2f0b20251fedc968929bff92e25e398a1e4d21858c496fce457ded165ae"
+}
