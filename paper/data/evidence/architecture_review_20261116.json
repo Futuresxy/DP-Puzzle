@@ -1,0 +1,722 @@
+{
+  "scope": "中文第三章的静态内容核验与行文修订；未修改硬件、未新增硬件实验；英文正文未同步",
+  "date": "2026-11-16",
+  "reviewer": "Codex",
+  "verification_kind": "static cross-check against current specification, CModel, Verilog, and retained validation records; not a new simulation/PPA run",
+  "source_commit_before_edit": "b7c6eaed0cb458ff46b27697b2cce4daa086224a",
+  "changes": [
+    "澄清 Group 原始坐标、比较指数与 C 未经LZD的比较方式。",
+    "以数值表示不变量代替逐模式Anchor常量推导；删除移位边界分段式和累加位宽展开式。",
+    "聚焦 E 定点旁路、Group 规约后尺度融合、共享末端累加及专用 Group 的组合。",
+    "明确 MAX/各源移位/压缩随规模扩展，唯一 C/最终 CPA/规格化舍入仍保持单份。",
+    "删除重复的外部工作结构比较和未复核的 Park 子乘法器数量描述；相关工作引用保留在背景章节。"
+  ],
+  "claims": [
+    {
+      "id": "A01",
+      "claim": "T1H2Q4E8 Lane；两 Lane 一组，四个基础组；固定 L8/II=1。",
+      "evidence": [
+        {
+          "path": "src/verilog/parameter/dp_defs.vh",
+          "lines": [
+            32,
+            33,
+            34,
+            35,
+            51,
+            52,
+            80,
+            112,
+            124,
+            126,
+            128,
+            129,
+            130
+          ],
+          "match_pattern": "DP_(LANES|Q_LANES|E_LANES|BASE_LATENCY|DEFAULT_K|GROUP_H)"
+        },
+        {
+          "path": "test/results/dp-top-v1.8.md",
+          "lines": [
+            18
+          ],
+          "match_pattern": "L8|II=1"
+        },
+        {
+          "path": "test/results/five-expansions-final-v1.12-20261112.md",
+          "lines": [
+            7
+          ],
+          "match_pattern": "L8|II=1"
+        }
+      ]
+    },
+    {
+      "id": "A02",
+      "claim": "Q 的 E5M3 为保值内部映射；E 为定点幅值，不作为逐元素浮点对齐对象。",
+      "evidence": [
+        {
+          "path": "src/spec/dp/lane/unpack.md",
+          "lines": [
+            25,
+            27,
+            31,
+            41,
+            45,
+            66,
+            68,
+            70,
+            72,
+            74,
+            81,
+            86
+          ],
+          "match_pattern": "E5M3|I3F1|I2F2|decoded_value"
+        },
+        {
+          "path": "src/verilog/unpack/dp_unpack_atom.v",
+          "lines": [
+            67,
+            68,
+            69,
+            114,
+            121,
+            132,
+            167,
+            169,
+            179,
+            181,
+            191,
+            193,
+            203,
+            205,
+            215,
+            217
+          ],
+          "match_pattern": "DP_Q_BIAS|DP_DT_MXFP4|DP_DT_HIF4"
+        },
+        {
+          "path": "src/verilog/lane/dp_lane_align.v",
+          "lines": [
+            5,
+            6,
+            24,
+            74,
+            81,
+            96,
+            99,
+            104,
+            105
+          ],
+          "match_pattern": "E_FIXED_COORD|pair_leaf"
+        }
+      ]
+    },
+    {
+      "id": "A03",
+      "claim": "基础 Lane 使用两组共享部分积资源；E 八乘积先 pair 后复用四叶树，HiF4 e2 在 Lane 内融合。",
+      "evidence": [
+        {
+          "path": "src/verilog/lane/dp_mantissa_bank.v",
+          "lines": [
+            47,
+            50,
+            77,
+            79,
+            231,
+            234,
+            240,
+            241
+          ],
+          "match_pattern": "DP_MUL_BANKS|product_first|product_second"
+        },
+        {
+          "path": "src/verilog/lane/dp_lane_align.v",
+          "lines": [
+            35,
+            67,
+            103
+          ],
+          "match_pattern": "pair_sum =|out_leaves"
+        },
+        {
+          "path": "src/verilog/lane/dp_lane.v",
+          "lines": [
+            35,
+            381,
+            388,
+            394,
+            405
+          ],
+          "match_pattern": "lane_e_shift|lane_sop_d|u_lane_sop_tree"
+        }
+      ]
+    },
+    {
+      "id": "A04",
+      "claim": "NVFP4/HiF4 先合并两个 Lane，再以 U14×U8 注入尺度；MX 幂次尺度走指数。",
+      "evidence": [
+        {
+          "path": "src/verilog/group/dp_group.v",
+          "lines": [
+            71,
+            104,
+            213,
+            216,
+            221,
+            259,
+            264,
+            265,
+            272,
+            274,
+            282,
+            291
+          ],
+          "match_pattern": "group_sum|dp_scale_multiply|raw_anchor_work"
+        },
+        {
+          "path": "src/cmodel/lib/group.cpp",
+          "lines": [
+            76,
+            97,
+            99,
+            101
+          ],
+          "match_pattern": "compact \\* factor|out.anchor_raw|scale_a.exponent"
+        }
+      ]
+    },
+    {
+      "id": "A05",
+      "claim": "原始 Anchor 为最高物理位的数值坐标；比较指数为 Anchor-LZC，不在 Group 内移动幅值。",
+      "evidence": [
+        {
+          "path": "src/spec/dp/dptop/mixed-precision-expansion.md",
+          "lines": [
+            94,
+            95
+          ],
+          "match_pattern": "value =|compare_exp ="
+        },
+        {
+          "path": "src/verilog/group/dp_group.v",
+          "lines": [
+            213,
+            216,
+            221,
+            298,
+            351,
+            353,
+            360
+          ],
+          "match_pattern": "raw_anchor_work|compare_exp_d|u_group_leading_detect"
+        },
+        {
+          "path": "src/cmodel/lib/top/backend.cpp",
+          "lines": [
+            14,
+            27,
+            95
+          ],
+          "match_pattern": "token.compare_exp =|net_shift = token.anchor_raw"
+        }
+      ]
+    },
+    {
+      "id": "A06",
+      "claim": "C 不做 LZD，直接以解码指数参与 MAX；Group 与 C 的比较指数来源不同。",
+      "evidence": [
+        {
+          "path": "src/verilog/top/dp_top.v",
+          "lines": [
+            211,
+            248
+          ],
+          "match_pattern": "DETECT_LEADING_ZERO\\(0\\)|source_compare_exp\\[GROUPS"
+        },
+        {
+          "path": "src/verilog/top/common/dp_top_mixed.v",
+          "lines": [
+            419,
+            457
+          ],
+          "match_pattern": "DETECT_LEADING_ZERO\\(0\\)|source_compare_exp\\[GROUPS"
+        },
+        {
+          "path": "src/cmodel/lib/top/backend.cpp",
+          "lines": [
+            25,
+            27
+          ],
+          "match_pattern": "No C LZD|c_token.compare_exp = state.c_token.anchor_raw"
+        }
+      ]
+    },
+    {
+      "id": "A07",
+      "claim": "各源补到 U39 后仅做一次净移位，恢复符号为 S40；最终共享 CPA 与 FP32 RNE。",
+      "evidence": [
+        {
+          "path": "src/verilog/top/dp_top.v",
+          "lines": [
+            63,
+            338
+          ],
+          "match_pattern": "GLOBAL_MAG_W = GLOBAL_W - 1|dp_fp32_round"
+        },
+        {
+          "path": "src/cmodel/lib/top/backend.cpp",
+          "lines": [
+            87,
+            95,
+            96,
+            97,
+            99,
+            100,
+            101,
+            103,
+            106,
+            108
+          ],
+          "match_pattern": "padded_magnitude|net_shift|signed_value"
+        },
+        {
+          "path": "src/verilog/arithmetic/dp_mixed_csa_sum.v",
+          "lines": [
+            17,
+            45,
+            52,
+            66,
+            77,
+            85,
+            100,
+            114,
+            127,
+            137,
+            144,
+            145,
+            146,
+            147,
+            148
+          ],
+          "match_pattern": "selected_sum|selected_carry|out_sum"
+        }
+      ]
+    },
+    {
+      "id": "A08",
+      "claim": "E/QE/Q 专用前端不同：E 窄树；QE 保留 Q 宽对齐/宽树，四或八个4×4；Q-only 移除E专属逻辑。",
+      "evidence": [
+        {
+          "path": "src/spec/dp/dptop/mixed-precision-expansion.md",
+          "lines": [
+            7,
+            23,
+            25,
+            27,
+            29,
+            98,
+            130
+          ],
+          "match_pattern": "E lane|QE lane|LZD22|LZD31"
+        },
+        {
+          "path": "src/verilog/lane/dp_qe_product_bank.v",
+          "lines": [
+            2,
+            30,
+            36,
+            41,
+            42,
+            45,
+            48,
+            51
+          ],
+          "match_pattern": "Exactly eight|slot_enabled|DP_Q_LANES"
+        },
+        {
+          "path": "src/spec/dp/lane/dp_lane_q.md",
+          "lines": [
+            5
+          ],
+          "match_pattern": "不存在|只接受"
+        },
+        {
+          "path": "src/spec/dp/group/dp_group_q.md",
+          "lines": [
+            1,
+            3,
+            5,
+            7,
+            9
+          ],
+          "match_pattern": "scale|scale|Q8|尺度"
+        }
+      ]
+    },
+    {
+      "id": "A09",
+      "claim": "统一全局参考指数；MAX/移位/压缩随组数增长，C/最终CPA/规格化舍入单份；参与掩码随请求。",
+      "evidence": [
+        {
+          "path": "src/verilog/top/common/dp_top_mixed.v",
+          "lines": [
+            117,
+            436,
+            438,
+            474,
+            483,
+            503,
+            505,
+            515,
+            517,
+            518,
+            536,
+            565
+          ],
+          "match_pattern": "SUM_W =|r5_extension|r6_extension|dp_mixed_global_align|dp_fp32_round"
+        },
+        {
+          "path": "src/verilog/arithmetic/dp_mixed_csa_sum.v",
+          "lines": [
+            17,
+            36,
+            37,
+            38,
+            39,
+            40,
+            45,
+            46,
+            49,
+            50,
+            52,
+            53,
+            57,
+            58,
+            62,
+            63,
+            66,
+            67,
+            77,
+            81,
+            82,
+            85,
+            86,
+            100,
+            114,
+            127,
+            133,
+            134,
+            137,
+            138,
+            144,
+            145,
+            146,
+            147,
+            148
+          ],
+          "match_pattern": "BASE|base_|combined_|selected_|out_sum"
+        },
+        {
+          "path": "src/spec/dp/dptop/qe192-qe256-expansion.md",
+          "lines": [
+            12,
+            14,
+            18,
+            20,
+            22,
+            26
+          ],
+          "match_pattern": "唯一|参与|同一个Emax|唯一Emax|MAX"
+        }
+      ]
+    }
+  ],
+  "nine_ratio_checks": [
+    {
+      "profile": "baseline",
+      "kind": "base",
+      "added_groups": 0,
+      "hqe_products_per_cycle": [
+        16,
+        32,
+        64
+      ],
+      "ratio": "1:2:4",
+      "source_count_including_C": 5,
+      "sum_width_bits": 43
+    },
+    {
+      "profile": "t8h16q32e96",
+      "kind": "E",
+      "added_groups": 2,
+      "hqe_products_per_cycle": [
+        16,
+        32,
+        96
+      ],
+      "ratio": "1:2:6",
+      "source_count_including_C": 7,
+      "sum_width_bits": 43
+    },
+    {
+      "profile": "t8h16q32e128",
+      "kind": "E",
+      "added_groups": 4,
+      "hqe_products_per_cycle": [
+        16,
+        32,
+        128
+      ],
+      "ratio": "1:2:8",
+      "source_count_including_C": 9,
+      "sum_width_bits": 44
+    },
+    {
+      "profile": "t8h16q64e128_opt",
+      "kind": "QE",
+      "added_groups": 4,
+      "hqe_products_per_cycle": [
+        16,
+        64,
+        128
+      ],
+      "ratio": "1:4:8",
+      "source_count_including_C": 9,
+      "sum_width_bits": 44
+    },
+    {
+      "profile": "t8h16q64e64",
+      "kind": "Q",
+      "added_groups": 4,
+      "hqe_products_per_cycle": [
+        16,
+        64,
+        64
+      ],
+      "ratio": "1:4:4",
+      "source_count_including_C": 9,
+      "sum_width_bits": 44
+    },
+    {
+      "profile": "t8h16q32e192",
+      "kind": "E",
+      "added_groups": 8,
+      "hqe_products_per_cycle": [
+        16,
+        32,
+        192
+      ],
+      "ratio": "1:2:12",
+      "source_count_including_C": 13,
+      "sum_width_bits": 44
+    },
+    {
+      "profile": "t8h16q32e256",
+      "kind": "E",
+      "added_groups": 12,
+      "hqe_products_per_cycle": [
+        16,
+        32,
+        256
+      ],
+      "ratio": "1:2:16",
+      "source_count_including_C": 17,
+      "sum_width_bits": 45
+    },
+    {
+      "profile": "t8h16q96e192",
+      "kind": "QE",
+      "added_groups": 8,
+      "hqe_products_per_cycle": [
+        16,
+        96,
+        192
+      ],
+      "ratio": "1:6:12",
+      "source_count_including_C": 13,
+      "sum_width_bits": 44
+    },
+    {
+      "profile": "t8h16q128e256",
+      "kind": "QE",
+      "added_groups": 12,
+      "hqe_products_per_cycle": [
+        16,
+        128,
+        256
+      ],
+      "ratio": "1:8:16",
+      "source_count_including_C": 17,
+      "sum_width_bits": 45
+    }
+  ],
+  "sources": [
+    {
+      "path": "src/cmodel/lib/group.cpp",
+      "sha256": "2fd22230cc4c82d86bede735c598b10cb986ac1dc3af8c9086c657ff1b863e3c"
+    },
+    {
+      "path": "src/cmodel/lib/top/backend.cpp",
+      "sha256": "dec50b9960a7184a5cb4bf778e3c44da0fe095124cf949b50842004da3bb923f"
+    },
+    {
+      "path": "src/configs/dp/t8h16q128e256.json",
+      "sha256": "68e8b826467a89a399a87f37edc0be8ad3bdb0642e0cb74ab2d55e4e487c3256"
+    },
+    {
+      "path": "src/configs/dp/t8h16q32e128.json",
+      "sha256": "12da485a33bde64f4a647f6ef9d45479f8b9ecd328bfa04fc16bef7b90982527"
+    },
+    {
+      "path": "src/configs/dp/t8h16q32e192.json",
+      "sha256": "cf574401f703ba5564f2059914d8f79c86c140de530c7a2ffbf5b587e22c25da"
+    },
+    {
+      "path": "src/configs/dp/t8h16q32e256.json",
+      "sha256": "5fb8cb4704bad1af66044083e8e331b26f8ba42bc385cb19ce93c4dd55ed2b5d"
+    },
+    {
+      "path": "src/configs/dp/t8h16q32e96.json",
+      "sha256": "1f2fef936621534f1d7899776e2a635dbe54665c49674996d6561f28d40f465d"
+    },
+    {
+      "path": "src/configs/dp/t8h16q64e128_opt.json",
+      "sha256": "839319549a290778dbe27d5ae029e3856818720a974ba57fa20d4435f07072f9"
+    },
+    {
+      "path": "src/configs/dp/t8h16q64e64.json",
+      "sha256": "09361eb1f08ae97cffb391cfc7204e0935b73f90b46c05bbdc594ff7facc6f59"
+    },
+    {
+      "path": "src/configs/dp/t8h16q96e192.json",
+      "sha256": "d27d3f449e3c31c64d5853a592c9f90fe2bf2f5004e76847af4e41d47fe6767a"
+    },
+    {
+      "path": "src/spec/dp/dptop/mixed-precision-expansion.md",
+      "sha256": "0e6dfe0218ca7850c4b3c2aeb904aefd11a4759e8a03eeccbe81930eeed378c7"
+    },
+    {
+      "path": "src/spec/dp/dptop/qe192-qe256-expansion.md",
+      "sha256": "a7466feed3cb9c633b5b12972d69b823e296a08597a6d0ce379ee996f78dfe3e"
+    },
+    {
+      "path": "src/spec/dp/group/dp_group_q.md",
+      "sha256": "58ce3d6c2dfed677c8ece258df5c30252532e8e48858b4a21631b4696a4bb610"
+    },
+    {
+      "path": "src/spec/dp/lane/dp_lane_q.md",
+      "sha256": "297aac9e745b7d086df5316d8b55b74724354e85cdff6fa796766705705f75be"
+    },
+    {
+      "path": "src/spec/dp/lane/unpack.md",
+      "sha256": "537e555412e2483074fec4423d25658babb99e470fb093f846b1de57a9cd2a46"
+    },
+    {
+      "path": "src/verilog/arithmetic/dp_mixed_csa_sum.v",
+      "sha256": "66aef87d64d8008b20e2070ec295c074327f638886a2a948ae2a756033fe58f7"
+    },
+    {
+      "path": "src/verilog/group/dp_group.v",
+      "sha256": "cd6043e131b65bacc6b03d0668e238b33648ab744fd87b4ada26b5cf4b378efb"
+    },
+    {
+      "path": "src/verilog/lane/dp_lane.v",
+      "sha256": "e9220697ca660886252106656512bfec90d18338d16cbc4ddd5982ff37af1926"
+    },
+    {
+      "path": "src/verilog/lane/dp_lane_align.v",
+      "sha256": "b8c34aea819e274a441ad10429e068b0ed96ff2aec1c71f229e0497ed613afd1"
+    },
+    {
+      "path": "src/verilog/lane/dp_mantissa_bank.v",
+      "sha256": "3495efb7e471552ee33c52f7cdde9de595e1bd225895b21f443530c64b107f8f"
+    },
+    {
+      "path": "src/verilog/lane/dp_qe_product_bank.v",
+      "sha256": "d53a448dd346cc9861f1686000b074c50c794ed89fa5c891b88a7507bdb2462d"
+    },
+    {
+      "path": "src/verilog/parameter/dp_defs.vh",
+      "sha256": "aabef487fa57e87d98cfcde780f7c04262057cf0cedd89bba56ea348795b08b0"
+    },
+    {
+      "path": "src/verilog/top/common/dp_top_mixed.v",
+      "sha256": "644eeb8aca0b44209dd3daf461d550eb05aa0d529eb1983335a2f2d095524788"
+    },
+    {
+      "path": "src/verilog/top/dp_top.v",
+      "sha256": "d24df5009986b59056552d0802827d735921b091af2a8e0261c6b8e34407a86b"
+    },
+    {
+      "path": "src/verilog/top/dp_top_t8h16q128e256.v",
+      "sha256": "267fd622895b205ac053a820b6084a4b4e63146824ae8f27dea6576851a14ec6"
+    },
+    {
+      "path": "src/verilog/top/dp_top_t8h16q32e128.v",
+      "sha256": "e88e36fad18735d99f1105ed98c42e4e8297986a1883771055436c107f413771"
+    },
+    {
+      "path": "src/verilog/top/dp_top_t8h16q32e192.v",
+      "sha256": "64e5fb236dc138a2beb2e4725c9805663e9d5da028d0eb1b1a3f5cc7cc242113"
+    },
+    {
+      "path": "src/verilog/top/dp_top_t8h16q32e256.v",
+      "sha256": "559dd3efdb5b73759858eea922ad928a0d9ff21d6552ec416240f06352012dff"
+    },
+    {
+      "path": "src/verilog/top/dp_top_t8h16q32e96.v",
+      "sha256": "bbaed08da77eac7a3535ecee1ceb8a4adb1c3b6d8fe6ebab227444ba02377ddf"
+    },
+    {
+      "path": "src/verilog/top/dp_top_t8h16q64e128_opt.v",
+      "sha256": "5648aa2e66fd9a58f6d873823726a9896924af11df46496b5b6a2fc3e00f9d55"
+    },
+    {
+      "path": "src/verilog/top/dp_top_t8h16q64e64.v",
+      "sha256": "79a8de82e52d8851fff008433b1dd3a55f2a753968dd0176a46f77aeb4fe8c6e"
+    },
+    {
+      "path": "src/verilog/top/dp_top_t8h16q96e192.v",
+      "sha256": "7944662a6db2ceba55b7da28075c0283c742b654a8ba4504a7bb86b79ee97ec6"
+    },
+    {
+      "path": "src/verilog/unpack/dp_unpack_atom.v",
+      "sha256": "8304c3cab3355fdfd2e3506ac2b9fe1722d5214dcaf526285a35a7e202aac9c5"
+    },
+    {
+      "path": "test/results/dp-top-v1.8.md",
+      "sha256": "2ca12eaa703f5f884f90ec5fd3b5bf01f1f8353149cd393ab37b6d82c4c182b0"
+    },
+    {
+      "path": "test/results/five-expansions-final-v1.12-20261112.md",
+      "sha256": "8be8b7df0ef7e051ee153f65add0467de9252dc81db2d1a9ebc72e88747fde2e"
+    }
+  ],
+  "manuscript_output": {
+    "path": "paper/sections/03_architecture.tex",
+    "sha256": "b46fc8eb948e04b01db14286cb3be98cc21a24824017cf9ed9cd6341401ffa99"
+  },
+  "retained_author_note": "原输入解包图的 Lane 数量标注核对注释保留；本轮不修改图稿。",
+  "checks": {
+    "nine_config_assembly": "pass",
+    "unrelated_manuscripts_unchanged": "pass",
+    "latex_build": {
+      "status": "pass",
+      "engine": "XeLaTeX via latexmk",
+      "pages": 8,
+      "undefined_references": 0,
+      "overfull_boxes": 0,
+      "remaining_warnings": [
+        "existing CJK font shape warning",
+        "references exceed one page"
+      ]
+    }
+  },
+  "scope_measurements": {
+    "display_equations_before": 4,
+    "display_equations_after": 2,
+    "source_characters_before": 6075,
+    "source_characters_after": 4792
+  }
+}
