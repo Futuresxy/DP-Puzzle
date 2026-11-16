@@ -1,5 +1,13 @@
 # DAC 2027 论文
 
+## 严格功耗扫描与扩展边界（2026-11-16）
+
+新增 `make power-sweep`：β=0.50–1.50、步长 0.01，另保留 2.1；α=0.2/0.3/0.4，九配比、六场景、11 个上下文。整数部署与连续松弛分别评价，主线保持已确认的三模式全开功耗合同。输入为 `data/inputs/v41_power_sweep.json`，结果与机制解释见 [严格功耗报告](data/evidence/v41_power_sweep_20261116/README.md)，图为 [v41_strict_power.pdf](figures/v41_strict_power.pdf)。此前 β=1.5 六场景图保留作对照，中文正文与摘要加入严格预算的结论。
+
+α=0.3、β=1 时，C/E 选择 1:2:8，F 选择 1:2:12；F 的 FP4 占比虽达 94.03%–95.62%，1:2:16 的残余 FP8 却占 26.59%–33.42% 的时间。1:8:16 与 1:4:8 的整芯片 Q/E 峰值相同、H 减半，出现算力支配。连续模型显示，所有候选均受功耗限制时 β 不改变相对排序；整数取整造成部分局部换位。跨 A–F 的最小最坏损失可随预算放宽而增加，但任何固定候选的绝对时间都不会变差。
+
+372,438 项 case/design 计算，输出保留部署、最优选择、代表点全部候选、服务时间分解、利用率/分布敏感性和成对边界。31 项测试通过；`make reproduce` 包含新扫描。尚未增加推理、EDA 或非满利用率功耗测量。作者引言修改保持原状。
+
 ## 当前主分析：六个核心迁移场景与路由利用率（2026-11-16）
 
 用户确认将分析收敛到主要计算负载。当前中文 DSE 使用 `data/inputs/v41_core.json` 和 `scripts/v41_core.py`：只迁移路由专家、共享专家、Q-up/O-up、主 SWA/CSA2 QK/PV、Grouped O-down 五类算子；连同原生 FP4 索引点积覆盖 93.22%–95.02% 的已统计 GEMM 工作量。Q-down、SWA-KV、Index-Q projection、Engram 等背景计算保留原精度和成本；FP32 工作仍单列。这里的简化是减少迁移变量，不是删除小算子。
@@ -9,7 +17,7 @@ A 原始；B 路由专家 E；C 在 B 上加入共享专家和 Q-up/O-up 的 E�
 ```bash
 MPLCONFIGDIR=/tmp/dp-paper-mpl make portfolio        # 当前六场景
 MPLCONFIGDIR=/tmp/dp-paper-mpl make portfolio-stress # 历史 32 组合包络
-MPLCONFIGDIR=/tmp/dp-paper-mpl make test             # 26 项测试
+MPLCONFIGDIR=/tmp/dp-paper-mpl make test             # 31 项测试
 make pdf
 ```
 

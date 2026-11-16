@@ -1,0 +1,73 @@
+{
+  "date": "2026-11-16",
+  "status": "analytical_uncalibrated",
+  "tests": {
+    "total_passed": 31,
+    "new_tests": 5,
+    "commands": [
+      "make test",
+      "python3 -m unittest discover -s scripts -p test_v41_power_sweep.py -v"
+    ]
+  },
+  "checks": {
+    "input_output_sha256": "passed",
+    "output_row_counts": {
+      "selections": 5508,
+      "checkpoints": 3402,
+      "sensitivity": 3645,
+      "deployments": 2754,
+      "service_breakdown": 594,
+      "capacity_dominance": 2,
+      "limits": 9,
+      "pairwise_thresholds": 8
+    },
+    "reported_F_ranges_percent": {
+      "E_flop_fraction": [
+        94.03,
+        95.62
+      ],
+      "Q_flop_fraction": [
+        4.35,
+        5.94
+      ],
+      "Q_time_fraction": [
+        26.59,
+        33.42
+      ]
+    },
+    "minimax_ratios_and_regret": "passed",
+    "beta1_capacity_dominance": "passed",
+    "nonideal_utilization_energy_null": "passed",
+    "absolute_time_monotonicity": "checked in generator for all cases, candidates, budgets and both deployment models"
+  },
+  "figure": {
+    "file": "figures/v41_strict_power.pdf",
+    "embedded_fonts": [
+      "Times New Roman",
+      "STIX General"
+    ],
+    "raster_images": 0,
+    "visual_review": "Standalone figure and page 9 of working manuscript inspected; no clipping or overlap."
+  },
+  "manuscript": {
+    "build": "passed",
+    "body_pages": 9,
+    "references_start_page": 10,
+    "total_pages": 10,
+    "overfull_boxes": false,
+    "undefined_references": false,
+    "author_intro": "Existing uncommitted introduction edits preserved and excluded from task commit.",
+    "remaining": "Author quality-feasible migration set and final manuscript compression; English unchanged."
+  },
+  "interpretation": [
+    "Continuous deployment is diagnostic only",
+    "Pairwise E thresholds are not global nine-candidate optimum thresholds",
+    "Regret compares with changing same-budget pointwise optima; it is not absolute latency",
+    "Capacity dominance at beta=1 does not imply energy dominance or dominance at every beta",
+    "No claim of literature novelty established by this scan"
+  ],
+  "paper_source_sha256": {
+    "sections/00_abstract.tex": "a39db8ef0e454cbb24dd336aa0af0fea0fe895edec537dfd63d7e28e1cc21c92",
+    "sections/05_dse.tex": "a0cad6c4f24f599f7079e4b86dff8c05e4aa541b21f19f7f0bcc4ad04ae1c3f7"
+  }
+}
