@@ -1,5 +1,41 @@
 # DAC 2027 论文
 
+## 面积与功耗联合硬件成本模型（2026-11-16）
+
+用户确认的选型口径：基准计算阵列面积占比 `alpha` 标定固定每 SM 外围面积，功耗倍率 `beta` 标定共同 DP 功耗预算。两项预算共同决定候选**实际配置的整数 SM 数**，所有已配置 SM 在每个受支持且已测功耗的模式下均可同时计算。同一物理设计的 SM 数不随 H/Q/E 工作量变化；超过预算的 SM 不实例化，剩余面积单列，不假定其已重新利用。
+
+[独立计算入口](scripts/hardware_cost.py) 使用 [11 种 DP 固定数据](data/DP_area_power/dp11_area_power_fixed_20261116.csv)，先校验 SHA-256。仅使用 BF16、MXFP8 E4M3、MXFP4 E2M1；纯 E/QE 的不支持模式输出空值，要求该模式的工作负载不可行。`0:2:0` 不参与。此入口不改动下文既有四配比负载扫描和论文图表，联合模型的 HQE 优势区域扫描尚未接入。
+
+令 `D` 为每 SM 的 DP 数（默认 256）、`N0` 为基准 SM 数（默认 36）、`a_j` 为单 DP 面积、`p_j,p` 为单 DP 测量总功耗，基准 0 为 `1:2:4`：
+
+```text
+A_tensor,0 = D * a_0
+A_other = A_tensor,0 * (1/alpha - 1)
+A_budget = N0 * A_tensor,0 / alpha
+A_SM,j = A_other + D * a_j
+P_reference = N0 * D * max_p(p_0,p)
+P_budget = beta * P_reference
+N_area,j = floor(A_budget / A_SM,j)
+N_power,j = floor(P_budget / (D * max_supported_measured_p(p_j,p)))
+N_j = min(N_area,j, N_power,j)
+C_j,p = 2 * frequency * N_j * D * K_j,p / II
+P_j,p = N_j * D * p_j,p
+```
+
+`alpha` 只标定 baseline；其他配比的阵列面积占比会改变。扫描 alpha 时固定 N0，因此各 alpha 对应不同的外围假设与总面积预算；同一个 alpha 内所有配比共享同一面积预算，不能把跨 alpha 的结果解释成同一固定 mm² 芯片的比较。扫描 beta 不重新标定 baseline：即使 beta<1 使 baseline 配置核数减少，功耗参照仍为原 N0 核的值。三个模式使用同一个预算；不按工作量组成或模式分别改变上限。
+
+默认 alpha=0.3 时，面积预算为 496.59255257088006 mm²，功耗参照为 147.4744218750001 W。Beta 是显式场景参数，没有默认的唯一物理上限。示例扫描（从 paper 目录运行，输出目录必须尚不存在）：
+
+```bash
+python3 scripts/hardware_cost.py --alpha 0.2 0.3 0.4 \
+  --beta 1 1.25 1.5 2 2.1 --output data/results/hardware_cost_20261116
+python3 -m unittest discover -s scripts -p test_hardware_cost.py -v
+```
+
+输出 `hardware_cost.csv` 和 `manifest.json`，包含两项预算分别允许的 SM 数、实际 SM/DP 数、约束来源、已用/剩余面积与功耗、分精度峰值 TFLOP/s、分精度 DP 功耗，以及面积部署全部开启所需 beta。每个模式按 2 FLOP/MAC，互斥模式峰值不能相加。状态为 `analytical_uncalibrated`：DP 数值来自测量，核心部署和理想供数下的绝对峰值是解析推导。
+
+假设每 SM 外围面积固定、供数充分、计算资源充分利用；DP 面积之和作为计算阵列面积代理。没有新增阵列 RTL、寄存器/广播网络表征、DVFS、外围功耗或端到端延迟模型。功耗为 DP 计算池的已测活动窗口平均功耗外推，不是整芯片 TDP 或瞬时最坏峰值；固定外围面积不能推出固定外围功耗。约束只覆盖三种已测格式，不保证其他支持格式也能全核运行。
+
 ## 当前中文审核稿：DSE 主线（2026-11-11）
 
 [main.tex](main.tex) 是当前中文入口，按六章组织：引言、背景与动机、组合式点积微架构、硬件成本表征、面积约束 DSE、结论。第三章已并入 E/QE 专用 Group 与 DP 内增配；原有两种扩展方式的比较从正文撤下。主线是“可实现 DP → 同工况成本 → 整核部署 → 工作量组成 → 配比选择”。章节映射、证据边界和下一步实验见 [research_plan.md](research_plan.md)。
