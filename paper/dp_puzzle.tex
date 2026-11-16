@@ -69,55 +69,41 @@ Our contributions are as follows:
 \subsection{Floating-Point and Microscaling Formats}
 \label{sec:formats}
 
-We use $\mathrm{Q}I.F$ for two's-complement fixed point and $\mathrm{UQ}I.F$ for unsigned fixed point. Here $I$ excludes the sign bit~\cite{ti2003qformat}, $F$ counts fractional bits, and total widths are $1+I+F$ and $I+F$, respectively. Separately encoded magnitudes use the unsigned notation.
+Floating-point formats encode a sign, an exponent, and a fraction. The exponent width determines dynamic range, whereas the fraction width determines relative precision. TF32 retains FP32's exponent range with a shorter significand to reduce the cost of tensor computation; FP16 and BF16 favor precision and dynamic range, respectively~\cite{burgess2019bfloat16}. The Open Compute Project (OCP) microscaling (MX) formats~\cite{ocpmx2023} represent each element as $x_{j,i}=X_jP_{j,i}$, where $X_j$ is a shared block scaling factor and $P_{j,i}$ is the decoded element value. MXFP8, MXFP6, and MXFP4 use E5M2/E4M3, E3M2/E2M3, and E2M1 element encodings, respectively. All three share one E8M0 scale across 32 elements to extend the representable range.
 
-A floating-point tensor's representation depends on both its element encoding and any shared block scale, as shown in Fig.~\ref{fig:fpformats}. BF16 and FP16 do not require an additional block scale; their exponent and significand widths determine dynamic range and precision~\cite{burgess2019bfloat16,ocpmx2023}. Microscaling formats combine low-bit elements, such as E5M2, E4M3, E3M2, E2M3, E2M1, or HiF4 fixed-point elements, with a shared scale. For block size $g$, OCP MXFP8/6/4 use $g=32$ and an E8M0 scale~\cite{ocpmx2023}; NVFP4 uses local blocks of $g=16$, E2M1 elements, and an E4M3 scale~\cite{nvidia2024nvfp4}. HiF4 uses $g=64$ and an unsigned E6M2 base scale. Its elements encode one sign bit, one integer bit, and two fractional bits in sign--magnitude form, with one-bit micro-exponents shared by every 8 and 4 elements~\cite{hifloat4}. Element encoding determines decoding and multiplication, block size determines reduction boundaries, and scale encoding determines how group results are scaled.
+Quantizing both weights and activations to MXFP4, however, can incur substantial accuracy loss. The power-of-two restriction of its E8M0 scale is a major source of quantization error~\cite{egiazarian2026bridging,zhang2026benchmarking}. To improve quantization accuracy, NVFP4 retains E2M1 elements, reduces the block size to 16, and combines an E4M3 block scale with an FP32 tensor scale~\cite{nvidia2024nvfp4}. HiF4 instead uses S1P2 fixed-point elements and hierarchical micro-exponent scaling to balance within-block dynamic range and precision~\cite{hifloat4}. Both MX-like formats use scales with fractional significand bits, introducing additional significand-multiplication hardware.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fp_format.png}
-\caption{Element encodings and shared scales~\cite{ocpmx2023,nvidia2024nvfp4,hifloat4}. Field labels denote bit widths; $g$ is the group size.}
-\label{fig:fpformats}
-\end{figure}
-
-
-\subsection{Tensor Computation and Dot-Product Units}
+\subsection{Tensor Computation with Dot-Product Units}
 \label{sec:tensor_organization}
 
-For matrix multiplication and accumulation $D=C+AB$, $M$ and $N$ are output dimensions and $K$ is the reduction dimension. A tensor-array processing element (PE) may use separate multipliers and adders, fused multiply-add (FMA), or local dot products. These choices affect power, performance, and area (PPA). Separate operations permit independent scheduling but normalize and round intermediate floating-point results. FMA combines one multiplication and addition with a single final rounding. A dot-product unit aligns and reduces multiple products before shared accumulation and output processing, amortizing these costs across the inner product~\cite{lutzFusedFP84Way2024}.
-
-We use a local DP as the array building block, with a baseline native FP16/BF16 reduction length of $K=16$. This granularity agrees with the dot-product accumulation granularity identified for Hopper and Blackwell in prior numerical modeling work~\cite{xie2025mmasim}. Each mode and ratio has its own native reduction length. Longer GEMMs connect partial sums across multiple DP requests. A DP accepts explicit C and produces D; accumulation state across requests resides outside the unit. Our bandwidth analysis assumes row/column broadcast and output residency, with storage location, interleaved contexts, and port requirements treated as model parameters rather than an implemented array memory system.
-
-Formats with and without shared scales fit a common local dot-product structure. Following the OCP dot-product definition, a shared scale can be factored out of the reduction~\cite{ocpmx2023}. Partition $L$ products into $G=\lceil L/g\rceil$ scale groups, zero-pad the final group if necessary, and include an addend $c$:
+Dot-product accumulation for conventional and microscaling formats~\cite{ocpmx2023} can be expressed as
 \begin{equation}
-d=c+\sum_{j=0}^{G-1}X_j^{(A)}X_j^{(B)}
-\underbrace{\sum_{i=0}^{g-1}P_{j,i}^{(A)}P_{j,i}^{(B)}}_{q_j}.
+\begin{aligned}
+\operatorname{DP}_K(\mathbf{a},\mathbf{b},c)
+&=c+\sum_{k=0}^{K-1}a_kb_k \\
+&=c+\sum_{j=0}^{G_s-1}
+\widetilde{X}_j^{(A)}\widetilde{X}_j^{(B)}
+\underbrace{\sum_{i=0}^{g-1}
+P_{j,i}^{(A)}P_{j,i}^{(B)}}_{q_j},
+\end{aligned}
 \label{eq:blockdot}
 \end{equation}
-Here, $X_j^{(A)}$ and $X_j^{(B)}$ are the two operand scales for group $j$, $P_{j,i}^{(A)}$ and $P_{j,i}^{(B)}$ are decoded elements, and $q_j$ is the group dot product. HiF4 micro-exponents are included in element decoding. Setting $X_j^{(A)}=X_j^{(B)}=1$ gives ordinary dot-product accumulation for unscaled formats.
+The two inputs use the same scaling-block boundaries along the reduction dimension. Here, $g$ is the block size, $G_s=\lceil K/g\rceil$, and the final block is zero-padded. The term $q_j$ is the dot product within block $j$, and $\widetilde{X}_j$ is its effective scale. For conventional floating-point formats, $\widetilde{X}_j=1$ and $P_{j,i}$ is the original element value; for MX formats, $\widetilde{X}_j=X_j$. HiF4's local micro-exponents are incorporated into $P_{j,i}$.
 
-Equation~\eqref{eq:blockdot} exposes common boundaries for element multiplication and alignment, local reduction, scale processing, and accumulation across groups. These boundaries support arithmetic reuse and hierarchical composition. The equation specifies the computation; internal widths, operation ordering, and rounding positions remain implementation choices~\cite{ocpmx2023}.
-
-
-
-\subsection{Datapath Reuse and Design-Space Exploration}
+\subsection{Related Work on Multi-Precision Dot-Product Design and Design-Space Exploration}
 \label{sec:datapath_sharing}
 
-Multi-precision units share multiplication, alignment, and reduction hardware to reduce the costs of separate datapaths. TransDot reconfigures multipliers and shifters across precisions, sharing resources between wide operations and parallel low-precision dot products~\cite{transdot2026}. MPICC decodes different formats into a common internal representation~\cite{huangMPICCMultiplePrecisionInterCombined2025}. Fused FP8 dot-product work compares dedicated backends with reuse of an FP32 FMA adder, highlighting accumulation, normalization, and rounding as additional sharing opportunities~\cite{lutzFusedFP84Way2024}.
+For multiplier reuse, Bit Fusion composes low-bit-width multiplication units through shifts and additions~\cite{bitfusion2018}. Park et al. share multipliers and reduction datapaths between FP16 significand multiplication and INT8/INT4 dot products~\cite{parkMultimode8KMACHWutilizationaware2022}. Abdel-Aziz et al. support higher precision through temporal decomposition and analyze the overhead of floating-point exponent alignment and addition~\cite{abdelaziz2021overheads}. For multi-format computation and fused reduction, FPnew supports multiple floating-point operations through configurable format slices~\cite{mach2020fpnew}. MiniFloats fuses two low-precision products with a higher-precision addend, reducing repeated normalization and rounding~\cite{bertaccini2022minifloat}. TransDot reuses multiplier partial products and partitionable shifters~\cite{transdot2026}; Ten-Four connects dot products in multiple formats to a shared reduction backend~\cite{rout2026tenfourv3}. MXDOTP uses a unified internal element representation, integrates MX scaling into the dot-product datapath, and accumulates in FP32~\cite{islamoglu2025mxdotp}.
 
-Design-space exploration also connects numerical formats to hardware costs. Crafton et al. jointly explore low-precision formats and MAC microarchitectures using numerical-error, area, and power Pareto trade-offs~\cite{paretomac2025}. MX-like Tensor Core evaluates shared scales together with weight and activation formats~\cite{zhao2026mxlike}. At the array level, Timeloop explores mappings and organizations through loop tiling, spatial unrolling, and memory hierarchies, including tiling along $K$~\cite{timeloop2019}. These studies primarily optimize unit structures, formats, or array parameters. They provide limited direct comparison of 16-/8-/4-bit peak throughput ratios as independent design variables and of alternative implementations of the same ratio.
+For alignment and accumulation, a dynamic alignment anchor selects a reference exponent from the inputs. A fixed anchor instead uses a reference determined by the format's exponent range, trading a wider fixed-point datapath for simpler exponent-selection logic. Products can be aligned and reduced together with the addend $C$, or a floating-point adder can combine $C$ with the scaled dot product. Where $C$ enters the datapath determines the alignment range and accumulation overhead~\cite{bertaccini2022minifloat,lutzFusedFP84Way2024}. Internal accumulation order, truncation positions, and rounding rules jointly determine numerical results~\cite{sun2023tensorcores,xie2025mmasim}. In design-space exploration, Crafton et al. and MX-Like further examine trade-offs among low-precision formats, compute organization, and hardware cost~\cite{paretomac2025,zhao2026mxlike}, but neither addresses throughput-ratio selection.
 
-
+Table~\ref{tab:related_features} compares the precision formats supported by DP-Puzzle and related dot-product designs. Building on support for multiple formats, our design adds specialized low-precision units to adjust the relative peak throughputs within each dot-product unit, enabling multiple throughput ratios.
 
 \subsection{Motivation for Throughput-Ratio Exploration}
 \label{sec:commercial_ratios}
 \label{sec:ratio_motivation}
 
-Table~\ref{tab:vendor_ratios} summarizes representative products and development roadmaps. Normalized to each product's 16-bit matrix peak, ratios extend from $1:2:4$ to $1:2:6$, approximately $1:4:8$, and a roadmap target of $1:2:8$. This diversity makes low-precision provisioning an explicit architectural choice. Given the different development timescales of chips and models, provisioning must address both current workloads and future low-precision demand.
-
-
-
-Two questions follow. First, how can shared arithmetic, specialized low-precision components, and DP composition realize a target ratio? Second, at matched absolute peak throughput for every precision, how do internal expansion along $K$ and array-level expansion along $M/N$ differ in area, power, bandwidth, and usable throughput? K expansion increases reduction parallelism for one output, whereas M/N expansion increases independent outputs, changing backend sharing and data-supply requirements. A composable DP and a common PPA and bandwidth model make these alternatives concrete and comparable. Section~\ref{sec:architecture} establishes the shared baseline; Section~\ref{sec:expansion} describes specialization and the two composition methods.
+Table~\ref{tab:vendor_ratios} summarizes recent products and development roadmaps from major GPGPU and NPU vendors, illustrating industry interest in $1:2:6$, $1:4:8$, and $1:2:8$ ratios. These disclosures do not explain the rationale for selecting each ratio, and the configurations cover only a small part of the design space. We therefore extend the exploration to $1:4:4$, $1:2:12$, $1:2:16$, $1:6:12$, and $1:8:16$. Together with the three ratios above and the $1:2:4$ baseline, these form a design space of nine candidates. Our objective is to determine how hardware cost should be traded against performance benefits as the precision requirements of future model workloads evolve.
 % END REVIEW PAIR: 02_background.tex
 
 % BEGIN REVIEW PAIR: 03_architecture.tex
