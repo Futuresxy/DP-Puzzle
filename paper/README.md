@@ -1,10 +1,26 @@
 # DAC 2027 论文
 
+## 当前中文稿：九配比与双预算 DSE（2026-11-16）
+
+本轮在作者工作区稿件上更新九种全精度 DP 的组合说明、设计动机、硬件成本与 DSE。`main.tex` 为中文入口；英文 `dp_puzzle.tex` 保留历史版本。当前正文使用 `scripts/reproduce_joint_dse.py` 和 `data/inputs/joint_dse.json`，从固定 11 设计数据中选取九种完整 HQE 候选。低精度 `0:2:4` 仅用于相关工作表，与共享基线并列；独立 E/QE 不参与全精度负载扫描。
+
+```bash
+MPLCONFIGDIR=/tmp/dp-paper-mpl make reproduce  # 九配比部署、区域、模型点评估与对比表
+MPLCONFIGDIR=/tmp/dp-paper-mpl make test       # 12 项成本/区域/工作量一致性测试
+make pdf                                    # build/main.pdf
+```
+
+结果索引为 [data/evidence/joint_dse_20261116/manifest.json](data/evidence/joint_dse_20261116/manifest.json)：9 个 α×β 场景、每场景 5,151 个 HQE 组成、42 个模型/迁移负载点和 3,402 次候选评估。部署、区域份额、模型点与候选评估为受控 CSV/JSON；完整 92,718 行双目标网格及算子账本放在被忽略的 `data/results/joint_dse_20261116/`。图为矢量 PDF `figures/joint_dse_regions.pdf`，表为 `tables/hardware_joint_table.tex`。作者提供的九配比成本图 `figures/dp_ratio_area_power.pdf` 保留原稿。
+
+正文已更新为九候选实际结果：α=0.3、β=1.5 时 W4A8 21 点中 16 点选择 1:4:4，5 点选择 1:4:8；不能继续沿用四候选的“全部点选择 1:4:8”。当前模型中配置数量同时缩放吞吐和功耗，预算改变延迟区域，DP 单位工作能耗排序保持不变。旧四候选流程以 `make reproduce-legacy`、`make test-legacy` 保留。
+
+作者待补内容用可见斜体集中在 III、IV、V 章末尾，不将未核验内容补写为结果。新计算依据固定硬件记录与既有模型结构分析，未新增 EDA 或推理测量。当前工作稿为正文 7 页、参考文献 2 页；投稿前还需按页面要求压缩。待补清单和数字核对记录见 `data/evidence/joint_dse_20261116/manuscript_review.json`。
+
 ## 面积与功耗联合硬件成本模型（2026-11-16）
 
 用户确认的选型口径：基准计算阵列面积占比 `alpha` 标定固定每 SM 外围面积，功耗倍率 `beta` 标定共同 DP 功耗预算。两项预算共同决定候选**实际配置的整数 SM 数**，所有已配置 SM 在每个受支持且已测功耗的模式下均可同时计算。同一物理设计的 SM 数不随 H/Q/E 工作量变化；超过预算的 SM 不实例化，剩余面积单列，不假定其已重新利用。
 
-[独立计算入口](scripts/hardware_cost.py) 使用 [11 种 DP 固定数据](data/DP_area_power/dp11_area_power_fixed_20261116.csv)，先校验 SHA-256。仅使用 BF16、MXFP8 E4M3、MXFP4 E2M1；纯 E/QE 的不支持模式输出空值，要求该模式的工作负载不可行。`0:2:0` 不参与。此入口不改动下文既有四配比负载扫描和论文图表，联合模型的 HQE 优势区域扫描尚未接入。
+[独立计算入口](scripts/hardware_cost.py) 使用 [11 种 DP 固定数据](data/DP_area_power/dp11_area_power_fixed_20261116.csv)，先校验 SHA-256。仅使用 BF16、MXFP8 E4M3、MXFP4 E2M1；纯 E/QE 的不支持模式输出空值，要求该模式的工作负载不可行。`0:2:0` 不参与。默认选取其中九种全精度设计；`--include-specialized` 可导出全部 11 种。正文的 HQE 扫描已通过 `scripts/reproduce_joint_dse.py` 接入该模型。
 
 令 `D` 为每 SM 的 DP 数（默认 256）、`N0` 为基准 SM 数（默认 36）、`a_j` 为单 DP 面积、`p_j,p` 为单 DP 测量总功耗，基准 0 为 `1:2:4`：
 
@@ -36,9 +52,9 @@ python3 -m unittest discover -s scripts -p test_hardware_cost.py -v
 
 假设每 SM 外围面积固定、供数充分、计算资源充分利用；DP 面积之和作为计算阵列面积代理。没有新增阵列 RTL、寄存器/广播网络表征、DVFS、外围功耗或端到端延迟模型。功耗为 DP 计算池的已测活动窗口平均功耗外推，不是整芯片 TDP 或瞬时最坏峰值；固定外围面积不能推出固定外围功耗。约束只覆盖三种已测格式，不保证其他支持格式也能全核运行。
 
-## 当前中文审核稿：DSE 主线（2026-11-11）
+## 历史四候选工作流说明（2026-11-11）
 
-[main.tex](main.tex) 是当前中文入口，按六章组织：引言、背景与动机、组合式点积微架构、硬件成本表征、面积约束 DSE、结论。第三章已并入 E/QE 专用 Group 与 DP 内增配；原有两种扩展方式的比较从正文撤下。主线是“可实现 DP → 同工况成本 → 整核部署 → 工作量组成 → 配比选择”。章节映射、证据边界和下一步实验见 [research_plan.md](research_plan.md)。
+以下记录为旧四候选稿的复放说明；当前入口与结果以上方九配比说明为准。旧稿按六章组织：引言、背景与动机、组合式点积微架构、硬件成本表征、面积约束 DSE、结论。第三章已并入 E/QE 专用 Group 与 DP 内增配；原有两种扩展方式的比较从正文撤下。主线是“可实现 DP → 同工况成本 → 整核部署 → 工作量组成 → 配比选择”。章节映射、证据边界和下一步实验见 [research_plan.md](research_plan.md)。
 
 本轮仅修改中文。英文单文件 [dp_puzzle.tex](dp_puzzle.tex) 保留上一轮七章版本，待用户确认后同步。当前中英文的章节、公式、表格和图源存在有意差异；`Makefile.en check` 会报告这些差异，不能当作已通过一致性检查。不得用旧英文内容覆盖本轮中文结构。
 
@@ -90,24 +106,24 @@ make -C paper -f Makefile.en          # 上一轮英文：paper/build/dp_puzzle.
 
 ## 编译与重绘
 
-需要 XeLaTeX、latexmk、BibTeX（TeX Live 的 xeCJK、IEEEtran、subfig/caption 相关依赖），以及 Python 3、NumPy、Matplotlib。正文采用 TeX Gyre 和 Fandol 字体；图中文字优先 Arial。IEEE 模板随目录保留，来源见 [template/SOURCE.md](template/SOURCE.md)。
+需要 XeLaTeX、latexmk、BibTeX（TeX Live 的 xeCJK、IEEEtran、subfig/caption 相关依赖），以及 Python 3、NumPy、Matplotlib。正文采用 TeX Gyre 和 Fandol 字体；新 DSE 图采用 Times New Roman 衬线字体。IEEE 模板随目录保留，来源见 [template/SOURCE.md](template/SOURCE.md)。
 
 ```bash
 cd paper
 python3 -m pip install -r requirements.txt  # 缺少依赖时执行
 make                    # 仅编译正文，输出 build/main.pdf
-make reproduce          # 重算部署、负载、三角分区、两张图和三张表
+make reproduce-legacy   # 重算旧四候选部署、负载、三角分区、两张图和三张表
 # make diagrams         # 历史示意图入口；本轮不调用，架构图由作者维护
 make cost-figures       # 按可编辑 CSV 重绘 select8 面积/功耗和 H16Q32E64 面积占比
-make check              # 保持历史工作量不变，核验当前测量输入、部署与时间/能耗
-make test               # 临时目录内验证修改参数后的重算
+make check              # 重算九配比结果并核验部署、区域与时间/能耗
+make test               # 12 项联合成本与区域一致性测试
 ```
 
 `make` 不会自动覆盖图表。可先运行 `make reproduce` 检查新结果，再 `make` 更新 PDF。编译和分析均不依赖原工程、网络或 GPU。
 
-### 负载配比分区图
+### 历史四候选负载配比分区图
 
-第六节使用 `figures/k4_n12_prefill_comparison.png`，左右分别为整数核心部署下的最小计算延迟与最小 DP 计算能耗。图内标注四种配比及其最优区域的几何面积占比，并提供 H/Q/E 百分比刻度、20%/30%/50% 读数示例和三模型×两种专家量化映射的图例。原区域表不再单独排入正文；连续/整数部署及能耗的数值仍保留于 `tables/region_table.tex` 和 `data/results/regions.json`。
+旧稿第六节使用 `figures/k4_n12_prefill_comparison.png`，左右分别为整数核心部署下的最小计算延迟与最小 DP 计算能耗。图内标注四种配比及其最优区域的几何面积占比，并提供 H/Q/E 百分比刻度、20%/30%/50% 读数示例和三模型×两种专家量化映射的图例。原区域表不再单独排入正文；连续/整数部署及能耗的数值仍保留于 `tables/region_table.tex` 和 `data/results/regions.json`。
 
 组合图将读数示例置于两三角图之间的上方空白处，底部仅保留两行量化方案、三列模型的紧凑图例。配比标签不加底色；区域百分比、轨迹方向和实心终点的解释放在论文图注。
 
@@ -142,7 +158,7 @@ python3 scripts/plot_triangles.py  # 使用已安装 requirements.txt 的 Python
 python3 scripts/reproduce.py --config data/inputs/experiment.json --output /tmp/dp-paper-trial
 ```
 
-`--config` 中的 `hardware` 相对该配置文件解析；模型配置固定从本目录 `data/inputs/models/` 读取。当前入口针对四种既定配比和三个模型，不是任意设计空间生成器。
+`--config` 中的 `hardware` 相对该配置文件解析；模型配置固定从本目录 `data/inputs/models/` 读取。此历史入口针对四种既定配比和三个模型。
 
 **重绘更新数值表格和图形，不自动改写正文结论。** 修改参数后需同步审核正文中的面积、核数、百分比、轨迹端点和图注中的上下文范围。`make check` 核对默认测量输入，并检查历史工作量保持不变；自定义参数用独立输出目录和 `make test` 验证，不要求新硬件结果匹配历史值。
 

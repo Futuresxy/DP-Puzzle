@@ -5,7 +5,7 @@
 \subsection{浮点精度与微缩放格式}
 \label{sec:formats}
 
-BF16/FP16 由逐元素的指数与有效数确定动态范围和精度~\cite{burgess2019bfloat16}；微缩放格式则将低位宽元素与共享尺度共同编码（图~\ref{fig:fpformats}）。OCP MXFP8/6/4 采用 32 元素一组的 E8M0 尺度~\cite{ocpmx2023}；NVFP4 使用 16 元素一组的 E4M3 尺度~\cite{nvidia2024nvfp4}；HiF4 使用 64 元素一组的无符号 E6M2 基础尺度，并为每 8、4 个元素分别配置一位微指数~\cite{hifloat4}。元素编码、分组粒度和尺度编码分别决定解包、局部规约与尺度融合的硬件需求。
+BF16/FP16 由逐元素的指数与有效数确定动态范围和精度~\cite{burgess2019bfloat16}；微缩放格式则将低位宽元素与共享尺度共同编码（图~\ref{fig:fpformats}）。OCP MXFP8/6/4 每 32 个元素共享一个 E8M0 尺度~\cite{ocpmx2023}；NVFP4 使用 16 元素一组的 E4M3 尺度~\cite{nvidia2024nvfp4}；HiF4 使用 64 元素一组的无符号 E6M2 基础尺度，并为每 8、4 个元素分别配置一位微指数~\cite{hifloat4}。元素编码、分组粒度和尺度编码分别决定解包、局部规约与尺度融合的硬件需求。
 
 \begin{figure}[t]
 \centering
@@ -37,38 +37,46 @@ d=c+\sum_{j=0}^{G-1}X_j^{(A)}X_j^{(B)}
 
 表~\ref{tab:related_features} 汇总格式与组合能力。MX 列区分完整微缩放支持与仅元素运算支持；本文通过在共享 DP 内增配专用 Group 改变算力配比。
 
-\input{tables/related_features.tex}
-
-已有工作通过跨精度共享降低单元成本：TransDot 重组乘法器与移位器~\cite{transdot2026}，MPICC 将多种格式映射为统一内部表示~\cite{huangMPICCMultiplePrecisionInterCombined2025}，融合 FP8 点积设计复用累加和舍入后端~\cite{lutzFusedFP84Way2024}。DSE 研究进一步联合探索数值格式与 MAC 微架构~\cite{paretomac2025}，或共享尺度、权重和激活格式~\cite{zhao2026mxlike}；Timeloop 则以循环分块与存储层次分析阵列映射~\cite{timeloop2019}。本文固定目标格式集合，将 H/Q/E 峰值配比作为设计变量，考察实测单元成本如何影响面积预算下的部署规模与负载收益。
+已有工作通过跨精度共享降低单元成本：TransDot 重组乘法器与移位器~\cite{transdot2026}，MPICC 将多种格式映射为统一内部表示~\cite{huangMPICCMultiplePrecisionInterCombined2025}，融合 FP8 点积设计复用累加和舍入后端~\cite{lutzFusedFP84Way2024}。DSE 研究进一步联合探索数值格式与 MAC 微架构~\cite{paretomac2025}，或共享尺度、权重和激活格式~\cite{zhao2026mxlike}；Timeloop 则以循环分块与存储层次分析阵列映射~\cite{timeloop2019}。本文固定目标格式集合，将 H/Q/E 峰值配比作为设计变量，考察实测单元成本如何通过面积与功耗预算影响部署规模与负载收益。
 
 \subsection{算力配比的设计动机}
 \label{sec:commercial_ratios}
 \label{sec:ratio_motivation}
 
-表~\ref{tab:vendor_ratios} 给出代表性产品与研发路线的配比。本文选取 $1:2:4$、$1:2:6$、$1:2:8$ 和 $1:4:8$ 构成离散设计空间；这些数字仅规定各精度相对峰值，不预设面积或功耗按同一比例缩放。
+表~\ref{tab:vendor_ratios} 展示了从 $1:2:4$ 向 E 增强或 Q/E 同时增强的产品与研发路线。已有选择给出了配比变化的方向，但不能覆盖不同负载和硬件预算下的全部选择。本文进一步考察只增强 Q、提高 E 增配幅度以及扩大 Q/E 共同增配的组合，将 $1:4:4$、$1:2:12$、$1:2:16$、$1:6:12$ 和 $1:8:16$ 纳入探索，与上述四种配比共同构成九候选设计空间。
 
 \begin{table}[t]
 \centering
-\caption{各产品的稠密矩阵峰值（PFLOP/s）及研发路线目标。}
+\caption{Per-device dense matrix peaks (PFLOP/s) and roadmap targets.}
 \label{tab:vendor_ratios}
-\begingroup\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lrrrl@{}}\toprule
-Product & 16-bit & 8-bit & 4-bit & Ratio \\\midrule
-B200 SXM~\cite{nvidiahgx} & 2.250 & 4.500 & 9.000 & $1:2:4$ \\
-MI355X~\cite{amdmi355x} & 2.517 & 5.033 & 10.066 & $1:2:4$ \\
-Ascend 950PR~\cite{huawei950} & 0.432 & 0.865 & 1.730 & $1:2:4$ \\
+\begingroup\footnotesize\setlength{\tabcolsep}{2pt}
+\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}llrrrl@{}}
+\toprule
+Vendor & Product & BF16 & MXFP8 & MXFP4 & Ratio \\
 \midrule
-B300 SXM~\cite{nvidiahgx} & 2.250 & 4.500 & 13.500 & $1:2:6$ \\
+NVIDIA & B200 SXM~\cite{nvidiahgx}
+ & 2.250 & 4.500 & 9.000 & $1:2:4$ \\
+ & B300 SXM~\cite{nvidiahgx}
+ & 2.250 & 4.500 & 13.500 & $1:2:6$ \\
+ & Rubin GPU~\cite{nvidiaverarubin}
+ & 4.000 & 17.500 & 35.000 & $\approx 1:4:8$ \\
 \midrule
-Rubin GPU~\cite{nvidiaverarubin} & 4.000 & 17.500 & 35.000 & $\approx 1:4:8$ \\
-MI455X~\cite{amdmi455x} & 5.033 & 20.133 & 40.265 & $1:4:8$ \\
+AMD & MI355X~\cite{amdmi355x}
+ & 2.517 & 5.033 & 10.066 & $1:2:4$ \\
+ & MI455X~\cite{amdmi455x}
+ & 5.033 & 20.133 & 40.265 & $1:4:8$ \\
 \midrule
-Ascend 960PR$^\dagger$~\cite{huawei960roadmap} & 1.000 & 2.000 & 8.000 & $1:2:8$ \\
+Huawei & Ascend 950PR~\cite{huawei950}
+ & 0.432 & 0.865 & 1.730 & $1:2:4$ \\
+ & Ascend 960PR$^\dagger$~\cite{huawei960roadmap}
+ & 1.000 & 2.000 & 8.000 & $1:2:8$ \\
 \bottomrule
 \end{tabular*}
 \par\smallskip
-\parbox{\columnwidth}{\raggedright 产品行使用稠密矩阵峰值；$\dagger$ 表示研发路线目标。}
+\parbox{\columnwidth}{\raggedright
+Ratios are normalized to BF16 peaks
+$\dagger$ denotes an R\&D roadmap target.}
 \endgroup
 \end{table}
 
-配比选择包含两个相互关联的问题：增加低精度算力需要多少硬件资源，以及新增资源在给定工作量组成下能否缩短计算时间、降低能耗。前者需要可组合微架构及同工况成本表征；后者需要将面积引起的部署密度变化纳入负载模型。第~\ref{sec:architecture} 节构建候选 DP，第~\ref{sec:evaluation} 节表征其成本，第~\ref{sec:workload} 节在统一面积预算下分析配比的适用区域。
+更高的低精度峰值需要额外乘法、对齐和规约资源，也会改变整核面积和逐模式功耗。因此，配比选择需要同时回答：单位成本能增加多少低精度吞吐，以及面积与功耗预算允许配置多少核心。本文以组合式微架构构造候选，以同工况测量建立成本，再将预算决定的绝对算力映射到 H/Q/E 负载组成，分析工业界已有选择和更大增配方案各自的优势区域。

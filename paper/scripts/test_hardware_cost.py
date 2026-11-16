@@ -1,7 +1,7 @@
 """Budget feasibility, exact boundaries and unsupported-mode semantics."""
 import unittest
 
-from hardware_cost import deploy, load_profiles
+from hardware_cost import deploy, load_profiles, full_precision_profiles
 
 
 class HardwareCostTests(unittest.TestCase):
@@ -18,6 +18,12 @@ class HardwareCostTests(unittest.TestCase):
             self.assertEqual(r['installed_sms'], 36)
             self.assertEqual(r['binding_constraint'], 'both')
             self.assertAlmostEqual(r['mxfp8_e4m3_peak_tflops'], 589.824)
+
+    def test_full_precision_candidate_set(self):
+        selected = full_precision_profiles(self.profiles)
+        self.assertEqual(len(selected), 9)
+        self.assertTrue(all(len(p['modes']) == 3 for p in selected))
+        self.assertNotIn('0:2:4', {p['ratio'] for p in selected})
 
     def test_physical_count_is_common_to_all_modes(self):
         r = self.rows()['1:8:16']

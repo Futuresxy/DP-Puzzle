@@ -1,17 +1,37 @@
 % !TeX root = ../main.tex
 \section{引言}
 \label{sec:introduction}
-通用矩阵乘法（GEMM）是 AI 模型的主要计算负载，GPGPU/NPU 通过多精度张量计算单元提高其执行效率。传统设计在近似相同的输入位宽下增加低精度运算的并行度，使 16、8、4 位浮点峰值算力大致遵循 $1:2:4$。本文将这三类执行精度分别记为 H、Q、E，并以 H:Q:E 表示其峰值算力配比。
+随着大模型技术的发展，模型的参数规模与计算需求持续增长，采用更低精度的数值格式已成为常见的优化手段。通用矩阵乘法（GEMM）作为大模型的主要计算负载，其计算格式也逐渐由单精度浮点格式（FP32）向低精度格式拓展。其中，最主要的代表包括 TensorFloat-32（TF32）、半精度浮点格式（FP16）和 BF16。随着大模型量化技术的发展，FP8、INT8、FP6、FP4，以及引入共享缩放因子（scaling factor）的微缩放（Microscaling）格式，也逐渐成为模型推理优化中的重要选择。以 DeepSeek-V4.1-Flash~\cite{deepseekv41source}为例，其文本主干采用按算子配置的混合精度策略：混合专家（MoE）计算及多数注意力投影采用 FP8；稀疏注意力索引器的 QK 路径采用 MXFP4；主注意力的 QK/PV 计算采用 BF16。因此可见，当前大语言模型推理呈现出了多种精度计算需求并存的特点，对承载大模型推理的硬件也带来了更高的要求。
 
-模型对三类算力的需求正在变化。DeepSeek-V3 采用 FP8 执行主要线性层的矩阵乘法~\cite{deepseekv3}，DeepSeek-V4 进一步使用 MXFP4 专家权重与低精度注意力索引计算~\cite{deepseekv4}。低位宽权重存储并不必然对应同位宽乘法，敏感计算也仍需较高精度。因此，配比选择需要依据实际执行精度及其计算量，而非参数存储类型。商业芯片及公开路线已出现 $1:2:6$、$1:4:8$ 和 $1:2:8$ 等选择~\cite{nvidiahgx,amdmi455x,huawei960roadmap}。芯片设计周期长于模型与量化方法的迭代周期，硬件既需适应当前负载，也需评估低精度计算进一步增长的影响。
+在相同输入位宽下，低精度格式可容纳更多元素，形成 BF16:MXFP8:MXFP4 为 $1:2:4$ 的常见峰值配比。工业界通过定向增强 FP4，或共同增强 FP8 与 FP4，改变这一比例。模型演进与芯片设计周期的差异，使配比选择需要覆盖当前工作量与未来的精度迁移，而不只复现已有产品规格。
 
-峰值配比无法直接回答资源分配问题。共享电路使新增算力的面积与功耗不必等比例增长；在总面积固定时，单核低精度吞吐的提高又可能减少可部署核心数，降低高精度总算力。已有研究探索了通路复用、数值格式及硬件成本之间的关系~\cite{transdot2026,paretomac2025,zhao2026mxlike}，但算力配比的选择仍需要贯通可实现电路、芯片资源预算与混合精度工作量的分析。
-
-DP-Puzzle 将算力配比作为设计空间探索（design space exploration，DSE）的变量。我们以 Lane、Group 和 DP 三层组合式微架构构造四种候选，通过 DP 内低精度 Group 的增配改变原生点积长度，共享累加与输出通路。随后以同工况面积和活动功耗表征候选成本，在整核面积预算下计算部署数量及各精度总算力，并将 H/Q/E 工作量映射为计算延迟和能耗。由此，微架构提供硬件成本依据，负载组成决定配比的适用区域。
-
+DP-Puzzle 将这一问题落实到可组合的点积单元。通过在共享后端前组合 Q、E 和 QE 专用 Group，构造九种完整支持目标格式的 DP 配比，并测量其面积和逐模式功耗。随后以面积与功耗预算共同决定可配置核心数，将单元增配映射为分精度绝对算力，再分析不同工作量组成下的延迟与能耗收益。
+% BEGIN INLINE TABLE: related_features
+\suppressfloats[t]
+\begin{table}[t]
+\centering
+\caption{精度支持与组合式配比配置能力。}
+\label{tab:related_features}
+\begingroup\footnotesize\setlength{\tabcolsep}{1pt}
+\def\Y{$\checkmark$}\def\N{$\times$}\def\E{$\triangle$}
+\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}l*{10}{c}@{}}\toprule
+Design & TF32 & FP16 & BF16 & \shortstack{MX\\FP8} & \shortstack{MX\\FP6} & \shortstack{MX\\FP4} & INT8 & \shortstack{NV\\FP4} & HiF4 & \shortstack{Multi\\Ratio} \\\midrule
+Ten-Four~\cite{rout2026tenfourv3} & \Y & \Y & \Y & \Y & \N & \N & \Y & \N & \N & \N \\
+MXDOTP~\cite{islamoglu2025mxdotp} & \N & \N & \N & \Y & \N & \N & \N & \N & \N & \N \\
+FPnew~\cite{mach2020fpnew} & \N & \Y & \Y & \E & \N & \N & \N & \N & \N & \N \\
+TransDot~\cite{transdot2026} & \N & \Y & \N & \E & \N & \E & \N & \N & \N & \N \\
+\midrule
+DP-Puzzle & \Y & \Y & \Y & \Y & \Y & \Y & \Y & \Y & \Y & \Y \\
+\bottomrule\end{tabular*}
+\par\smallskip
+\parbox{\columnwidth}{\raggedright
+$\checkmark$: supported; $\times$: absent in the reported configuration; $\triangle$: element arithmetic supported, integrated MX scaling not established; }
+\endgroup
+\end{table}
+% END INLINE TABLE: related_features
 本文的主要贡献如下：
 \begin{enumerate}
-\item \textbf{具有电路成本依据的配比设计空间。} 通过共享多精度 DP 与 E、QE 专用 Group 构建四种配比，在相同工艺、频率和活动来源下量化面积与功耗，并分析持续供数所需的带宽增量。
-\item \textbf{整核面积约束下的配比选择模型。} 将单 DP 成本、整数核心部署与各精度工作量联系起来，分别求解延迟和 DP 计算能耗的优势区域，揭示低精度加速与高精度吞吐损失之间的权衡。
-\item \textbf{负载驱动的配比分析。} 依据固定模型配置和执行精度规则构建 DeepSeek prefill 负载点，比较原始映射与专家低精度迁移场景，分析 $1:4:8$ 的当前优势及 $1:2:8$ 获益所需的负载条件。
+\item \textbf{可组合的九配比点积微架构。} 以共享全精度 Group 与 Q、E、QE 专用 Group 组合构造九种候选，在 12\,nm、1\,GHz 下表征其综合面积与真实负载活动功耗，覆盖单独增强 Q、单独增强 E 和共同增强 Q/E。
+\item \textbf{面积与功耗联合约束的成本模型。} 将基准阵列面积占比和功耗预算倍率映射为整数核心数量，求得各候选的绝对算力，并分别分析计算延迟与 DP 能耗。
+\item \textbf{预算与精度迁移的联合探索。} 扫描 H/Q/E 工作量组成，并分析 DeepSeek prefill 与专家低精度迁移场景，揭示更大配比的收益门槛以及仅增强 Q 的候选在 Q 密集负载中的优势。
 \end{enumerate}

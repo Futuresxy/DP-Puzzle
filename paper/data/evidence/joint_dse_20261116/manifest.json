@@ -1,0 +1,217 @@
+{
+  "status": "analytical_uncalibrated",
+  "config": {
+    "baseline_sms": 36,
+    "dp_per_sm": 256,
+    "alphas": [
+      "0.2",
+      "0.3",
+      "0.4"
+    ],
+    "betas": [
+      "1",
+      "1.5",
+      "2.1"
+    ],
+    "figure_alpha": "0.3",
+    "table_beta": "1.5",
+    "simplex_divisions": 100,
+    "contexts": [
+      1024,
+      4096,
+      16384,
+      65536,
+      262144,
+      524288,
+      1048576
+    ],
+    "batch": 1,
+    "models": [
+      "DeepSeek-V4-Flash",
+      "DeepSeek-V4-Pro",
+      "DeepSeek-V4.1-Flash"
+    ],
+    "workload_profiles": [
+      "reference_work",
+      "nvfp4_experts"
+    ]
+  },
+  "ratios": [
+    "1:2:4",
+    "1:2:6",
+    "1:2:8",
+    "1:4:8",
+    "1:4:4",
+    "1:2:12",
+    "1:2:16",
+    "1:6:12",
+    "1:8:16"
+  ],
+  "command": "python3 scripts/reproduce_joint_dse.py",
+  "validation": {
+    "designs": 9,
+    "scenarios": 9,
+    "points_per_simplex": 5151,
+    "simplex_rows": 92718,
+    "workload_points": 42,
+    "evaluations": 3402,
+    "region_partition_pass": true,
+    "region_vertices_optimal_pass": true,
+    "energy_budget_invariance_pass": true
+  },
+  "power_scope": "DP pool; Qwen activity proxy, MXFP4 proxy for NVFP4 expert scenario",
+  "source_metadata": {
+    "schema_version": 1,
+    "dataset_id": "dp11_area_power_fixed_20261116",
+    "frozen_on": "2026-11-16",
+    "policy": "Immutable plotting snapshot; publish a new dated dataset for future changes. No automatic refresh.",
+    "csv": "dp11_area_power_fixed_20261116.csv",
+    "csv_sha256": "56e04ca93c9dd4b27edf9e90d35fe346339bac8dace5554bd6232908061770fd",
+    "design_count": 11,
+    "measured_power_points": 30,
+    "unsupported_cells": 3,
+    "ratio_definition": "H:Q:E native MAC/cycle capacities divided by 16; mutually exclusive modes are not additive.",
+    "area_unit": "um2",
+    "power_unit": "mW",
+    "power_definition": "Tool-reported total power, including dynamic and leakage. Original decimal strings preserved; no rounding or recomputation.",
+    "empty_cell_meaning": "Unsupported precision; not zero and not an unmeasured supported mode.",
+    "formats": [
+      "bf16",
+      "mxfp8_e4m3",
+      "mxfp4_e2m1"
+    ],
+    "excluded_ratios": [
+      "0:2:0"
+    ],
+    "conditions": {
+      "process": "TSMC CLN12FFCLL",
+      "corner": "TT",
+      "voltage_v": 0.7,
+      "temperature_c": 85,
+      "frequency_hz": 1000000000,
+      "clock_gating": true,
+      "latency_cycles": 8,
+      "initiation_interval_cycles": 1,
+      "saif_window_ns": 512,
+      "workload_transactions": 1024,
+      "workload": "Qwen3-8B layer 0 MLP down_proj, native K per design and precision",
+      "scope": "Post-synthesis zero-delay gate activity, pre-CTS and pre-route"
+    },
+    "source": {
+      "commit": "e5bf75c58b7d242ff202de995650214ab71ec011",
+      "backup_tag": "backup-before-b7d2a08-20261116-e5bf75c",
+      "path": "hw/data/dp_latest_area_power_20261112.csv",
+      "local_snapshot": "dp11_area_power_source_20261112.csv",
+      "sha256": "f8ca1f225055086db60a0b1a568ebb5c702c41259c198a4efb53adeb647d6006"
+    },
+    "verification": {
+      "current_branch_points_compared": 24,
+      "compared_fields": [
+        "area_um2",
+        "dynamic_mw",
+        "static_mw",
+        "total_mw"
+      ],
+      "remaining_points": "6 QE expansion points preserved from the backup source",
+      "new_eda_runs": false,
+      "raw_artifacts_revalidated": false,
+      "limitation": "Source PASS and artifact checks describe the historical measurement. Raw DC, power audit and frozen RTL paths for the two QE expansions were not found locally during the 2026-11-16 check."
+    },
+    "implementation_notes": [
+      "E256 and Q128E256 use additional combinational hierarchy expansion; costs include mapping strategy differences.",
+      "Q128E256 includes 8 input-to-S1 hold-repair buffers in the measured area."
+    ]
+  },
+  "inputs": [
+    {
+      "path": "data/inputs/joint_dse.json",
+      "sha256": "68249e1805fa8d91f9a30977d073bfb98656b1fd204a034f47b5066a22cfbc98"
+    },
+    {
+      "path": "data/DP_area_power/dp11_area_power_fixed_20261116.sources.json",
+      "sha256": "857d923b381bee14b424f6f4667e0487b67915efeaf9d28f1c3422ac8648a707"
+    },
+    {
+      "path": "data/DP_area_power/dp11_area_power_fixed_20261116.csv",
+      "sha256": "56e04ca93c9dd4b27edf9e90d35fe346339bac8dace5554bd6232908061770fd"
+    },
+    {
+      "path": "scripts/hardware_cost.py",
+      "sha256": "88950a398a82706d875fc06f212c71071aca27287e7ae31bac5c303e2339db68"
+    },
+    {
+      "path": "scripts/reproduce_joint_dse.py",
+      "sha256": "2eee362726639d879da47bab9508ffac2402a24c77e406ac2687d8b1d46d5c5a"
+    },
+    {
+      "path": "scripts/simplex.py",
+      "sha256": "ddfc0fd3cdb65da6a4a3c2968c79060e53867a55c90e98831fd67622869d6c35"
+    },
+    {
+      "path": "scripts/costs.py",
+      "sha256": "93b7c27de1537335921ba91f31314b43425c4cda2717885616bbfef04b4158a9"
+    },
+    {
+      "path": "scripts/workloads.py",
+      "sha256": "6301d4882dc0623de2c1cc4bd07baa7a9a8dba4e6860cfbebc2c05f1641416b2"
+    },
+    {
+      "path": "scripts/deepseek_v41.py",
+      "sha256": "ad6257b601b0b89a56a1570caf243ae7d13d1a2e85b0d9ae7d54af2e5563d031"
+    },
+    {
+      "path": "data/inputs/models/DeepSeek-V4-Flash/inference/config.json",
+      "sha256": "6cc6f816ca73a8d38750194e330398e4f6955b4b45f674f7d29c96da14ccb733"
+    },
+    {
+      "path": "data/inputs/models/DeepSeek-V4-Pro/inference/config.json",
+      "sha256": "a6aded1806a2dbacbbab89bae2380d0422a6d0dcc55c946b421c7f5e06ef6094"
+    },
+    {
+      "path": "data/inputs/models/DeepSeek-V4.1-Flash/inference/config.json",
+      "sha256": "2e84f45cf1dac8c7fcbb200e96667d4b913275690668ed496f24c7747207a809"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "data/evidence/joint_dse_20261116/deployments.csv",
+      "sha256": "5581362d29186c365c6f2f560066f376a6df962ee54042457bf88994df534789"
+    },
+    {
+      "path": "data/evidence/joint_dse_20261116/region_shares.csv",
+      "sha256": "4612ad2ffec24fe26a9bde9574401c9bfbb1ca543a10749581580d40cdc6af44"
+    },
+    {
+      "path": "data/evidence/joint_dse_20261116/workload_points.csv",
+      "sha256": "10a47aae79d363e6d06e068bd5d23b1f034cd06930fe3e48d6ab53ec30b2a08d"
+    },
+    {
+      "path": "data/evidence/joint_dse_20261116/workload_evaluations.csv",
+      "sha256": "0b3a6fbbcea2a7486500f0fb1873e80b5e4e5f0b7a6f7fbc939ebea1b8595737"
+    },
+    {
+      "path": "data/evidence/joint_dse_20261116/selections.csv",
+      "sha256": "9cc8caeb6b4a276bc42ad2b2fee335e6a38d12739e465f0006c125e165f16845"
+    },
+    {
+      "path": "data/evidence/joint_dse_20261116/regions.json",
+      "sha256": "ca393af70b5f2100df529ec94b5cde93f5d8634cc7958685a2990101c4e43cc1"
+    },
+    {
+      "path": "figures/joint_dse_regions.pdf",
+      "sha256": "26b4e6e5750a8084ac786d91ce5931941921fcdf0883b3fbc9e23cb911d322f5"
+    },
+    {
+      "path": "tables/hardware_joint_table.tex",
+      "sha256": "9a2f2d7a1edcd0f3197b018f9bdd5856faa62294ef2e9b1f073133da9485b4e8"
+    },
+    {
+      "path": "data/results/joint_dse_20261116/simplex_sweep.csv",
+      "sha256": "8076b2341af12578f85db0f35c0bf0d4337f973e9aab0a370b1063ac9d0d955f"
+    },
+    {
+      "path": "data/results/joint_dse_20261116/workload_ledger.json",
+      "sha256": "e6c8963b699d4ca755fa168228e72b75da3d8a5518ff5f7422d482fe9e7779f0"
+    }
+  ]
+}

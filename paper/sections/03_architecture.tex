@@ -4,7 +4,7 @@
 \label{sec:architecture}
 \label{sec:brick_definition}
 
-DP-Puzzle 采用 Lane、Group 和 DP 三层组合式架构（图~\ref{fig:dp_architecture}）。Lane 复用元素乘法、局部对齐与规约；Group 融合尺度并统一部分和表示；DP 共享全局对齐、累加与输出通路。Group 接口将低精度专用化与后端组合分离，使设计阶段能够通过增配 Group 构造不同算力配比。四种配置各自固定硬件资源，运行时仅切换计算精度。
+DP-Puzzle 采用 Lane、Group 和 DP 三层组合式架构（图~\ref{fig:dp_architecture}）。Lane 复用元素乘法、局部对齐与规约；Group 融合尺度并统一部分和表示；DP 共享全局对齐、累加与输出通路。Group 接口将低精度专用化与后端组合分离，使设计阶段能够通过增配 Group 构造不同算力配比。九种配置各自固定硬件资源，运行时仅切换计算精度。
 
 对于固定的 $m\times n$ DP 阵列，精度 $p$ 的原生点积长度为 $K_p$，时钟频率为 $f$。在每拍接收输入且阵列充分利用时，其峰值算力为
 \begin{equation}
@@ -106,25 +106,18 @@ Ten-Four 将 $C$ 纳入前端指数比较~\cite{rout2026tenfourv2}，Lutz 等在
 
 \textbf{E 专用设计。} E8 Lane 仅保留 MXFP4/NVFP4/HiF4 解包、八个 $4\times4$ 乘法器与窄规约树，删除 T/H/Q/INT8 分支、元素指数比较和尾数对齐。HiF4 的二级微指数在规约后用于局部移位。两个 Lane 组成 E16 Group，生成 15 位有符号组和及 14 位幅值，复用 $14\times8$ 尺度尾数乘法，低位补零至公共 31 位输出并保持 Anchor 坐标。
 
-\textbf{Q/E 共享设计。} Q4E8 Lane 删除 T/H/INT8 解包与通路，保留 Q 的指数比较、局部对齐与宽规约；八个 $4\times4$ 乘法器在 Q 模式启用四个，E 模式全部启用并旁路对齐。两个 Lane 组成 Q8E16 Group，保留 Q 所需的宽组和与前导零检测，复用 E 的尺度尾数乘法。两类 Group 均以统一的幅值、指数及状态接口接入 DP 后端。
+\textbf{Q/E 共享设计。} Q4E8 Lane 删除 T/H/INT8 解包与通路，保留 Q 的指数比较、局部对齐与宽规约；八个 $4\times4$ 乘法器在 Q 模式启用四个，E 模式全部启用并旁路对齐。两个 Lane 组成 Q8E16 Group，保留 Q 所需的宽组和与前导零检测，复用 E 的尺度尾数乘法。Q 专用 Group 则仅保留 Q8 容量，用于独立增加 Q 算力。三类专用 Group 均以统一的幅值、指数及状态接口接入 DP 后端。
 
 \subsection{DP 内算力配比配置}
 \label{sec:expansion}
 
-基线的四个多精度 Group 提供 H16Q32E64。分别加入两个 E16、四个 E16 或四个 Q8E16 Group，即得到 $1:2:6$、$1:2:8$ 或 $1:4:8$，同时保留 TF32 与 INT8 能力。新增 Group 接收同一输出对应的额外 A/B 片段及尺度，共享一份 $C$ 和最终规格化、舍入通路。
+四个多精度 Group 构成 H16Q32E64 基线。在此基础上组合专用 Group：增加 2、4、8、12 个 E16 Group，分别得到 $1:2:6$、$1:2:8$、$1:2:12$、$1:2:16$；增加 4 个 Q8 Group 得到 $1:4:4$；增加 4、8、12 个 Q8E16 Group，分别得到 $1:4:8$、$1:6:12$、$1:8:16$。连同基线，共形成九种全精度配比，均保留 TF32、FP16/BF16 与 INT8 通路。
 
-三种增配分别增加 2、4、4 个全局双向移位器，并将新增 Group 纳入指数 MAX。规约树合并新增源与基线的两行 carry-save 输出，共用最终 CPA（图~\ref{fig:dp_csa_expansion}）。设 Group 总数为 $N_{\mathrm{group}}$，无符号对齐窗口位宽为 $W$，累加结果保留位宽为
+组合发生在同一 DP 内：新增 Group 处理同一输出的额外 A/B 片段及尺度，通过统一部分和接口接入全局指数比较、对齐和 carry-save 规约，共享唯一的 $C$、最终 CPA、规格化与舍入通路。设 Group 总数为 $N_{\mathrm{group}}$、无符号对齐窗口位宽为 $W$，累加位宽为
 \begin{equation}
 W_{\mathrm{sum}}=W+1+\left\lceil\log_2(N_{\mathrm{group}}+1)\right\rceil.
 \label{eq:expanded_sum_width}
 \end{equation}
-其中 $W+1$ 包含符号位，$N_{\mathrm{group}}+1$ 计入唯一的 $C$。增配保持八级流水与 II=1。
+其中符号位和唯一的 $C$ 均计入增长。各配置保持八级流水与 II=1；Q、E、QE 扩展分别仅在对应精度模式下参与计算，掩码同步控制寄存更新、指数比较、移位和规约。
 
-E 扩展仅在 E 模式激活，QE 扩展仅在 Q/E 模式激活；掩码同步控制前端更新、MAX、移位、规约及特殊值传播。
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.55\columnwidth]{DP_CSAmodule.png}
-\caption{增配 Group 后的 carry-save 规约结构。右上虚线 4:2 压缩器仅用于 $1:2:8$、$1:4:8$，将四个新增源压缩为两行；$1:2:6$ 的两个新增源直接进入右下合并级。底部选择基础或扩展两行，共享最终 CPA。}
-\label{fig:dp_csa_expansion}
-\end{figure}
+\textit{作者补充：核对输入解包图中的 Lane 数量标签，以及 Park 等工作中子乘法器组合的原文电路图。}

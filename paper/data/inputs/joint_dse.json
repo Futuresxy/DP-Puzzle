@@ -1,0 +1,13 @@
+{
+  "baseline_sms": 36,
+  "dp_per_sm": 256,
+  "alphas": ["0.2", "0.3", "0.4"],
+  "betas": ["1", "1.5", "2.1"],
+  "figure_alpha": "0.3",
+  "table_beta": "1.5",
+  "simplex_divisions": 100,
+  "contexts": [1024, 4096, 16384, 65536, 262144, 524288, 1048576],
+  "batch": 1,
+  "models": ["DeepSeek-V4-Flash", "DeepSeek-V4-Pro", "DeepSeek-V4.1-Flash"],
+  "workload_profiles": ["reference_work", "nvfp4_experts"]
+}

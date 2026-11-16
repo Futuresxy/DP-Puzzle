@@ -15,6 +15,16 @@ from pathlib import Path
 PAPER = Path(__file__).resolve().parents[1]
 DATA = PAPER / 'data/DP_area_power/dp11_area_power_fixed_20261116.sources.json'
 MODES = {'bf16': 'h_native', 'mxfp8_e4m3': 'q_native', 'mxfp4_e2m1': 'e_native'}
+FULL_PRECISION_RATIOS = ('1:2:4', '1:2:6', '1:2:8', '1:4:8', '1:4:4',
+                         '1:2:12', '1:2:16', '1:6:12', '1:8:16')
+
+
+def full_precision_profiles(profiles):
+    """Keep the nine physical designs that all support the full HQE workload."""
+    selected = {p['ratio']: p for p in profiles if set(p['modes']) == set(MODES)}
+    if set(selected) != set(FULL_PRECISION_RATIOS):
+        raise ValueError('Expected exactly the nine full-precision DP designs')
+    return [selected[ratio] for ratio in FULL_PRECISION_RATIOS]
 
 
 def positive(value):
@@ -130,10 +140,14 @@ def main():
                         help='Explicit budget scenarios, e.g. 1 1.25 1.5 2 2.1')
     parser.add_argument('--baseline-sms', type=int, default=36)
     parser.add_argument('--dp-per-sm', type=int, default=256)
+    parser.add_argument('--include-specialized', action='store_true',
+                        help='Also include E-only and QE-only designs (default: nine full-precision designs)')
     parser.add_argument('--output', type=Path, required=True,
                         help='New output directory; existing directories are rejected')
     args = parser.parse_args()
     profiles, metadata = load_profiles()
+    if not args.include_specialized:
+        profiles = full_precision_profiles(profiles)
     alphas = list(dict.fromkeys(positive(v) for v in args.alpha))
     betas = list(dict.fromkeys(positive(v) for v in args.beta))
     rows = [row for alpha in alphas for beta in betas for row in
@@ -150,7 +164,8 @@ def main():
         'command': [sys.executable, *sys.argv],
         'status': 'analytical_uncalibrated',
         'parameters': {'alpha': list(map(float, alphas)), 'beta': list(map(float, betas)),
-                       'baseline_sms': args.baseline_sms, 'dp_per_sm': args.dp_per_sm},
+                       'baseline_sms': args.baseline_sms, 'dp_per_sm': args.dp_per_sm,
+                       'include_specialized': args.include_specialized},
         'area_budget_policy': 'Recalibrate from fixed baseline SM count for each alpha; common to all ratios within that alpha.',
         'power_budget_policy': 'Beta times original baseline maximum across three measured modes; common to all ratios and modes.',
         'deployment_policy': 'One physical SM count satisfies both budgets in every supported measured mode; all installed SMs may compute.',

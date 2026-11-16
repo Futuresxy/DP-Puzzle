@@ -15,9 +15,8 @@ PROFILES = (
     ('0:0:4', 'dp_top_e64'),
     ('0:2:4', 'dp_top_q32e64'),
 )
-# Keep all measured profiles in the audit export; compare only the shared baseline
-# with prior work in the manuscript. The ratio candidates have their own figure.
-DISPLAY_PROFILES = PROFILES[:1]
+# Compare both the full-precision baseline and its low-precision specialization.
+DISPLAY_PROFILES = (PROFILES[0], PROFILES[-1])
 FORMATS = (('BF16', 'bf16'), ('MXFP8', 'mxfp8_e4m3'), ('MXFP4', 'mxfp4_e2m1'))
 UNSUPPORTED_MODES = {
     'dp_top_e64': {'bf16', 'mxfp8_e4m3'},
@@ -50,9 +49,8 @@ def profile_cells(points):
         for label, _ in FORMATS:
             value = values.get((ratio, label))
             formatted = '---' if value is None else f'{value:.3f}'
-            lines.append(label + ' & ' + formatted if index == 0 else formatted)
-        macro = r'\Eff' if index == 0 else r'\Vals'
-        cells.append(macro + '{' + r'\\'.join(lines) + '}')
+            lines.append(label + ' & ' + formatted)
+        cells.append(r'\Eff{' + r'\\'.join(lines) + '}')
     return cells
 
 

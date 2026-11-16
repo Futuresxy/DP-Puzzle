@@ -1,9 +1,12 @@
 PYTHON ?= python3
-.PHONY: all pdf watch reproduce petile17 diagrams cost-figures dp-share-figures check test clean
+.PHONY: all pdf watch reproduce reproduce-legacy petile17 diagrams cost-figures dp-share-figures check test test-legacy clean
 all: pdf
 pdf:
 	latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error main.tex
 reproduce:
+	$(PYTHON) scripts/reproduce_joint_dse.py
+	$(PYTHON) data/process_normalization/normalize_table.py
+reproduce-legacy:
 	$(PYTHON) scripts/reproduce.py
 petile17:
 	$(PYTHON) scripts/reproduce_petile17_n12.py
@@ -12,8 +15,11 @@ diagrams:
 	$(PYTHON) scripts/plot_tensor_dp_background.py
 	$(PYTHON) scripts/plot_kn_composition.py
 check: reproduce
-	$(PYTHON) scripts/check_reference.py
+	$(MAKE) test
 test:
+	$(PYTHON) -m unittest discover -s scripts -p 'test_hardware_cost.py' -v
+	$(PYTHON) -m unittest discover -s scripts -p 'test_joint_dse.py' -v
+test-legacy:
 	$(PYTHON) scripts/test_parameters.py
 clean:
 	latexmk -c main.tex
