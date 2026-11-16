@@ -1,0 +1,35 @@
+{
+  "status": "analytical_uncalibrated",
+  "scope": "Frozen V4.1 CED cold prefill, batch 1, 11 contexts",
+  "flop_denominator": "All GEMM FLOPs in ledger, including FP32; excludes non-GEMM operations",
+  "time_denominator": "Baseline 1:2:4 ideal HQE compute service time, alpha=0.3 beta=1.5; excludes FP32",
+  "validation": "All operator FLOPs partitioned; HQE time fractions sum to one for every context",
+  "inputs": [
+    {
+      "path": "data/evidence/v41_portfolio_20261116/operator_work.csv",
+      "sha256": "7e58500f595b7506997e66c8cc5446eb331e5f6b0b12c0fe99aa3d269d4a7e09"
+    },
+    {
+      "path": "scripts/analyze_v41_migration.py",
+      "sha256": "206336b261a037b26721836dd5a1d464be56a99b8740de0f68606c2a682e8f4b"
+    },
+    {
+      "path": "scripts/hardware_cost.py",
+      "sha256": "88950a398a82706d875fc06f212c71071aca27287e7ae31bac5c303e2339db68"
+    },
+    {
+      "path": "data/DP_area_power/dp11_area_power_fixed_20261116.csv",
+      "sha256": "56e04ca93c9dd4b27edf9e90d35fe346339bac8dace5554bd6232908061770fd"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "data/evidence/v41_migration_review_20261116/operators.csv",
+      "sha256": "310219c9dfec362df1991e4af33cafd32a38d08cd05dddd4d0c692b9302e081c"
+    },
+    {
+      "path": "data/evidence/v41_migration_review_20261116/groups.csv",
+      "sha256": "3f4e5e852a1bf8c211c572c680bd0163bfcc22f0e94fbb8771e86c6670b58c6a"
+    }
+  ]
+}
