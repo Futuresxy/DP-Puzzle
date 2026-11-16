@@ -53,51 +53,53 @@
 
 \input{sections/04_evaluation}
 
-% BEGIN independent DSE draft; compact fixed-budget analysis, 2026-11-16.
-% Temporary manuscript only. The author promotes accepted text to the official manuscript.
+% BEGIN independent DSE draft; single-column figure and three findings, 2026-11-16.
+% Temporary manuscript only; the author promotes accepted text to the official manuscript.
 \section{面积与功耗约束下的算力配比探索}
 \label{sec:workload}
 
-\subsection{从单 DP 成本到整核部署}
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{temp/dse_fixed_budget_v2.pdf}
+\caption{九配比部署与理想计算收益，$\alpha=0.3$。(a) 仅面积与双约束核数，数字为后者；(b) $\beta=1$ 时相对同场景 $1:2:4$ 的平均计算加速比。实框/虚框分别标记双约束/仅面积的最优配比，格内数值均为双约束结果。A--F 迁移定义见正文，All 为六场景等权汇总。}
+\label{fig:fixed_budget_compact}
+\end{figure}
+
+\subsection{联合成本与计算模型}
 \label{sec:k4_area}
+考察 TensorCore 局部增配、每 SM 的 shared memory 容量及控制配置不变、由本地复用充分供数的场景，将每核外围面积近似固定。B200/B300 的 HBM 带宽均为最高 8\,TB/s~\cite{nvidiahgx,nvidiahgxmemory2026temp}，体现了低精度吞吐与存储带宽可以不同步增长；固定外围面积仍是本模型的设计前提。
 
-以 $1:2:4$ 为基准，每个 SM 配置 $D=256$ 个 DP，基准部署 $N_0=36$ 个 SM。令 $a_j$ 为候选 $j$ 的单 DP 面积，$\alpha$ 为基准计算阵列占 SM 的面积比例。固定每核外围面积 $A_O$，共同面积预算为
+以 $1:2:4$ 为基准，每 SM 含 $D=256$ 个 DP，基准为 $N_0=36$ 核。设单 DP 面积为 $a_j$，$\alpha$ 为基准 TensorCore 面积占比，$p_j^{\max}=\max_{p\in\{H,Q,E\}}p_{j,p}$ 为三模式最大测量功耗。外围面积、面积预算和 DP 池功耗预算为
 \begin{equation}
-A_O=Da_0(\alpha^{-1}-1),\qquad A_{\mathrm{bud}}=N_0Da_0/\alpha.
+\begin{aligned}
+A_O&=Da_0(\alpha^{-1}-1),& A_b&=N_0Da_0/\alpha,\\
+P_b&=\beta N_0D p_0^{\max}.&&
+\end{aligned}
 \end{equation}
-
-以 $p_{j,p}$ 表示 H/Q/E 模式的单 DP 测量功耗，取 $p_j^{\max}=\max_p p_{j,p}$。共同 DP 功耗预算为 $P_{\mathrm{bud}}=\beta N_0D p_0^{\max}$，实际部署数量由两项预算共同决定：
+实际部署核心数、模式峰值及计算服务时间为
 \begin{equation}
-n_j=\min\!\left\{
-\left\lfloor\frac{A_{\mathrm{bud}}}{A_O+Da_j}\right\rfloor,
-\left\lfloor\frac{P_{\mathrm{bud}}}{Dp_j^{\max}}\right\rfloor
-\right\}.
+\begin{aligned}
+n_j&=\min\!\left\{\left\lfloor\frac{A_b}{A_O+Da_j}\right\rfloor,
+\left\lfloor\frac{P_b}{Dp_j^{\max}}\right\rfloor\right\},\\
+C_{j,p}&=2fDn_jK_{j,p},\qquad
+\widehat T_j=\sum_p F_p/C_{j,p}.
+\end{aligned}
 \label{eq:core_area_budget}
 \end{equation}
-同一候选的物理核心数在精度和上下文之间保持不变，所有已配置核心均满足各模式的功耗上限。取 $f=1$\,GHz、II=1，模式 $p$ 的原生点积长度为 $K_{j,p}$，则峰值算力及充分供数下的计算时间为
-\begin{equation}
-C_{j,p}=2fDn_jK_{j,p},\qquad T_j(L,z)=\sum_p\frac{F_p(L,z)}{C_{j,p}}.
-\end{equation}
-$F_p(L,z)$ 是上下文 $L$、精度场景 $z$ 下的 GEMM 工作量，各精度阶段顺序执行。主比较固定 $\alpha=0.3$、$\beta=1$，对应共同面积预算 496.59\,mm$^2$ 和 DP 计算池功耗上限 147.47\,W。
+其中 $f=1$\,GHz、II=1，$K_{j,p}$ 为原生点积长度，$F_p$ 为 GEMM 工作量。各精度顺序执行，部署不随模式或上下文变化。模型按阵列近满利用率（计算时取 100\%）估算，仅以工作量除以峰值算力，不计访存、通信和非 GEMM 开销，$\widehat T_j$ 不代表端到端延迟。
 
-\subsection{固定预算下的精度迁移收益}
+\subsection{迁移假设与三点发现}
+DeepSeek-V4.1-Flash~\cite{deepseekv41source} 冷启动 prefill 取 batch=1、1K--1M 的 11 个对数间隔上下文。A 为原始映射；B 将路由专家 Q$\to$E；C 在 B 上将共享专家、Q-up/O-up 转 E；D 从 B 将主注意力 QK/PV、Grouped O-down 的 H$\to$Q；E 合并 C/D；F 将 E 的主注意力及 Grouped O-down 再转 E。其余算子保持原精度，FP32 单列。专家 W4A4 部署~\cite{nvidiav41routed2026} 与 FP8/FP4 attention 的分块量化机制~\cite{flashattention3,sageattention3} 为分阶段迁移提供依据；C--F 用作未来负载情景。
 
-\begin{figure*}[!t]
-\centering
-\includegraphics[width=\textwidth]{temp/dse_fixed_budget.pdf}
-\caption{同面积、同功耗上限下的九配比比较，$\alpha=0.3$、$\beta=1$。(a) 灰条为仅面积约束核数，蓝条及数字为双约束实际核数；中列为单 DP 三模式最大功耗及对应模式 Q/E。(b) 每个候选在全部上下文采用固定部署，数值为同精度场景下 baseline 与候选平均计算时间之比，黑框表示各列平均时间最短的候选。A--F 为正文定义的精度迁移场景；各上下文等权，1.00 表示与 $1:2:4$ 相同。}
-\label{fig:fixed_budget_compact}
-\end{figure*}
+图~\ref{fig:fixed_budget_compact} 固定 $\alpha=0.3$、$\beta=1$，各上下文等权，报告 $S_j=\overline{\widehat T}_0/\overline{\widehat T}_j$；All 进一步对六场景的时间等权求均值，用于选择跨上下文、跨迁移场景的一款固定芯片。
 
-采用 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 的冷启动 prefill，batch=1，上下文从 1K 至 1M 逐次翻倍，共 11 点。A 保持原始精度；B 将路由专家转为 FP4；C 在 B 上将共享专家和 Q-up/O-up 转为 FP4；D 从 B 分支，将主注意力 QK/PV 与 Grouped O-down 转为 FP8；E 合并 C/D；F 将 E 中的主注意力与 Grouped O-down 进一步转为 FP4。其余算子保持原精度，FP32 工作单列。对上下文计算时间等权求均值，报告 $S_j(z)=\overline T_0(z)/\overline T_j(z)$，每个场景内的配比不随上下文改变。
+\textbf{(1) 功耗约束改变面积模型的扩展偏好。} 仅面积约束时，A/C 分别选择 $1:8:16$/$1:2:16$；加入功耗后变为 $1:2:4$/$1:2:8$。较大低精度容量的面积收益不能直接转化为相同功耗预算下的收益。
 
-\textbf{发现一：相同 FP4 单元容量下，非对称增配可保留更高部署密度。}
-$1:2:8$ 与 $1:4:8$ 的单 DP E 吞吐相同，但最大模式功耗分别为 17.59\,mW（E）与 28.79\,mW（Q），预算内分别部署 32 和 20 个 SM，前者整芯片 E 算力高 60\%。Q 模式的功耗要求会约束同一设计在 E 模式下的部署规模，因此 Q/E 同时增配不一定适合 E 密集负载。
+\textbf{(2) 非对称增配保留更多可部署核心。} $1:2:8$ 与 $1:4:8$ 的单 DP E 吞吐相同，后者受更高 Q 模式功耗限制，只能部署 20 核，前者可部署 32 核，整芯片 E 算力高 60\%。
 
-\textbf{发现二：适度的非对称增配能在不增加预算的条件下兑现精度迁移收益。}
-原始场景 A 由 $1:2:4$ 取得最低平均时间；在 B、C、E 中，$1:2:8$ 分别达到 baseline 的 1.08、1.24、1.36 倍计算性能。C 中其平均性能亦为 $1:4:8$ 的 1.53 倍，且在全部上下文相对 baseline 均获得 1.18--1.26 倍加速。进一步迁移到 F 时，$1:2:12$ 以 1.69 倍加速取得优势。负载迁移决定增配方向，双预算下的部署密度决定适宜的增配幅度。
+\textbf{(3) 适度增配形成跨场景的整体优势。} $1:2:8$ 在 B--E 均为平均时间最优，A--F 等权汇总加速为 1.15 倍；即使不计最激进的 F，仍以 1.10 倍居首。因此，在相同面积和功耗预算下，适度 E 增配可覆盖多种迁移路径，无需随上下文或精度策略更换设计。
 
-\textit{作者补充：确认 C--F 的模型质量可行范围，以及目标芯片外围功耗与实际矩阵利用率。}
+\textit{作者确认：C--F 的模型质量可行范围。}
 % END independent DSE draft.
 
 
@@ -115,6 +117,6 @@ $1:2:8$ 与 $1:4:8$ 的单 DP E 吞吐相同，但最大模式功耗分别为 17
 \fi
 \typeout{DAC2027: References start on page \thepage}
 \bibliographystyle{IEEEtran}
-\bibliography{references/references}
+\bibliography{references/references,references/temp_dse}
 
 \end{document}

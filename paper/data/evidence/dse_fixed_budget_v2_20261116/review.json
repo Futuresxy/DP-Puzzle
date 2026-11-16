@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-16",
+  "scope": "temporary manuscript only",
+  "checks": {
+    "source_and_output_hashes": "passed",
+    "protected_files_unchanged_since_turn_start": {
+      "main.tex": true,
+      "sections/00_abstract.tex": false,
+      "sections/01_introduction.tex": true,
+      "sections/05_dse.tex": true,
+      "references/references.bib": true
+    },
+    "author_working_tree_edits": "Abstract changed externally during work; preserved along with existing introduction edits; excluded from commit",
+    "matrix_shape": [
+      9,
+      7
+    ],
+    "baseline_one": true,
+    "area_only_time_from_flop_ledger": "passed",
+    "overall_time_equal_case_context_average": "passed"
+  },
+  "figure": {
+    "path": "figures/temp/dse_fixed_budget_v2.pdf",
+    "vector": true,
+    "raster_images": 0,
+    "embedded_font": "Times New Roman",
+    "visual_review": "Standalone figure, one-page DSE excerpt, full manuscript pages 5 and 6 inspected. Numeric cells and caption readable without overlap."
+  },
+  "manuscript": {
+    "file": "main_temp.tex",
+    "source_sha256": "ea90084cf98307575c6b49c714320af2700214787f79c30bc316eb903c7086aa",
+    "build": "passed",
+    "body_pages": 6,
+    "reference_pages": 1,
+    "standalone_dse_content_pages": 1,
+    "standalone_excerpt_reference_pages": 1,
+    "full_document_dse_flow": "Spans pages 5-6 around existing preceding-section floats; no shared section edited",
+    "overfull_boxes": false,
+    "undefined_references": false
+  },
+  "interpretation": [
+    "No new EDA, inference or quality measurement",
+    "Average compute time selection, not minimax",
+    "Beta 1 overall winner 1:2:8; beta 1.5 overall winner 1:4:8",
+    "Per-SM peripheral area fixed by assumption; B200/B300 same maximum HBM bandwidth does not imply same capacity",
+    "C-F migration quality range awaits author confirmation"
+  ]
+}

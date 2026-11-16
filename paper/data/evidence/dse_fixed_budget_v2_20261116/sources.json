@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-16",
+  "reviewer": "Codex (not author verification)",
+  "sources": [
+    {
+      "url": "https://docs.nvidia.com/enterprise-reference-architectures/hgx-ai-factory/latest/components.html",
+      "locator": "Table 1, B200/B300 memory capacity and bandwidth",
+      "supports": "Both maximum 8 TB/s HBM bandwidth; capacities differ",
+      "does_not_support": "Unchanged shared-memory capacity or peripheral area"
+    },
+    {
+      "url": "https://www.nvidia.com/en-us/data-center/hgx/",
+      "locator": "HGX B300 / B200 specifications",
+      "supports": "Higher FP4 throughput, larger HBM capacity"
+    },
+    {
+      "url": "https://huggingface.co/nvidia/DeepSeek-V4.1-Flash-NVFP4",
+      "locator": "Quantization scheme, routed experts",
+      "supports": "Routed expert W4A4 with group size 16"
+    },
+    {
+      "url": "https://arxiv.org/abs/2407.08608",
+      "locator": "FlashAttention-3, low precision FP8 attention",
+      "supports": "Block quantization as an FP8 attention mechanism"
+    },
+    {
+      "url": "https://arxiv.org/abs/2505.11594v3",
+      "locator": "SageAttention3, FP4 attention",
+      "supports": "FP4 attention exploration, not V4.1 quality validation"
+    }
+  ]
+}
