@@ -2,7 +2,9 @@
 
 ## 中英文共享英文表格（2026-11-16）
 
-`main.tex` 与 `dp_puzzle.tex` 共用 `tables/vendor_ratios.tex`、`tables/related_features.tex`、`tables/precision_families.tex` 和 `tables/related_ppa_native.tex`。表题、表头、内容及注释统一使用英文，通过 `\input` 引入；修改对应文件即可更新两份稿件。工业芯片表在两稿首页右栏顶部，自动编号为 Table I，精度支持表为 Table II。后续表号按各稿出现顺序生成，不手动指定。
+原 Table III 的格式简称、定点数表示和计算并行度记号已移入第三章首个小节“符号与记号约定 / Notation and Conventions”，中英文正文分别维护；不再使用符号表，后续表号自动递减。
+
+`main.tex` 与 `dp_puzzle.tex` 共用 `tables/vendor_ratios.tex`、`tables/related_features.tex` 和 `tables/related_ppa_native.tex`。表题、表头、内容及注释统一使用英文，通过 `\input` 引入；修改对应文件即可更新两份稿件。工业芯片表在两稿首页右栏顶部，自动编号为 Table I，精度支持表为 Table II。后续表号按各稿出现顺序生成，不手动指定。
 
 英文旧章节尚在使用的三张专用表提取至 `tables/legacy/`；其中面积部署表复用 `tables/hardware_compact_table.tex` 的数据。英文效率比较表已切换至正式稿的原工艺数据，相关说明同步取消工艺归一化。`make presentation` 生成的正式表同样为英文。临时审阅快照及历史表保留；这次表格统一不代表英文旧架构、评估和 DSE 章节已完成同步。`Makefile.en check` 仍会报告这些章节差异。
 

@@ -6,6 +6,15 @@
 
 DP-Puzzle 采用 Lane、Group 和 DP 三层组合式架构（图~\ref{fig:dp_architecture}）。Lane 复用元素乘法、局部对齐与规约；Group 融合尺度并统一部分和表示；DP 共享全局对齐、累加与输出通路。Group 接口将低精度专用化与后端组合分离，使设计阶段能够通过增配 Group 构造不同算力配比。九种配置各自固定硬件资源，运行时仅切换计算精度。
 
+\subsection{符号与记号约定}
+\label{sec:notation_conventions}
+
+本文以 T、H、Q、E 表示四类精度：T 为 TF32，H 为 FP16/BF16，Q 为 MXFP8（E4M3/E5M2）和 MXFP6（E2M3/E3M2），E 为 MXFP4、NVFP4 和 HiF4。后文以这些简称描述各类精度的计算通路与算力配比。
+
+定点数采用 $\mathrm{Q}I.F$ 与 $\mathrm{UQ}I.F$ 记号。其中，$I$ 为整数位数，$F$ 为小数位数，整数位数不含符号位~\cite{ti2003qformat}。$\mathrm{Q}I.F$ 表示二进制补码有符号数，总位宽为 $1+I+F$；$\mathrm{UQ}I.F$ 表示无符号数，总位宽为 $I+F$。例如，UQ2.26 表示含 2 位整数和 26 位小数的 28 位无符号数。单独编码的幅值采用无符号记号；精度简称 Q 与定点格式中的 Q 由上下文区分。
+
+计算并行度记为 $\mathrm{T}x_T\mathrm{H}x_H\mathrm{Q}x_Q\mathrm{E}x_E$，其中 $x_T$、$x_H$、$x_Q$、$x_E$ 分别表示对应模式下每周期可处理的 A/B 元素对数，每对产生一个乘积。例如，T1H2Q4E8 表示 T/H/Q/E 模式每周期分别计算 1/2/4/8 对元素的乘积。各精度模式互斥，这些数值表示各模式的独立峰值，不能相加为同时可用的吞吐。
+
 对于固定的 $m\times n$ DP 阵列，精度 $p$ 的原生点积长度为 $K_p$，时钟频率为 $f$。在每拍接收输入且阵列充分利用时，其峰值算力为
 \begin{equation}
 \mathrm{Peak}_p=2mnK_pf\quad(\mathrm{FLOP/s}).
@@ -13,9 +22,7 @@ DP-Puzzle 采用 Lane、Group 和 DP 三层组合式架构（图~\ref{fig:dp_arc
 \end{equation}
 系数 2 按一次 MAC 计两次浮点运算。因而 DP 内的 $K_H:K_Q:K_E$ 直接决定同构阵列的峰值配比；增配带来的面积、功耗和供数开销则需分别表征。
 
-表~\ref{tab:precision_families} 统一定义精度简称、定点格式和并行度记号。一个 Lane 支持 T1H2Q4E8；两个 Lane 构成 Group，四个 Group 构成 T8H16Q32E64 基线。此外，每个 Lane 支持四路 INT8 乘法，DP 支持 INT32 累加。各模式采用八级流水，每拍接收一笔独立请求。
-
-\input{tables/precision_families.tex}
+一个 Lane 支持 T1H2Q4E8；两个 Lane 构成 Group，四个 Group 构成 T8H16Q32E64 基线。此外，每个 Lane 支持四路 INT8 乘法，DP 支持 INT32 累加。各模式采用八级流水，每拍接收一笔独立请求。
 
 \begin{figure}[t]
 \centering

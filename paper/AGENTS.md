@@ -2,7 +2,9 @@
 
 ## 共享表格（2026-11-16）
 
-用户要求中英文稿共用每张表的单一文件，并统一使用英文表题、表头和注释。共用入口为 `tables/vendor_ratios.tex`、`tables/related_features.tex`、`tables/precision_families.tex` 和 `tables/related_ppa_native.tex`；不再向英文正文内复制表体。英文旧章节专用表放在 `tables/legacy/`，保留现有引用；不据此扩大正文改写范围。临时审阅稿仍保留为历史快照。
+用户随后要求将原 Table III 的格式简称、定点格式和并行度记号改为第三章首个小节的文字说明；`tables/precision_families.tex` 已移除，相关内容在中英文正文的 `sec:notation_conventions` 处维护。
+
+用户要求中英文稿共用每张表的单一文件，并统一使用英文表题、表头和注释。共用入口为 `tables/vendor_ratios.tex`、`tables/related_features.tex` 和 `tables/related_ppa_native.tex`；不再向英文正文内复制表体。英文旧章节专用表放在 `tables/legacy/`，保留现有引用；不据此扩大正文改写范围。临时审阅稿仍保留为历史快照。
 
 ## 当前正式稿（2026-11-16 提升）
 

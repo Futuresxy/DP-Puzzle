@@ -113,9 +113,16 @@ Table~\ref{tab:vendor_ratios} summarizes recent products and development roadmap
 
 DP-Puzzle uses a composable Lane--Group--DP hierarchy (Fig.~\ref{fig:dp_architecture}). Each Lane shares element multiplication, local alignment, and reduction across precision modes, mapping their different product parallelisms to a common partial-sum output. Groups incorporate block scales and unify partial-sum representation, while the DP shares global alignment and accumulation. A uniform Group interface allows low-precision units to be specialized and added independently, forming the composition boundary for subsequent throughput-ratio expansion.
 
-Table~\ref{tab:precision_families} defines the precision families, fixed-point formats, and parallelism notation. One Lane supports T1H2Q4E8; two Lanes form a Group, and four Groups form the T8H16Q32E64 baseline. Each Lane also supports four INT8 multiplications, with INT32 accumulation at the DP level. All modes use an eight-stage pipeline that accepts one independent request per cycle.
+\subsection{Notation and Conventions}
+\label{sec:notation_conventions}
 
-\input{tables/precision_families.tex}
+We use T, H, Q, and E to denote four precision families: T denotes TF32; H denotes FP16/BF16; Q denotes MXFP8 (E4M3/E5M2) and MXFP6 (E2M3/E3M2); and E denotes MXFP4, NVFP4, and HiF4. These abbreviations identify the corresponding datapaths and throughput ratios throughout the following sections.
+
+Fixed-point values use $\mathrm{Q}I.F$ and $\mathrm{UQ}I.F$ notation, where $I$ and $F$ are the integer and fractional widths, respectively, and $I$ excludes the sign bit~\cite{ti2003qformat}. $\mathrm{Q}I.F$ denotes a signed two's-complement value with $1+I+F$ bits; $\mathrm{UQ}I.F$ denotes an unsigned value with $I+F$ bits. For example, UQ2.26 is a 28-bit unsigned value with 2 integer and 26 fractional bits. Separately encoded magnitudes use the unsigned notation. Context distinguishes the Q precision family from Q fixed-point notation.
+
+We denote compute parallelism by $\mathrm{T}x_T\mathrm{H}x_H\mathrm{Q}x_Q\mathrm{E}x_E$, where $x_T$, $x_H$, $x_Q$, and $x_E$ count the A/B element pairs processed per cycle in the corresponding mode, each producing one product. For example, T1H2Q4E8 computes 1/2/4/8 element-pair products per cycle in T/H/Q/E modes, respectively. The modes are mutually exclusive, so these counts specify separate per-mode peaks and cannot be summed as simultaneously available throughput.
+
+One Lane supports T1H2Q4E8; two Lanes form a Group, and four Groups form the T8H16Q32E64 baseline. Each Lane also supports four INT8 multiplications, with INT32 accumulation at the DP level. All modes use an eight-stage pipeline that accepts one independent request per cycle.
 
 \begin{figure}[t]
 \centering
