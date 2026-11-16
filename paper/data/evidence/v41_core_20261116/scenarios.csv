@@ -1,0 +1,7 @@
+id,label,routed,shared,projections,attention,output,basis
+A,Original,FP8,FP8,FP8,BF16,BF16,frozen reference mapping
+B,Routed FP4,FP4,FP8,FP8,BF16,BF16,routed W4A4 deployment path; other work fixed
+C,Linear FP4,FP4,FP4,FP4,BF16,BF16,conditional FP4 migration of shared experts and Q-up/O-up
+D,Attention FP8,FP4,FP8,FP8,FP8,FP8,branch from B: FP8 attention and grouped output
+E,Linear4 + Attn8,FP4,FP4,FP4,FP8,FP8,combined C and D
+F,Core FP4,FP4,FP4,FP4,FP4,FP4,aggressive core GEMM scenario; background remains unchanged

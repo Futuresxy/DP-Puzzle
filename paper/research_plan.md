@@ -31,7 +31,15 @@
 
 旧 `04_expansion.tex` 已合入第三章；旧第五至七章分别由新第四至六章取代。论文正文不包含代码版本、模块路径、run ID 或工程验收细节。英文仍为上一轮七章稿，中英文一致性检查在同步前会报告预期差异。
 
-## 当前可用证据
+## 当前确认范围：核心算子与简化利用率（2026-11-16）
+
+用户确认优先分析主要计算负载，降低低占比算子的迁移维度。已落地六场景 A–F，当前入口为 `scripts/v41_core.py`，配置为 `data/inputs/v41_core.json`，结果为 `data/evidence/v41_core_20261116/`。主要投影收窄到 Q-up/O-up，Q-down/SWA-KV/Index-Q 与 Engram 保持原精度；主负载（五类迁移对象加原生 E 索引点积）覆盖 93.22%–95.02% 的 GEMM FLOP。新图每个面板明确一个场景，显示精度占比与固定硬件性能。
+
+路由利用率分开评价：主结果 η=1；敏感性只调整 routed expert 的服务时间，比较 Q/E 共同降效和 E 额外降效。η 为假设，不由平均 batch 大小直接推定；非理想 η 能耗为空值。批内每专家平均分配量 `6*B*L_group/384` 只解释聚合规模，不代表矩阵单元占用率。参考 [MegaBlocks](https://proceedings.mlsys.org/paper_files/paper/2023/hash/5a54f79333768effe7e8927bcccffe40-Abstract-mlsys2023.html)、[cuDNN grouped matmul](https://docs.nvidia.com/cudnn/operations/MoeGroupedMatmul/) 和 [TensorRT-LLM MoE performance guide](https://nvidia.github.io/TensorRT-LLM/developer-guide/moe-perf-guide.html)。
+
+在 α=0.3、β=1.5 时，A/B 覆盖选 1:4:8（6.87% 最坏损失），A–E 覆盖同样选 1:4:8（16.85%），A–F 覆盖变为 1:6:12（49.29%）。更大功耗预算 β=2.1 使 A–F 覆盖选择 1:8:16（16.70%）。最终讨论同时给出场景、覆盖集合、预算、请求分布、利用率假设，避免宣布一个脱离条件的通用配比。
+
+## 基础与历史对照证据
 
 - 固定硬件输入：`data/DP_area_power/dp11_area_power_fixed_20261116.csv`，九种全精度候选进入 DSE；`0:2:4` 用于同类单元比较。
 - 双预算部署与区域：`data/evidence/joint_dse_20261116/`，9 个 α×β 场景；配置为 `data/inputs/joint_dse.json`。保留三模型对照批次，但不再用单点获胜次数回答固定芯片选型。
@@ -41,7 +49,7 @@
 - 精度迁移只重分配工作量，不宣称 32 个模型质量方案均已验证。质量约束确定可接受方案子集后，可在相应结果行上重做选型。
 - 能耗为 DP-only；Qwen 活动用于 DeepSeek 代理，NVFP4 用 MXFP4 功耗。原始 FP32 与其他未覆盖计算保持单列；计算服务时间不包含外围系统延迟。
 
-## 算子敏感性与迁移场景建议（2026-11-16，待作者确定场景）
+## 算子敏感性与迁移场景调研（2026-11-16，后续核心范围以上节为准）
 
 用户指出当前 A/B/C 图中的 C 为 32 方案最坏值包络，无法表达一条具体迁移路径。本轮先整理计算量与文献依据，不修改现有图和精度方案输入。后续每个面板固定一张精度映射，跨上下文评价同一硬件候选；全方案包络作为独立汇总，不冒充一种未来模型。已有 32 组合结果属于压力测试；1:4:8 的 20.05% 最坏损失只对该集合成立。
 

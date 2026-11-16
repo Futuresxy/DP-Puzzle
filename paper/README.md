@@ -1,10 +1,31 @@
 # DAC 2027 论文
 
+## 当前主分析：六个核心迁移场景与路由利用率（2026-11-16）
+
+用户确认将分析收敛到主要计算负载。当前中文 DSE 使用 `data/inputs/v41_core.json` 和 `scripts/v41_core.py`：只迁移路由专家、共享专家、Q-up/O-up、主 SWA/CSA2 QK/PV、Grouped O-down 五类算子；连同原生 FP4 索引点积覆盖 93.22%–95.02% 的已统计 GEMM 工作量。Q-down、SWA-KV、Index-Q projection、Engram 等背景计算保留原精度和成本；FP32 工作仍单列。这里的简化是减少迁移变量，不是删除小算子。
+
+A 原始；B 路由专家 E；C 在 B 上加入共享专家和 Q-up/O-up 的 E；D 从 B 分支，将主注意力与 Grouped O 转 Q；E 合并 C/D；F 将 E 的主注意力与 Grouped O 进一步转 E。六张面板分别展示明确的精度场景，上部是 HQE 工作量占比，下部是九种固定芯片的相对减速。当前图：[v41_core_scenarios.pdf](figures/v41_core_scenarios.pdf)。
+
+```bash
+MPLCONFIGDIR=/tmp/dp-paper-mpl make portfolio        # 当前六场景
+MPLCONFIGDIR=/tmp/dp-paper-mpl make portfolio-stress # 历史 32 组合包络
+MPLCONFIGDIR=/tmp/dp-paper-mpl make test             # 26 项测试
+make pdf
+```
+
+当前结果：[data/evidence/v41_core_20261116/manifest.json](data/evidence/v41_core_20261116/manifest.json)。66 个负载点 × 9 种设计 × 9 个预算 × 5 组利用率，共 26,730 项评估。`cases.csv` 保留有用 FLOP，`evaluations.csv` 保存单点服务时间，`metrics.csv` 包含均衡/偏短/偏长分布、最坏损失、平均时间、能耗和 Pareto，`scenarios.csv` 明示算子精度；`routing_scale.csv` 给出批内专家分组规模。固定集合分别为 A/B、A–E、A–F，不将进取场景自动等同于近期必须覆盖的需求。
+
+主分析假设充分利用；另外仅给 routed GEMM 引入有效算力系数 η。扫描 Q/E 共同为 0.75、0.5，以及 Q=1、E=0.75/0.5，候选间使用相同系数。η 不改变工作量或实例数，不能以激活专家比例 6/384 再折扣已统计 FLOP。平均每专家 token 数为 `6*B*L_group/384`；`L_group` 是一次分组中实际处理的 token 数，分块 prefill 和 128-token replay 不能按完整上下文推断利用率。该规模表不是 batch→η 的实测映射。没有低利用率功耗曲线，非理想 η 行的能耗输出空值；功耗预算仍由原始已测模式设定。
+
+α=0.3、β=1.5、η=1：A/B/C/D/E/F 的最小最坏损失设计分别是 1:4:4、1:4:8、1:2:16、1:8:16、1:8:16、1:2:16。A/B 固定选 1:4:8，最坏损失 6.87%；A–E 也选 1:4:8，损失 16.85%；A–F 则选 1:6:12，损失 49.29%，体现进取 FP4 场景与现有负载的部署取舍。β=2.1 时 A–F 选择 1:8:16，损失降至 16.70%。场景 E 的平均时间/能耗分别偏向 1:8:16/1:2:16；C 的两项目标均选择 1:2:16。B 在五组 η 下的选型不变；E 在 routed E η=0.5 时转为 1:2:16。
+
+当前工作区中文 PDF 正文 9 页、参考文献 1 页，仍需压缩；引言含作者本轮正在编辑的未提交内容。当前检查记录为 [review.json](data/evidence/v41_core_20261116/review.json)。保留历史数据与图，英文未同步。
+
 ## 精度迁移假设的后续核对（2026-11-16）
 
-用户要求先按算子计算量、精度敏感性与论文依据选择合理迁移场景。分析已写入 [research_plan.md](research_plan.md)，重算数据为 [groups.csv](data/evidence/v41_migration_review_20261116/groups.csv) 与逐算子 `operators.csv`，入口 `python3 scripts/analyze_v41_migration.py`。建议采用 A 原始、B 路由专家 FP4、C 主要线性 FP4、D 主注意力/Grouped O FP8、E 两分支合并、F 主要 GEMM 进一步 FP4；C/D 为不同分支，且保留小算子原精度成本。当前正文与 ABC 图仍是上一批次结果，尚未将本轮建议误写成已验证迁移。全 32 组合包络作为压力测试，不再视为唯一的未来精度集合。
+用户要求先按算子计算量、精度敏感性与论文依据选择合理迁移场景。分析已写入 [research_plan.md](research_plan.md)，重算数据为 [groups.csv](data/evidence/v41_migration_review_20261116/groups.csv) 与逐算子 `operators.csv`，入口 `python3 scripts/analyze_v41_migration.py`。建议采用 A 原始、B 路由专家 FP4、C 主要线性 FP4、D 主注意力/Grouped O FP8、E 两分支合并、F 主要 GEMM 进一步 FP4；C/D 为不同分支，且保留小算子原精度成本。该阶段尚未替换 ABC 图；随后按用户确认的核心算子范围生成上方六场景分析，质量证据等级保持原定义。全 32 组合包络作为压力测试，不再视为唯一的未来精度集合。
 
-## V4.1-Flash：跨上下文与精度迁移的固定芯片选型（2026-11-16）
+## 历史 32 组合：跨上下文与精度迁移的固定芯片选型（2026-11-16）
 
 中文稿现在以 DeepSeek-V4.1-Flash 为主要负载。保持一个物理芯片配置，评估 1K–1M 的 11 个逐次翻倍上下文与 32 个算子精度方案。五个独立开关依次为路由专家 Q→E、共享专家 Q→E、注意力线性投影 Q→E、主注意力 QK/PV H→Q、分组输出投影 H→Q；未选算子保持原精度。`P10000` 表示仅路由专家迁移，`P11111` 表示全部开关启用。策略不随上下文改变；这些开关定义计算需求探索，模型质量可接受的子集由作者确定。
 
@@ -13,7 +34,7 @@
 用户确认先做均衡评测，再做分布敏感性。偏短和偏长场景分别用请求概率 ∝ `1/L` 和 `L`；这些是合成流量假设。全方案平均值对精度方案也等权；最坏损失仅取决于目标负载集合，不依赖这些权重。均衡基准的平均时间仍会受到大请求计算量的影响，所以同时报告等权平均相对减速。加权时间的有效 HQE 点由加权 **FLOP 总量** 归一化得到，不平均每点的精度占比。
 
 ```bash
-MPLCONFIGDIR=/tmp/dp-paper-mpl make portfolio  # 仅重算 V4.1 固定配比框架、图、表
+MPLCONFIGDIR=/tmp/dp-paper-mpl make portfolio-stress  # 重算历史 32 组合框架、图、表
 MPLCONFIGDIR=/tmp/dp-paper-mpl make test       # 20 项测试
 make pdf
 ```
@@ -22,7 +43,7 @@ make pdf
 
 α=0.3、β=1.5 时，原始方案的最小最坏损失配比为 **1:4:4（3.91%）**，仅路由专家迁移时为 **1:4:8（0%）**，覆盖全部 32 个方案时为 **1:4:8（20.05%）**。原始方案的最低平均时间选择会随请求分布从偏短的 1:4:4 变为均衡/偏长的 1:4:8。因而“均衡表现”“最坏损失”“平均时间”是不同指标。连续迁移界只针对已采样上下文、固定容量和仿射工作量，不含精度转换成本。
 
-图为 [v41_fixed_ratio.pdf](figures/v41_fixed_ratio.pdf)，正文表为 `tables/v41_fixed_choice.tex`。当前 PDF 正文 8 页、参考文献 1 页，仍需压缩正文；本轮检查见 [review.json](data/evidence/v41_portfolio_20261116/review.json)。英文稿未同步，三模型的历史对照结果保留。
+图为 [v41_fixed_ratio.pdf](figures/v41_fixed_ratio.pdf)，正文表为 `tables/v41_fixed_choice.tex`。该历史批次 PDF 正文 8 页、参考文献 1 页；该批次检查见 [review.json](data/evidence/v41_portfolio_20261116/review.json)。英文稿未同步，三模型的历史对照结果保留。
 
 ## 九配比与双预算 DSE 基础批次（2026-11-16）
 
