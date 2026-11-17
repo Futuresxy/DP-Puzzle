@@ -1,0 +1,15 @@
+{
+  "scope": "Chinese Evaluation baseline comparison before nine-ratio analysis; remove Ten-Four efficiency column",
+  "baseline": "1:2:4",
+  "checks": {
+    "retained_values_equal_previous_batch": true,
+    "table_regeneration_identical": true,
+    "latex_build_passed": true,
+    "undefined_references": false,
+    "overfull_boxes": false,
+    "table_page_visually_checked": 5
+  },
+  "comparison_basis": "Original reported process nodes and measurement conditions; voltage/workload not controlled across works",
+  "pending": "Updated 0:2:4 area efficiency to be supplied by author; no superiority over MXDOTP asserted",
+  "human_verification": "Author review pending"
+}

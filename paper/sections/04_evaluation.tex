@@ -10,6 +10,17 @@
 
 功耗评估采用 Qwen3-8B 在 WikiText-2 上运行时第一层 MLP 下投影的激活与权重~\cite{qwen3technicalreport,merity2016pointer}，分别量化为 BF16、MXFP8 E4M3 和 MXFP4 E2M1。Power Compiler 基于 1\,GHz 门级仿真提取的稳态开关活动估计总功耗。面积与功耗均对应综合后、CTS/布局布线前的单 DP。精度验证采用真实模型负载的多精度量化数据，结合随机及边界向量，通过 Verilator 对每种配置完成覆盖 11 种格式的 10,747 笔测试。以独立的精确二进制算术模型为参考，完整计算包含块缩放与累加项 $C$ 的点积，仅在最终结果处按最近偶数舍入至 FP32。在受测数据上，BF16 的最大误差为 3 个 FP32 ULP，其余浮点格式不超过 1\,ULP，其中 HiF4 为 0；INT8/INT32 精确匹配。
 
+\subsection{基线设计与同类多精度单元比较}
+\label{sec:related_dp_evaluation}
+
+\input{tables/related_ppa_native.tex}
+
+表~\ref{tab:related_features} 与表~\ref{tab:related_dp} 分别比较格式覆盖与实现效率。本文选取 $1:2:4$ 基线作为完整多精度设计的代表，支持 TF32、FP16/BF16、MXFP8/6/4、NVFP4、HiF4 及 INT8，浮点与整型运算分别采用 FP32 和 INT32 累加。该设计在共享通路中同时支持常规浮点与多种细粒度块缩放格式，为不同量化方案提供统一的计算基础。
+
+各项效率采用原文报告的工艺与测量条件，以下重点比较同为 12\,nm 的实现。相对 MiniFloats，本文基线的 FP8 面效与能效分别为其 $3.74\times$ 和 $2.45\times$；相对 TransDot，FP8 对应约 $2.97\times$ 和 $3.36\times$，FP4 对应约 $2.97\times$ 和 $4.69\times$。其中，TransDot 的面积由原图估读，相关面效及倍率为近似值，表中以 $\dagger$ 标识。结果表明，完整多精度覆盖与块缩放支持能够兼顾较高的面积和能量效率。
+
+表中同时列出 $0:2:4$ 低精度专用设计，以展示格式专用化的收益：在保持 Q32E64 并行度的同时，移除 T/H/INT8 通路使 MXFP8 面效由 3.959 提高至 5.472\,TFLOP/s/mm$^2$，能效由 4.000 提高至 4.713\,TFLOP/s/W。后续配比分析以完整格式的 $1:2:4$ 为共同基线，比较保持相同精度支持范围时，低精度增配带来的硬件成本与吞吐变化。
+
 \subsection{九种配比的面积与功耗}
 \label{sec:lowp_costs}
 
@@ -38,12 +49,3 @@ B_{\mathrm{in}}(K,x)=fbK\left(\frac{m}{x}+n\right),\qquad
 \label{eq:ratio_bandwidth}
 \end{equation}
 这里固定阵列尺寸、频率及复用周期，并假设完整缩放块下输入位数随 $K$ 同比增长。A 的复用降低了重复读取开销，但每周期更新的 B 仍需持续供给。因此，相比 $1:2:4$，$1:2:8$ 的 E 模式、$1:4:8$ 的 Q/E 模式在满吞吐下均需要约两倍输入带宽。增配低精度算力时，需要同时考虑 shared memory 的供给是否跟得上阵列消费；后续 DSE 仍以供数充分为前提，不加入 shared memory 带宽约束。
-
-\subsection{与同类多精度单元比较}
-\label{sec:related_dp_evaluation}
-
-\input{tables/related_ppa_native.tex}
-
-表~\ref{tab:related_dp} 按各工作的原工艺与报告条件比较面积及能量效率。FPnew 采用正式期刊报告的 SIMD FMA 数据，MiniFloats 采用扩展 wDotp 的独立 FPU 数据。TransDot 的绝对面效按原图的单元面积估读值计算，并以 $\dagger$ 标识；其相对 FPnew 的倍率对应原文内部的 12\,nm 对照。
-
-在本文相同的 12\,nm、1\,GHz 工况下，去除 T/H/INT8 通路的 $0:2:4$ 保持 Q32E64 容量，MXFP8 面效从全精度基线的 3.959 提升至 5.472\,TFLOP/s/mm$^2$，能效从 4.000 提升至 4.713\,TFLOP/s/W。其 MXFP4 面效与能效分别为 10.945\,TFLOP/s/mm$^2$ 和 12.527\,TFLOP/s/W。两列体现完整格式共享与低精度专用化的成本，九种全精度候选则用于后续统一功能范围的 DSE。

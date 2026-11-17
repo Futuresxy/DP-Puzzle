@@ -18,13 +18,13 @@ def main():
     parser.add_argument('--official',action='store_true',help='Write the promoted official table and a separate evidence batch')
     args=parser.parse_args()
     if args.official:
-        OUT=ROOT/'data/evidence/related_native_main_20261116'
+        OUT=ROOT/'data/evidence/related_native_main_20261117'
         TABLE=ROOT/'tables/related_ppa_native.tex'
     with SOURCE.open() as f:
         rows = [dict(work=r['work'], node_nm=r['node_nm'], metric=r['metric'],
                      format=r['format'], config=r['config'], value=float(r['native']),
                      status='native', source='retained native column; see source records')
-                for r in csv.DictReader(f) if r['work']!='ours' or r['config'] in ('1:2:4','0:2:4')]
+                for r in csv.DictReader(f) if r['work']!='tenfour' and (r['work']!='ours' or r['config'] in ('1:2:4','0:2:4'))]
     # Latest user-provided comparison image fixes the earlier transposed metric names.
     for metric, values in [('energy',{'FP8':1.63,'FP16':.82}),('area',{'FP8':1.06,'FP16':.53})]:
         for mode,value in values.items():
@@ -38,10 +38,6 @@ def main():
     assert all(r['value']>0 for r in rows)
     def eff(work,metric,config=''):
         selected=[r for r in rows if r['work']==work and r['metric']==metric and r['config']==config]
-        if work=='tenfour':
-            selected=[r for r in rows if r['work']==work and r['metric']==metric]
-            return r'\Eff{'+r'\\'.join(mode+' & '+' / '.join(f"{r['value']:.3f}" for r in selected if r['format']==mode)
-                                       for mode in ('BF16','MXFP8'))+'}' if selected else '---'
         if not selected:return '---'
         return r'\Eff{'+r'\\'.join(r['format']+' & '+
             (r'$\approx '+f"{r['value']:.2f}"+r'^{\dagger}$' if r['status']=='figure_read_estimate'
@@ -53,27 +49,27 @@ def main():
 \label{tab:related_dp}
 \begingroup\footnotesize\setlength{\tabcolsep}{1.5pt}
 \def\Eff#1{\begin{tabular}{@{}lr@{}}#1\end{tabular}}
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}l*{8}{c}@{}}\toprule
-Metric & Ten-Four~\cite{rout2026tenfourv3} & MPICC~\cite{huangMPICCMultiplePrecisionInterCombined2025} & MXDOTP~\cite{islamoglu2025mxdotp} & FPnew~\cite{mach2021fpnew_temp} & MiniFloats~\cite{bertaccini2024minifloats_temp} & TransDot~\cite{transdot2026} & \multicolumn{2}{c}{DP-Puzzle} \\
-\cmidrule(lr){8-9}
- & & & & & & & $1:2:4$ & $0:2:4$ \\
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}l*{7}{c}@{}}\toprule
+Metric & MPICC~\cite{huangMPICCMultiplePrecisionInterCombined2025} & MXDOTP~\cite{islamoglu2025mxdotp} & FPnew~\cite{mach2021fpnew_temp} & MiniFloats~\cite{bertaccini2024minifloats_temp} & TransDot~\cite{transdot2026} & \multicolumn{2}{c}{DP-Puzzle} \\
+\cmidrule(lr){7-8}
+ & & & & & & $1:2:4$ & $0:2:4$ \\
 \midrule
-Structure & Fused DP & $n$-term MAC & MX DP & SIMD FMA & SIMD wDotp & FMA / DP & MX DP & MX DP \\
-Technology (nm) & 7 & 28 & 12 & 22 & 12 & 12 & 12 & 12 \\
-Voltage (V) & 0.7 & 0.9 & 0.8 & 0.8 & 0.8 & 0.8 & 0.7 & 0.7 \\
-Frequency (GHz) & 1.58 & 1.43 & 1.09 & 0.923 & 1.26 & 1.0 & 1.0 & 1.0 \\
-Area ($\mu$m$^2$) & 2400 / 4650 & 2295 & 3150 & 49\,000 & 19\,000 & $\approx 6000^\dagger$ & 16\,165.12 & 11\,695.21 \\
-Accumulation & FP32/INT32 & FP12/INT8 & FP32 & Per format & FP16/FP32 & FP32 & FP32/INT32 & FP32 \\
+Structure & $n$-term MAC & MX DP & SIMD FMA & SIMD wDotp & FMA / DP & MX DP & MX DP \\
+Technology (nm) & 28 & 12 & 22 & 12 & 12 & 12 & 12 \\
+Voltage (V) & 0.9 & 0.8 & 0.8 & 0.8 & 0.8 & 0.7 & 0.7 \\
+Frequency (GHz) & 1.43 & 1.09 & 0.923 & 1.26 & 1.0 & 1.0 & 1.0 \\
+Area ($\mu$m$^2$) & 2295 & 3150 & 49\,000 & 19\,000 & $\approx 6000^\dagger$ & 16\,165.12 & 11\,695.21 \\
+Accumulation & FP12/INT8 & FP32 & Per format & FP16/FP32 & FP32 & FP32/INT32 & FP32 \\
 \midrule
 '''
-    works=[('tenfour',''),('mpicc',''),('mxdotp',''),('fpnew',''),('minifloats',''),('transdot',''),('ours','1:2:4'),('ours','0:2:4')]
+    works=[('mpicc',''),('mxdotp',''),('fpnew',''),('minifloats',''),('transdot',''),('ours','1:2:4'),('ours','0:2:4')]
     for metric,title in [('energy',r'\shortstack[l]{Energy efficiency\\(TFLOP/s/W)}'),('area',r'\shortstack[l]{Area efficiency\\(TFLOP/s/mm$^2$)}')]:
         table+=title+' & '+' & '.join(eff(w,metric,c) for w,c in works)+r' \\'+'\n'
         if metric=='energy':table+='\\midrule\n'
     table+=r'''\bottomrule\end{tabular*}
 \par\smallskip
 \parbox{\textwidth}{\raggedright
-均为原工艺数据，不做工艺归一化；支持范围见表~\ref{tab:related_features}。Ten-Four 为全格式 Q8/Q16；MiniFloats 取独立 wDotp FPU，非 cluster。
+均为原工艺数据，不做工艺归一化；支持范围见表~\ref{tab:related_features}。MiniFloats 取独立 wDotp FPU，非 cluster。
 $\dagger$：TransDot 面积由原文图 7(a) 的 1\,ns 点估读，面效按表 II 吞吐计算；原文相对其 12\,nm FPnew 基线的平均 FP16/FP8 面效为 1.46$\times$/2.92$\times$，不与本表 22\,nm FPnew 值相乘。--- 表示无报告值或不适用。}
 \endgroup
 \end{table*}
@@ -83,8 +79,8 @@ $\dagger$：TransDot 面积由原文图 7(a) 的 1\,ns 点估读，面效按表 
         table=table.replace('已有单元与 DP-Puzzle 的原工艺实现条件及效率。',
                             'Implementation conditions and efficiency at the reported process nodes.')
         table=table.replace(
-            r'均为原工艺数据，不做工艺归一化；支持范围见表~\ref{tab:related_features}。Ten-Four 为全格式 Q8/Q16；MiniFloats 取独立 wDotp FPU，非 cluster。',
-            r'All values use the reported process nodes without technology normalization; supported formats are listed in Table~\ref{tab:related_features}. Ten-Four uses full-format Q8/Q16 configurations; MiniFloats reports the standalone wDotp FPU, excluding the cluster.')
+            r'均为原工艺数据，不做工艺归一化；支持范围见表~\ref{tab:related_features}。MiniFloats 取独立 wDotp FPU，非 cluster。',
+            r'All values use the reported process nodes without technology normalization; supported formats are listed in Table~\ref{tab:related_features}. MiniFloats reports the standalone wDotp FPU, excluding the cluster.')
         table=table.replace(
             r'$\dagger$：TransDot 面积由原文图 7(a) 的 1\,ns 点估读，面效按表 II 吞吐计算；原文相对其 12\,nm FPnew 基线的平均 FP16/FP8 面效为 1.46$\times$/2.92$\times$，不与本表 22\,nm FPnew 值相乘。--- 表示无报告值或不适用。',
             r'$\dagger$: TransDot cell area is estimated from the 1\,ns point in its Fig. 7(a), with area efficiency calculated using the throughput in its Table II. Its mean FP16/FP8 area-efficiency gains of 1.46$\times$/2.92$\times$ are relative to its own 12\,nm FPnew baseline and are not applied to the 22\,nm FPnew results here. --- denotes unreported or inapplicable values.')
