@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-18",
+  "engine": "pdfLaTeX",
+  "isolated_build_passed": true,
+  "original_repository_dependencies": false,
+  "body_pages": 6,
+  "reference_pages": 1,
+  "pdf_pages": 7,
+  "references_start_page": 7,
+  "unmodified_IEEEtran_class": true,
+  "unmodified_IEEEtran_bst": true,
+  "all_fonts_embedded": true,
+  "undefined_references": false,
+  "overfull_boxes": false,
+  "missing_glyphs": false,
+  "body_text_unchanged": true,
+  "compiled_citation_count": 39
+}

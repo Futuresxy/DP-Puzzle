@@ -1,0 +1,94 @@
+{
+  "source_manuscript": "paper/dp_puzzle.tex",
+  "source_sha256": "d34a834469f713881b54176cdb91a1952b0d2fdf356c7c3935ef984052a21185",
+  "scope": "Standalone editorial copy; source shared assets retained for Chinese manuscript.",
+  "compiler": "pdfLaTeX with bundled unmodified IEEEtran 1.8b",
+  "body_unchanged": true,
+  "files": [
+    {
+      "source": "tables/vendor_ratios.tex",
+      "destination": "tables/vendor_ratios.tex",
+      "sha256": "86f40dc706fbce851cfcaf428a78c70e1c2f2133db899b8f4ff66b0cb05b7d29"
+    },
+    {
+      "source": "tables/related_features.tex",
+      "destination": "tables/related_features.tex",
+      "sha256": "a0e6acfb52e77d0facef3bf35131c4ca81dcaff2d83ddd2a69c9b822f2bb12e0"
+    },
+    {
+      "source": "tables/group_compositions.tex",
+      "destination": "tables/group_compositions.tex",
+      "sha256": "cf62b0bddd91bab870bae2ca9c93737892b42bf56888d50ef2a0e3c36c9d3a25"
+    },
+    {
+      "source": "tables/related_ppa_native.tex",
+      "destination": "tables/related_ppa_native.tex",
+      "sha256": "6e2fc44ca119c4ab42e86dbb233e970b6ff7300f4bad4dcd9660e2e37de78524"
+    },
+    {
+      "source": "tables/five_stage_migrations.tex",
+      "destination": "tables/five_stage_migrations.tex",
+      "sha256": "3d1f52c78c4b646010f002cd39fe67eecc6dcccc38e7063183b4a8a8f01f7e38"
+    },
+    {
+      "source": "figures/baseline_arch.pdf",
+      "destination": "figures/baseline_arch.pdf",
+      "sha256": "8780dfc41e1b8d418bf7e7b41e529fc401f664feeff8a472a21226a323f47224"
+    },
+    {
+      "source": "figures/dp_ratio_area_power.pdf",
+      "destination": "figures/dp_ratio_area_power.pdf",
+      "sha256": "89505c455080222703ba41c28c8da6e9e90325a8cfae01a309776fa457ef6d7c"
+    },
+    {
+      "source": "figures/dynamic_add.pdf",
+      "destination": "figures/dynamic_add.pdf",
+      "sha256": "0f50fb65ea918f7bdefc0981497ac56fcfb7467767fed555be85131af25c9823"
+    },
+    {
+      "source": "figures/unpack_layout.pdf",
+      "destination": "figures/unpack_layout.pdf",
+      "sha256": "1408694fbe83a3b4edd30b0c6e4e8bf16cc8270aac0be303472f74494e8954b2"
+    },
+    {
+      "source": "figures/v41_case_panels_overlay.pdf",
+      "destination": "figures/v41_case_panels_overlay.pdf",
+      "sha256": "e37080d4f64c07e1834ba7d19893bb213f85f524e355e2277329f1ea4c0bcfe2"
+    },
+    {
+      "source": "references/references.bib",
+      "destination": "references/references.bib",
+      "sha256": "b4128c3bb886407fb9e0bd59a9daf670513be23a3f3bca4a7ed27ce8ced4e9fe"
+    },
+    {
+      "source": "template/upstream/IEEEtran.cls",
+      "destination": "IEEEtran.cls",
+      "sha256": "da751920a317ed318b7b5cd7fa585a6cc7d28502d457856382e9be24b10a3bd7"
+    },
+    {
+      "source": "template/upstream/bibtex/IEEEtran.bst",
+      "destination": "IEEEtran.bst",
+      "sha256": "314f0ece704568faf827011bac498650691b2b5ee06320720830e782416d5a5f"
+    },
+    {
+      "source": "template/upstream/bare_conf.tex",
+      "destination": "template/bare_conf.tex",
+      "sha256": "cc4fa258aa90115ad6afbd8ca5555f448880b29a971398bf1a20ee5f240b45f7"
+    },
+    {
+      "source": "template/upstream/README",
+      "destination": "template/README.IEEEtran",
+      "sha256": "cc2de809d6e86ab95cd4e88d97b41cb81dd96cf224e6445474aeb7419f4a0462"
+    },
+    {
+      "source": "template/upstream/bibtex/README",
+      "destination": "template/README.bibtex",
+      "sha256": "797417f3c4f37349f24869ceaf015fac36d4d147262d17b2ce50b36f32e806a7"
+    },
+    {
+      "source": "template/SOURCE.md",
+      "destination": "template/SOURCE.md",
+      "sha256": "94a4e5ad6691faf7d91c057b59dbb799ee80a3ada04c3bf6e4c60cc43777cc92"
+    }
+  ]
+}

@@ -1,0 +1,288 @@
+% !TeX program = latexmk
+% !TeX root = dp-puzzle.tex
+% Standalone DAC 2027 English manuscript.
+% Edit this file and the local tables/, figures/, and references/ directly.
+\documentclass[conference,10pt,letterpaper]{IEEEtran}
+\usepackage[T1]{fontenc}
+% IEEEtran supplies the standard conference fonts and page geometry.
+% Existing vector figures use PDF 1.7; preserve their embedded fonts.
+\pdfminorversion=7
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage[caption=false,font=footnotesize]{subfig}
+\usepackage{booktabs}
+\usepackage{cite}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{figures/}}
+\newcommand{\PaperTitle}{DP-Puzzle: Exploring Throughput Ratios in Multi-Precision Tensor Cores with Composable Dot-Product Units}
+\title{\PaperTitle}
+\author{\IEEEauthorblockN{Anonymous Submission}}
+\hypersetup{pdfauthor={},pdftitle={\PaperTitle},pdfsubject={English manuscript}}
+\newcounter{DACreferencepage}
+\AtEndDocument{%
+  \ifnum\value{page}>\value{DACreferencepage}\relax
+    \PackageWarningNoLine{DAC2027}{References exceed one page}%
+  \fi}
+\begin{document}
+\bstctlcite{DPBSTcontrol}
+\maketitle
+
+% Queue Table I at the top of the first page's right column.
+\suppressfloats[t]
+\input{tables/vendor_ratios.tex}
+
+% BEGIN REVIEW PAIR: 00_abstract.tex
+\begin{abstract}
+Mixed-precision AI workloads make tensor-core throughput allocation across 16/8/4-bit formats a key design choice. DP-Puzzle combines shared multi-precision datapaths with precision-specific compute units to tune throughput allocation; we compare nine configurations, jointly modeling area, power, and precision migration. At 12 nm and 1 GHz, doubling FP4 throughput raises area by 33.6\% while improving area and energy efficiency by 49.7\% and 27.3\%. At matched area and power, 1:2:8 performs best overall among the nine, yielding a modeled $1.13\times$ compute-only speedup on DeepSeek-V4.1-Flash GEMMs. Moderate expansion thus balances low-precision capacity and deployment density.
+\end{abstract}
+\begin{IEEEkeywords}
+AI workloads, dot-product units, LLM inference, mixed-precision arithmetic, multi-precision tensor core, throughput-ratio allocation
+\end{IEEEkeywords}
+% END REVIEW PAIR: 00_abstract.tex
+
+% BEGIN REVIEW PAIR: 01_introduction.tex
+\section{Introduction}
+\label{sec:introduction}
+Growing model sizes and computational demands have made lower-precision numerical formats a common optimization for large AI models~\cite{deepseekv3}. General matrix multiplication (GEMM) increasingly uses TensorFloat-32 (TF32), FP16, and BF16 in place of FP32. Advances in quantization have also made FP8, INT8, FP6, FP4, and microscaling formats~\cite{ocpmx2023} with shared scaling factors important options for inference. DeepSeek-V4.1-Flash~\cite{deepseekv41source}, for example, uses mixed-precision GEMMs: mixture-of-experts (MoE) computation and most attention projections use FP8, the QK path of the sparse attention indexer uses MXFP4, and the main attention QK/PV computations use BF16. These workloads require inference hardware to support multiple precisions within the same model.
+
+For a fixed input bit width, lower-precision formats allow more elements to be supplied in parallel, motivating the conventional BF16:MXFP8:MXFP4 peak throughput ratio of $1:2:4$. Recent commercial AI chips depart from this ratio by selectively increasing FP4 throughput or increasing both FP8 and FP4 throughput, as summarized in Table~\ref{tab:vendor_ratios}. Models evolve faster than chips, so a ratio suited to current demand may become inefficient for future workloads. Tensor cores must therefore balance hardware cost against current and future precision demands.
+
+We present DP-Puzzle to connect the hardware cost of throughput-ratio choices to their benefits for evolving model workloads. Tensor cores typically organize dot-product units into two-dimensional arrays with systolic~\cite{jouppi2017tpu} or broadcast dataflows. We therefore focus on dot-product units that support multiple formats and allow low-precision throughput to be increased independently. We characterize their area and power using Synopsys synthesis and power analysis at 12\,nm and 1\,GHz, then construct a chip-level throughput model under common area and power constraints. Five precision-migration scenarios represent possible changes in future workloads, allowing us to evaluate the estimated GEMM compute-latency benefits of nine throughput ratios.
+Our contributions are as follows:
+\begin{enumerate}
+\item \textbf{Composable multi-precision datapaths:} DP-Puzzle combines shared dot-product arithmetic with FP8-only, FP4-only, and shared FP8/FP4 units to adjust throughput ratios while retaining support for TF32, FP16/BF16, INT8, MXFP8/6/4, NVFP4, and HiF4. Relative to \mbox{$1:2:4$}, the \mbox{$1:2:8$} configuration doubles MXFP4 throughput with a 33.60\% area increase, improving MXFP4 area and energy efficiency by 49.70\% and 27.27\%, respectively.
+\item \textbf{Chip-level throughput modeling:} Synthesis and power analysis driven by Qwen3-8B~\cite{qwen3technicalreport} data at 12\,nm and 1\,GHz characterize nine dot-product configurations. These costs determine deployable core counts and precision-specific peak throughput under joint area and compute-power budgets.
+\item \textbf{Workload-driven ratio selection:} Five current and prospective precision scenarios for DeepSeek-V4.1-Flash, evaluated over 1K--1M contexts, connect workload migration to estimated GEMM compute latency. Under matched area and power budgets, \mbox{$1:2:8$} achieves the best aggregate modeled speedup of $1.13\times$ over \mbox{$1:2:4$}. Moderate expansion thus balances remaining high-precision demand with future low-precision workloads.
+\end{enumerate}
+
+Section~\ref{sec:background} presents background and motivation; Section~\ref{sec:architecture} describes the microarchitecture; Section~\ref{sec:evaluation} evaluates hardware costs; Section~\ref{sec:workload} studies workload-driven ratio selection; and Section~\ref{sec:conclusion} concludes.
+
+
+% END REVIEW PAIR: 01_introduction.tex
+
+% BEGIN REVIEW PAIR: 02_background.tex
+\section{Background and Motivation}
+\label{sec:background}
+
+\subsection{Floating-Point and Microscaling Formats}
+\label{sec:formats}
+
+Floating-point formats encode a sign, an exponent, and a fraction. The exponent width determines dynamic range, whereas the fraction width determines relative precision. TF32 retains FP32's exponent range with a shorter significand to reduce the cost of tensor computation; FP16 and BF16 favor precision and dynamic range, respectively~\cite{burgess2019bfloat16}. The Open Compute Project (OCP) microscaling (MX) formats~\cite{ocpmx2023} represent each element as $x_{j,i}=X_jP_{j,i}$, where $X_j$ is a shared block scaling factor and $P_{j,i}$ is the decoded element value. MXFP8, MXFP6, and MXFP4 use E5M2/E4M3, E3M2/E2M3, and E2M1 element encodings, respectively. All three share one E8M0 scale across 32 elements to extend the representable range.
+
+Quantizing both weights and activations to MXFP4, however, can incur substantial accuracy loss. The power-of-two restriction of its E8M0 scale is a major source of quantization error~\cite{egiazarian2026bridging,zhang2026benchmarking}. To improve quantization accuracy, NVFP4 retains E2M1 elements, reduces the block size to 16, and combines an E4M3 block scale with an FP32 tensor scale~\cite{nvidia2024nvfp4}. HiF4 instead uses S1P2 fixed-point elements and hierarchical micro-exponent scaling to balance within-block dynamic range and precision~\cite{hifloat4}. Both MX-like formats use scales with fractional significand bits, introducing additional significand-multiplication hardware.
+
+\subsection{Unified Multi-Precision Dot-Product Computation}
+\label{sec:tensor_organization}
+
+Dot-product accumulation for conventional and microscaling formats~\cite{ocpmx2023} can be expressed as
+\begin{equation}
+\begin{aligned}
+\operatorname{DP}_K(\mathbf{a},\mathbf{b},c)
+&=c+\sum_{k=0}^{K-1}a_kb_k \\
+&=c+\sum_{j=0}^{G_s-1}
+\widetilde{X}_j^{(A)}\widetilde{X}_j^{(B)}
+\underbrace{\sum_{i=0}^{g-1}
+P_{j,i}^{(A)}P_{j,i}^{(B)}}_{q_j},
+\end{aligned}
+\label{eq:blockdot}
+\end{equation}
+The two inputs use the same scaling-block boundaries along the reduction dimension. Here, $g$ is the block size, $G_s=\lceil K/g\rceil$, and the final block is zero-padded. The term $q_j$ is the dot product within block $j$, and $\widetilde{X}_j$ is its effective scale. For conventional floating-point formats, $\widetilde{X}_j=1$ and $P_{j,i}$ is the original element value; for MX formats, $\widetilde{X}_j=X_j$. HiF4's local micro-exponents are incorporated into $P_{j,i}$.
+
+\input{tables/related_features.tex}
+
+\subsection{Related Work on Dot-Product Design and DSE}
+\label{sec:datapath_sharing}
+
+For multiplier reuse, Bit Fusion composes low-bit-width multiplication units through shifts and additions~\cite{bitfusion2018}. Park et al. share multipliers and reduction datapaths between FP16 significand multiplication and INT8/INT4 dot products~\cite{parkMultimode8KMACHWutilizationaware2022}. Abdel-Aziz et al. support higher precision through temporal decomposition and analyze the overhead of floating-point exponent alignment and addition~\cite{abdelaziz2021overheads}. For multi-format computation and fused reduction, FPnew supports multiple floating-point operations through configurable format slices~\cite{mach2020fpnew}. MiniFloats fuses two low-precision products with a higher-precision addend, reducing repeated normalization and rounding~\cite{bertaccini2022minifloat}. TransDot reuses multiplier partial products and partitionable shifters~\cite{transdot2026}; Ten-Four connects dot products in multiple formats to a shared reduction backend~\cite{rout2026tenfourv3}. MXDOTP uses a unified internal element representation, integrates MX scaling into the dot-product datapath, and accumulates in FP32~\cite{islamoglu2025mxdotp}.
+
+Products can be aligned and reduced together with the addend $C$, or a floating-point adder can combine $C$ with the scaled dot product. Where $C$ enters the datapath determines the alignment range and accumulation overhead~\cite{bertaccini2022minifloat,lutzFusedFP84Way2024}. Internal accumulation order, truncation positions, and rounding rules jointly determine numerical results~\cite{sun2023tensorcores,xie2025mmasim}. In design-space exploration, Crafton et al. and MX-Like further examine trade-offs among low-precision formats, compute organization, and hardware cost~\cite{paretomac2025,zhao2026mxlike}, but neither addresses throughput-ratio selection.
+
+Table~\ref{tab:related_features} compares the precision formats supported by DP-Puzzle and related dot-product designs. DP-Puzzle adds specialized low-precision units to adjust peak throughput across formats.
+
+\subsection{Motivation for Throughput-Ratio Exploration}
+\label{sec:commercial_ratios}
+\label{sec:ratio_motivation}
+
+Table~\ref{tab:vendor_ratios} summarizes recent products and development roadmaps from major GPGPU and NPU vendors, illustrating industry interest in $1:2:6$, $1:4:8$, and $1:2:8$ ratios. These disclosures do not explain the rationale for selecting each ratio, and the configurations cover only a small part of the design space. We therefore extend the exploration to $1:4:4$, $1:2:12$, $1:2:16$, $1:6:12$, and $1:8:16$. Together with the three ratios above and the $1:2:4$ baseline, these form a design space of nine candidates. Our objective is to determine how hardware cost should be traded against performance benefits as the precision requirements of future model workloads evolve.
+% END REVIEW PAIR: 02_background.tex
+
+% BEGIN REVIEW PAIR: 03_architecture.tex
+\section{Composable Dot-Product Microarchitecture for Throughput-Ratio Exploration}
+\label{sec:architecture}
+\label{sec:brick_definition}
+
+Fig.~\ref{fig:dp_architecture} shows the $1:2:4$ baseline datapath of DP-Puzzle, organized into three levels: Lane, Group, and dot-product unit (DP). Each Lane shares multiplication and local reduction across precisions. Each Group incorporates block scaling and produces a unified partial-sum representation, while the DP performs global alignment and accumulation. Adding specialized low-precision Groups to this baseline yields DP designs with different throughput ratios.
+
+\subsection{Notation and Architecture Overview}
+\label{sec:notation_conventions}
+
+We use T, H, Q, and E to denote TF32, FP16/BF16, MXFP8/6, and MXFP4/NVFP4/HiF4, respectively. Fixed-point values use $\mathrm{Q}I.F$ and $\mathrm{UQ}I.F$ notation for signed two's-complement and unsigned representations. Here, $I$ is the number of integer bits excluding the sign bit, and $F$ is the number of fractional bits; the total widths are $1+I+F$ and $I+F$, respectively~\cite{ti2003qformat}.
+
+Compute parallelism is denoted by $\mathrm{T}x_T\mathrm{H}x_H\mathrm{Q}x_Q\mathrm{E}x_E$, where $x_p$ is the number of element pairs processed per cycle in precision mode $p$; the modes are mutually exclusive. A baseline Lane supports T1H2Q4E8, two Lanes form a T2H4Q8E16 Group, and four Groups form a T8H16Q32E64 DP. The DP also supports 32 INT8 products per cycle with INT32 accumulation. At a fixed array size and clock frequency, the H:Q:E throughput ratio therefore equals the ratio of their respective parallelisms within each DP.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{baseline_arch.pdf}
+\caption{DP-Puzzle's $1:2:4$ baseline microarchitecture. Each T2H4Q8E16 Group contains two shared multi-precision Lanes, and four Groups form a T8H16Q32E64 DP. Other throughput ratios are constructed by adding specialized low-precision Groups.}
+\label{fig:dp_architecture}
+\end{figure}
+
+\subsection{Lane: Shared Multi-Precision Arithmetic}
+\label{sec:unpack_recode}
+\label{sec:full_brick}
+%(Fig.~\ref{fig:data_unpack})
+Each Lane provides T1H2Q4E8 parallelism, matching the eight-element sharing granularity of HiF4's second-level micro-exponent. During input data decoding, T/H operands are separated into exponents and significands, while Q operands are mapped exactly to an internal E5M3 representation. MXFP4/NVFP4 and HiF4 with its first-level micro-exponent incorporated are mapped to UQ3.1 and UQ2.2, respectively. These four-bit fixed-point magnitudes absorb the element exponents. All formats, including INT8, separate signs from magnitudes to share unsigned multipliers.
+
+% \begin{figure}[t]
+% \centering
+% \includegraphics[width=\columnwidth]{unpack_layout.pdf}
+% \caption{Mapping input formats to shared exponent, significand, and sign fields.}
+% \label{fig:data_unpack}
+% \end{figure}
+
+Each Lane contains two multiplier sets, each comprising one $8\times8$, one $8\times4$, one $4\times8$, and one $4\times4$ unit. For TF32/FP16, the 11-bit significands are split into upper and lower portions, with four bits in the latter: $a=2^4a_h+a_l$ and $b=2^4b_h+b_l$. The product is reconstructed from partial products as
+\begin{equation}
+ab=2^8a_hb_h+2^4(a_hb_l+a_lb_h)+a_lb_l.
+\label{eq:mantissa_reuse}
+\end{equation}
+TF32 and FP16 activate one and two sets, respectively; BF16 uses only the $8\times8$ unit in each set. Q computes two independent four-bit products per set, whereas E uses all four units. INT8 uses one $8\times8$ unit per set and reconstructs a second eight-bit product from the cross partial products.
+
+% Precision reference: MMA-Sim v3, Table III (Blackwell UTCQMMA) and Algorithm 7.
+T/H/Q use one, two, and four shared unsigned right shifters, respectively, to align products to the maximum valid product exponent within the Group. Guided by reverse engineering of Blackwell FP8 arithmetic~\cite{xie2025mmasim}, we use a UQ2.26 alignment window with 26 fractional bits. Magnitudes are right-shifted before conversion to two's complement, implementing truncation toward zero. E/INT8 bypass the wide shifters. E's eight products are converted to signed values and reduced pairwise to four terms; INT8's four terms enter directly. All modes share a balanced four-input adder tree that produces a 31-bit signed partial sum. HiF4's second-level micro-exponent is incorporated by shifting the Lane sum.
+
+\subsection{Group: Scale-Factor Integration and Unified Partial Sums}
+
+Two Lanes form a T2H4Q8E16 Group, matching NVFP4's 16-element scaling block; larger blocks broadcast the same scale factor across Groups. The Group first combines the Lane results and separates the sign and magnitude, then applies the shared scale factors. Only NVFP4/HiF4 require scale-significand multiplication. The two four-bit scale significands are premultiplied into an eight-bit coefficient. After removing structurally zero low-order bits, the 14-bit Group magnitude is multiplied by this coefficient using a shared $14\times8$ multiplier. The resulting 22-bit value is mapped to the U31 magnitude interface. MX's E8M0 scale factors contribute only to the exponent.
+
+% Layout cross-check: dp-top-v1.8.md, dp_group.v and dp_functions.vh;
+% the v1.8 HiF4 path uses the NVFP4 fractional layout after Lane-local e2 fusion.
+The U31 interface has $F_p=28/27/26$ fractional bits for T/H/Q and 21 and 19 fractional bits for MXFP4 and NVFP4/HiF4, respectively. Let $E_{\mathrm{loc}}$ denote the unbiased local alignment exponent and $E_{\mathrm{scale}}$ the sum of the two unbiased scale exponents. The exponent associated with the most significant physical bit of the magnitude is
+\begin{equation}
+\mathrm{Anchor}_{\mathrm{raw}}
+=E_{\mathrm{loc}}+E_{\mathrm{scale}}+30-F_p.
+\label{eq:anchor_recompute}
+\end{equation}
+For E, the element exponents and micro-exponents are already incorporated into the magnitude, so $E_{\mathrm{loc}}=0$. Formats without block scaling use $E_{\mathrm{scale}}=0$. This exponent calculation proceeds in parallel with significand reduction.
+
+For finite nonzero magnitudes, leading-zero detection (LZD) produces a count $z$ and the exponent of the most significant nonzero bit, $\mathrm{Anchor}_{\mathrm{eff}}=\mathrm{Anchor}_{\mathrm{raw}}-z$. Each Group outputs the U31 magnitude without normalization shifts, a separate sign, and both exponent coordinates.
+
+\subsection{DP: Shared Alignment and Fused Accumulation}
+
+The DP introduces the addend $C$ after within-Group reduction and scale-factor integration. It determines the global reference exponent $E_{\mathrm{max}}$ from the Group comparison exponents and the decoded exponent of $C$. Left-shifting a Group magnitude by $z$ bits for normalization and then right-shifting it for alignment gives the net shift
+\begin{equation}
+\begin{aligned}
+\Delta&=z-(E_{\mathrm{max}}-\mathrm{Anchor}_{\mathrm{eff}})\\
+      &=\mathrm{Anchor}_{\mathrm{raw}}-E_{\mathrm{max}}.
+\end{aligned}
+\label{eq:net_alignment_shift}
+\end{equation}
+After zero-padding the original magnitude to a 39-bit window, a single bidirectional shift suffices; right shifts truncate toward zero. Signs are restored before summation through a carry-save adder (CSA) compression tree and a single carry-propagate adder (CPA). The result is then normalized and rounded to FP32 using round-to-nearest, ties-to-even.
+
+INT8/INT32 bypass floating-point alignment and output normalization while sharing the accumulation datapath. Registers are enabled according to the request's precision. All configurations retain an eight-cycle latency and a throughput of one independent request per cycle.
+
+\subsection{Group Specialization and Throughput-Ratio Composition}
+\label{sec:specialized_midgroups}
+\label{sec:expansion}
+
+Specialization preserves the numerical mappings, precision, and rounding rules of supported formats while removing decoding and arithmetic for unsupported formats. Each Lane in a Q8E16 Group uses eight $4\times4$ multipliers; Q activates four, whereas E activates all eight. It retains Q's 28-bit alignment path, the 31-bit Lane output, and E's scale-significand multiplication. Q8 retains only four $4\times4$ multipliers per Lane and removes E decoding, micro-exponent processing, and scale-significand multiplication. E8M0 scale factors contribute only to exponent updates.
+
+E16 further reduces the alignment and reduction hardware. Each Lane retains eight $4\times4$ multipliers but removes element-exponent comparison, local alignment-reference generation across Lanes, and wide shifters. A narrow adder tree performs reduction, with HiF4's second-level micro-exponent incorporated after local summation; the Lane output is reduced to 14 signed bits. Combining two Lanes produces a 15-bit Group sum. Scaling and LZD operate on a 22-bit result, which is mapped to the common U31 magnitude and Anchor interface. E16 expansion therefore avoids the cost of Q's wide alignment and reduction paths.
+
+Table~\ref{tab:ratio9_composition} lists the Group compositions of the nine DP configurations. Each retains four baseline multi-precision Groups and adds Q8, E16, or Q8E16 Groups to adjust low-precision throughput. Added Groups process additional $K$ segments for the same output, with scale factors distributed according to the original quantization-block boundaries.
+
+\input{tables/group_compositions.tex}
+
+The DP adds bidirectional shifters for the new Groups, extends exponent comparison, and widens accumulation so that all participating sources align to a common reference. A 4:2 CSA network compresses the added results into two rows. A further 4:2 CSA merges these with the two baseline rows, which already include the single $C$ contribution. When only two Groups are added, their results enter the merge stage directly. A precision-controlled multiplexer (MUX) selects either the baseline or merged sum/carry pair for the shared CPA. Q8, E16, and Q8E16 participate in Q, E, and Q/E modes, respectively. When expansion is inactive, the MUX selects the baseline path, and the added Groups are excluded from exponent comparison and special-value reduction, preserving the original high-precision results.
+
+% \begin{figure}[t]
+% \centering
+% \includegraphics[width=\columnwidth]{dynamic_add.pdf}
+% \caption{Accumulation network for low-precision expansion. Results from 2/4/8/12 added Groups are merged with the baseline into sum and carry rows. A precision-controlled MUX selects the baseline or merged pair for the shared final CPA.}
+% \label{fig:dp_csa_expansion}
+% \end{figure}
+
+This composition maps throughput-ratio choices to the addition of specialized Groups. The next section evaluates all nine configurations at a common process node and frequency.
+% END REVIEW PAIR: 03_architecture.tex
+
+% BEGIN REVIEW PAIR: 04_evaluation.tex
+\section{Evaluation}
+\label{sec:evaluation}
+
+\input{tables/related_ppa_native.tex}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{dp_ratio_area_power.pdf}
+\caption{Synthesized area and total power of the nine throughput-ratio configurations. Area bars use the left axis, with labels indicating ratios relative to $1:2:4$; power bars for the three precision modes use the right axis (mW).}
+\label{fig:ratio4_costs}
+\end{figure*}
+
+\subsection{Experimental Setup and Verification}
+\label{sec:eval_setup}
+\label{sec:numerical_validation}
+
+We implement the nine dot-product configurations in Verilog RTL and verify their functionality using Verilator. All designs are synthesized and analyzed for timing using Synopsys Design Compiler in TSMC 12\,nm technology at the TT corner (0.7\,V, 85$^\circ$C), targeting 1\,GHz with integrated clock gating enabled. The designs meet timing and electrical constraints. Area includes combinational logic, pipeline registers, and clock-gating cells. For power evaluation, we collect activations and weights from the first-layer MLP down-projection of Qwen3-8B running on WikiText-2~\cite{qwen3technicalreport,merity2016pointer}, and quantize them to BF16, MXFP8 E4M3, and MXFP4 E2M1. Power Compiler estimates total power using steady-state switching activity extracted from gate-level simulation at 1\,GHz. Area and power results correspond to synthesized dot-product units before clock-tree synthesis and place-and-route.
+
+\subsection{Baseline Comparison with Prior Multi-Precision Units}
+\label{sec:related_dp_evaluation}
+
+
+Tables~\ref{tab:related_features} and~\ref{tab:related_dp} compare format coverage and implementation efficiency, respectively. Under the original published technology nodes and evaluation conditions, the DP-Puzzle $1:2:4$ baseline achieves $3.74\times$/$2.45\times$ the area/energy efficiency of MiniFloats at FP8. Relative to TransDot, the corresponding ratios are approximately $2.97\times$/$3.36\times$ at FP8 and $2.97\times$/$4.69\times$ at FP4. Separately, we use DeepScaleTool~\cite{sarangi2021deepscaletool} to scale Ten-Four from 7\,nm to 14\,nm as an approximate reference for our 12\,nm implementation. Under this estimate, our baseline achieves approximately $3\times$ the MXFP8 area efficiency of both full-format Ten-Four configurations.
+
+Under the original-node comparison, the $0:2:4$ low-precision unit achieves $5.26\times$/$2.68\times$ the area/energy efficiency of MPICC at FP8 and $2.63\times$/$2.35\times$ at FP4. Compared with MXDOTP, also implemented at 12\,nm, it achieves $1.19\times$/$2.57\times$ the MXFP8 area/energy efficiency while additionally supporting MXFP4, NVFP4, and HiF4.
+
+\subsection{Area and Power Across Nine Throughput Ratios}
+\label{sec:lowp_costs}
+
+Fig.~\ref{fig:ratio4_costs} shows the area and power of the nine configurations. \textbf{Expanding MXFP4 throughput incurs less area overhead than expanding MXFP8.} Relative to $1:2:4$, $1:2:8$ doubles MXFP4 throughput with only 33.60\% more area, whereas $1:4:8$ doubles both MXFP8 and MXFP4 throughput with 68.21\% more area. At higher ratios, $1:2:16$ and $1:8:16$ both provide four times the baseline MXFP4 throughput, but their area overheads are 83.68\% and 190.29\%, respectively. This difference reflects the lower cost of specialized MXFP4 datapaths, which omit portions of the exponent-comparison and alignment logic and use narrower reduction paths.
+
+\textbf{Expanding MXFP8 throughput imposes a tighter power constraint than expanding MXFP4.} MXFP8 has the highest power consumption in every configuration with increased MXFP8 throughput, rising from 28.79\,mW in $1:4:8$ to 52.85\,mW in $1:8:16$. In contrast, $1:2:16$, which expands only MXFP4 throughput, has a maximum power of 29.38\,mW across precision modes, reached in MXFP4 mode. BF16 power increases by at most 6.27\% across all nine configurations, indicating that power growth primarily comes from low-precision expansion. Thus, configurations with identical peak MXFP4 throughput can face different power limits. The following case study jointly considers area and the maximum power across precision modes to determine deployment scale.
+
+
+% END REVIEW PAIR: 04_evaluation.tex
+
+% BEGIN REVIEW PAIR: 05_dse.tex
+\section{Case Study}
+\label{sec:workload}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{v41_case_panels_overlay.pdf}
+\caption{Fixed-budget comparison ($\alpha=0.327$, $\beta=1$). (a) Core counts under area-only (gray) and joint (blue) budgets. (b) Ideal GEMM compute speedups: A--E each aggregate 11 contexts; All aggregates 55 combinations with equal request weights. Outlines mark column maxima.}
+\label{fig:fixed_budget_compact}
+\end{figure}
+Using the dominant GEMMs in DeepSeek-V4.1-Flash, we construct five successive precision-migration scenarios to examine which throughput ratio balances current workloads and future low-precision demand under fixed area and power budgets.
+
+\subsection{Deployment Scale Under Joint Budgets}
+All nine candidates share the core-area budget and DP-array power limit of $1:2:4$ ($\beta=1$). The baseline has 36 cores, each with 256 DPs at 1\,GHz and one request per cycle. We set the baseline array-area fraction to $\alpha=0.327$, referencing the reported 32.7\% Cube-cluster share of AI Core area~\cite{luo2024hifloat8area}, and fix peripheral storage and control area per core. Single-DP area and the maximum measured power across precision modes determine the integer core counts allowed by each budget; the smaller count determines deployment. Multiplying this count by DPs per core and precision-specific DP throughput gives chip-level peak throughput. Deployment remains fixed across workloads.
+
+Fig.~\ref{fig:fixed_budget_compact}(a) compares core counts under the area budget alone and under joint area and power budgets. The latter counts are used to evaluate GEMM compute time.
+
+\subsection{Ratio Selection Across Precision Migrations}
+We evaluate cold-start prefill at batch=1 over 11 doubling contexts from 1K to 1M tokens~\cite{deepseekv41source}. Table~\ref{tab:five_stage_migrations} progressively lowers major GEMM precisions through scenarios A--E; other operators retain their original precision. Routed-expert W4A4 deployment~\cite{nvidiav41routed2026} and FP8/FP4 attention~\cite{flashattention3,sageattention3} motivate these future migration assumptions. We sum each precision's operation count divided by its chip-level peak throughput to estimate GEMM compute time under sufficient data supply and full array utilization. All 55 scenario--context combinations receive equal request weight. Aggregate speedup is the baseline's mean compute time divided by the candidate's mean; longer contexts contribute according to their operation counts.
+\input{tables/five_stage_migrations}
+
+
+
+Aggressive low-precision expansion does not yield the best aggregate performance under these budgets (Fig.~\ref{fig:fixed_budget_compact}(b)). The moderate FP4 expansion of $1:2:8$ achieves the highest aggregate benefit, with an ideal GEMM compute speedup of $1.13\times$ over $1:2:4$. Within the same budgets, $1:2:8$ retains relatively high deployment density and high-precision throughput, balancing low-precision gains against the remaining mixed-precision workload.
+% END REVIEW PAIR: 05_dse.tex
+
+% BEGIN REVIEW PAIR: 06_conclusion.tex
+\section{Conclusion}
+\label{sec:conclusion}
+DP-Puzzle combines shared multi-precision dot-product datapaths with precision-specific Groups to construct nine throughput ratios. Synthesis and activity-driven power evaluation quantify their implementation costs and efficiency, supporting chip-level throughput modeling under common area and power budgets. Under the budgets and precision-migration assumptions of our case study, moderate low-precision expansion balances deployment density and mixed-precision demand, providing guidance for throughput-ratio selection as workloads evolve.
+% END REVIEW PAIR: 06_conclusion.tex
+
+
+\section*{Content Generated by AI}
+OpenAI Codex assisted with EDA scripting, interpretation of source code and microarchitecture, experimental modeling, data analysis, plotting scripts, and manuscript organization, drafting, and translation. The authors are responsible for the adopted scripts, results, and all claims in this paper.
+
+\clearpage
+\setcounter{DACreferencepage}{\value{page}}
+\ifnum\value{DACreferencepage}>7\relax
+  \PackageWarningNoLine{DAC2027}{Main text exceeds six pages}%
+\fi
+\typeout{DAC2027: References start on page \thepage}
+\bibliographystyle{IEEEtran}
+\bibliography{references/references}
+\end{document}
