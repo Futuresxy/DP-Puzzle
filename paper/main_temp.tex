@@ -181,7 +181,7 @@ $\dagger$ denotes an R\&D roadmap target.}
 \label{sec:architecture}
 \label{sec:brick_definition}
 
-DP-Puzzle 通过 Lane、Group 与 DP 三层结构组织多精度点积计算（图~\ref{fig:dp_architecture}）。Lane 共享乘法与局部规约资源，Group 融合块缩放因子并统一部分和表示，DP 完成全局对齐与融合累加。统一的 Group 接口使低精度专用通路能够与基础多精度通路组合，在保留格式支持的同时调整峰值算力配比，并共享最终累加与输出处理。
+图~\ref{fig:dp_architecture} 展示 DP-Puzzle 的 $1:2:4$ 基线配置。本节先介绍其 Lane--Group--DP 三层通路：Lane 共享乘法与局部规约，Group 融合块缩放并统一部分和表示，DP 完成全局对齐与累加。在此基础上增配低精度专用 Group，形成不同算力配比的 DP 设计；配比在设计时确定，各设计在运行时按请求选择精度。
 
 \subsection{符号约定与架构概览}
 \label{sec:notation_conventions}
@@ -193,7 +193,7 @@ DP-Puzzle 通过 Lane、Group 与 DP 三层结构组织多精度点积计算（�
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{baseline_arch.pdf}
-\caption{Lane--Group--DP 三层点积微架构。Lane 实现算术共享与局部规约，Group 融合缩放因子并输出统一部分和，DP 共享全局累加与输出通路。}
+\caption{DP-Puzzle 的 $1:2:4$ 基线微架构。每个 T2H4Q8E16 Group 含两个复用型 Lane，四个 Group 构成 T8H16Q32E64 DP。其他配比在此基础上增配低精度专用 Group。}
 \label{fig:dp_architecture}
 \end{figure}
 
@@ -258,9 +258,18 @@ INT8/INT32 旁路浮点对齐与输出规格化，复用累加通路。寄存器
 
 E16 的裁剪进一步覆盖宽对齐与规约通路。每条 Lane 保留八个 $4\times4$ 乘法器，删除元素指数比较、跨 Lane 局部对齐基准生成及宽移位器，以窄累加树完成规约；HiF4 二级微指数在局部求和后融入，Lane 输出缩为 14 位有符号数。两条 Lane 形成 15 位组和，尺度乘积与 LZD 使用 22 位，最后接入公共 U31 幅值与 Anchor 接口。因此，E16 增配无需承担 Q 的宽对齐与规约成本。
 
-四个多精度 Group 构成 $1:2:4$ 基线。新增 2/4/8/12 个 E16 分别得到 $1:2:6$、$1:2:8$、$1:2:12$、$1:2:16$；新增四个 Q8 得到 $1:4:4$；新增 4/8/12 个 Q8E16 得到 $1:4:8$、$1:6:12$、$1:8:16$，连同基线共九种配置。新增组处理同一输出的额外 $K$ 片段，尺度按原量化块边界分发，组类型与数量在设计时确定。
+表~\ref{tab:ratio9_composition} 给出九种 DP 的 Group 构成。各配置均保留四个基线复用型 Group，通过增配 Q8、E16 或 Q8E16 调整低精度吞吐；新增组处理同一输出的额外 $K$ 片段，尺度仍按原量化块边界分发。
 
-DP 为每个新增 Group 增设双向移位器，并扩展指数比较和累加位宽，所有参与源在共同基准下对齐。新增结果经 4:2 CSA 网络压缩为两行，再与包含唯一 $C$ 的基础两行经一次 4:2 CSA 合并；仅新增两组时直接接入合并级。MUX 按精度成对选择基础或合并结果，送入共享 CPA 及规格化、舍入通路。Q8、E16、Q8E16 分别在 Q、E、Q/E 模式参与；其他模式屏蔽新增组并旁路扩展压缩网络，保持基线计算结果。
+\input{tables/temp/group_compositions.tex}
+
+DP 为新增 Group 配置双向移位器，并扩展指数比较与累加位宽，使所有参与源在共同基准下对齐。如图~\ref{fig:dp_csa_expansion} 所示，新增结果经 4:2 CSA 网络压缩为两行，再与包含唯一 $C$ 的基础两行经一次 4:2 CSA 合并；仅新增两组时直接接入合并级。MUX 按精度成对选择基础或合并后的和、进位两行，送入共享 CPA。Q8、E16、Q8E16 分别在 Q、E、Q/E 模式参与；未启用扩展时选通基线路径，并屏蔽新增组对指数比较及特殊值归约的贡献，保持原有高精度计算结果。
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{dynamic_add.pdf}
+\caption{低精度扩展的累加网络。新增 2/4/8/12 个 Group 的结果与基线合并为和、进位两行；MUX 按精度选通基础或合并结果，复用最终 CPA。}
+\label{fig:dp_csa_expansion}
+\end{figure}
 
 上述组合将算力配比转化为专用 Group 的增配选择。下一节在相同工艺和频率下比较九种配置的面积与功耗，为芯片级配比探索提供成本依据。
 % END independent architecture draft.
