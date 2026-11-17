@@ -13,13 +13,14 @@
 \subsection{基线设计与同类多精度单元比较}
 \label{sec:related_dp_evaluation}
 
+\input{tables/related_features.tex}
 \input{tables/related_ppa_native.tex}
 
-表~\ref{tab:related_features} 与表~\ref{tab:related_dp} 分别比较格式覆盖与实现效率。本文选取 $1:2:4$ 基线作为完整多精度设计的代表，支持 TF32、FP16/BF16、MXFP8/6/4、NVFP4、HiF4 及 INT8，浮点与整型运算分别采用 FP32 和 INT32 累加。该设计在共享通路中同时支持常规浮点与多种细粒度块缩放格式，为不同量化方案提供统一的计算基础。
+表~\ref{tab:related_features} 与表~\ref{tab:related_dp} 分别比较格式覆盖与实现效率。本文选取 $1:2:4$ 基线作为完整多精度设计的代表，支持 TF32、FP16/BF16、MXFP8/6/4、NVFP4、HiF4 及 INT8，浮点与整型运算分别采用 FP32 和 INT32 累加。相比表中已有单元，该设计在共享通路中覆盖更完整的低精度块缩放格式，兼容 MXFP8/6/4、NVFP4 和 HiF4，并支持多种算力配比，为不同量化方案提供统一的计算基础。
 
 各项效率采用原文报告的工艺与测量条件，以下重点比较同为 12\,nm 的实现。相对 MiniFloats，本文基线的 FP8 面效与能效分别为其 $3.74\times$ 和 $2.45\times$；相对 TransDot，FP8 对应约 $2.97\times$ 和 $3.36\times$，FP4 对应约 $2.97\times$ 和 $4.69\times$。其中，TransDot 的面积由原图估读，相关面效及倍率为近似值，表中以 $\dagger$ 标识。结果表明，完整多精度覆盖与块缩放支持能够兼顾较高的面积和能量效率。
 
-表中同时列出 $0:2:4$ 低精度专用设计，以展示格式专用化的收益：在保持 Q32E64 并行度的同时，移除 T/H/INT8 通路使 MXFP8 面效由 3.959 提高至 5.531\,TFLOP/s/mm$^2$，能效由 4.000 提高至 5.230\,TFLOP/s/W。后续配比分析以完整格式的 $1:2:4$ 为共同基线，比较保持相同精度支持范围时，低精度增配带来的硬件成本与吞吐变化。
+针对仅支持低精度计算模式，我们同时列出 $0:2:4$ 低精度专用点积单元设计，以展示格式专用化的收益：在保持 Q32E64 并行度的同时，移除其他精度支持，使 MXFP8 面效由 3.959 提高至 5.531\,TFLOP/s/mm$^2$，能效由 4.000 提高至 5.230\,TFLOP/s/W。按各自原工艺与测量条件比较，相对同为 12\,nm 的 MXDOTP，其 MXFP8 面效基本持平（高约 0.13\%），能效为其 $2.57\times$，并增加 MXFP4、NVFP4 和 HiF4 支持。相对 28\,nm 的 MPICC，FP8 面效与能效分别为其 $4.44\times$ 和 $2.68\times$，FP4 分别为 $2.22\times$ 和 $2.35\times$。
 
 \subsection{九种配比的面积与功耗}
 \label{sec:lowp_costs}
