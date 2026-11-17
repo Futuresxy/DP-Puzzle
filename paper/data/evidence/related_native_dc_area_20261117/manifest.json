@@ -15,7 +15,7 @@
     },
     {
       "path": "scripts/build_related_native.py",
-      "sha256": "8eda6a0268b43febd6b5bc5eacb9d18298a0fa01351d5bbbf8f49a87c042bffe"
+      "sha256": "7d2b6371b1e9dbf8fd0679e0b386663a8214c1bf7e1a6f499fe0404f7c684b85"
     },
     {
       "path": "data/evidence/related_native_20261116/sources.json",
@@ -29,7 +29,7 @@
   "outputs": [
     {
       "path": "tables/related_ppa_native.tex",
-      "sha256": "bc9bd01a84a65a823565139e29474c11ed72567101a8d92674c501a5f8120254"
+      "sha256": "dfd7eff98f06cec7b41e853729c78c5e4e30d723c8903f68bc57a06a89da7888"
     },
     {
       "path": "data/evidence/related_native_dc_area_20261117/efficiencies.csv",
