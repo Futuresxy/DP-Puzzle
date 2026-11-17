@@ -1,0 +1,37 @@
+work,node_nm,metric,format,config,value,status,source
+tenfour,7,area,BF16,Q8,5.25,native,retained native column; see source records
+tenfour,7,area,BF16,Q16,5.419354838709678,native,retained native column; see source records
+tenfour,7,area,MXFP8,Q8,10.5,native,retained native column; see source records
+tenfour,7,area,MXFP8,Q16,10.838709677419356,native,retained native column; see source records
+mpicc,28,area,FP8,,1.246,native,retained native column; see source records
+mpicc,28,area,FP4,,4.985,native,retained native column; see source records
+mpicc,28,energy,FP8,,1.948,native,retained native column; see source records
+mpicc,28,energy,FP4,,5.931,native,retained native column; see source records
+mxdotp,12,area,MXFP8,,5.523809523809523,native,retained native column; see source records
+mxdotp,12,energy,MXFP8,,2.035,native,retained native column; see source records
+fpnew,22,area,FP16,,0.15143,native,retained native column; see source records
+fpnew,22,area,BF16,,0.15143,native,retained native column; see source records
+fpnew,22,area,FP8,,0.30265,native,retained native column; see source records
+fpnew,22,energy,FP16,,0.49767,native,retained native column; see source records
+fpnew,22,energy,BF16,,0.58196,native,retained native column; see source records
+fpnew,22,energy,FP8,,1.24478,native,retained native column; see source records
+transdot,12,energy,FP16,,0.5555555555555556,native,retained native column; see source records
+transdot,12,energy,FP8,,1.1904761904761905,native,retained native column; see source records
+transdot,12,energy,FP4,,2.4390243902439024,native,retained native column; see source records
+ours,12,area,BF16,1:2:4,1.9795705652667597,native,retained native column; see source records
+ours,12,area,MXFP8,1:2:4,3.9591411305335193,native,retained native column; see source records
+ours,12,area,MXFP4,1:2:4,7.918282261067039,native,retained native column; see source records
+ours,12,area,MXFP8,0:2:4,5.530724905199919,author_area_update,data/evidence/related_native_area_update_20261117/author_area.json
+ours,12,area,MXFP4,0:2:4,11.061449810399838,author_area_update,data/evidence/related_native_area_update_20261117/author_area.json
+ours,12,energy,BF16,1:2:4,2.087646683693308,native,retained native column; see source records
+ours,12,energy,MXFP8,1:2:4,3.9995003370817552,native,retained native column; see source records
+ours,12,energy,MXFP4,1:2:4,11.432109097998834,native,retained native column; see source records
+ours,12,energy,MXFP8,0:2:4,5.230060984962676,author_power_update,data/evidence/related_native_power_update_20261117/author_power.json
+ours,12,energy,MXFP4,0:2:4,13.928244946468205,author_power_update,data/evidence/related_native_power_update_20261117/author_power.json
+minifloats,12,energy,FP8,,1.63,reported_comparison,user attachment; primary Table 4 supports FP8 throughput/area and energy
+minifloats,12,energy,FP16,,0.82,reported_comparison,user attachment; primary Table 4 supports FP8 throughput/area and energy
+minifloats,12,area,FP8,,1.06,reported_comparison,user attachment; primary Table 4 supports FP8 throughput/area and energy
+minifloats,12,area,FP16,,0.53,reported_comparison,user attachment; primary Table 4 supports FP8 throughput/area and energy
+transdot,12,area,FP16,,0.6666666666666666,figure_read_estimate,TransDot Fig. 7(a) at 1 ns and Table II throughput
+transdot,12,area,FP8,,1.3333333333333333,figure_read_estimate,TransDot Fig. 7(a) at 1 ns and Table II throughput
+transdot,12,area,FP4,,2.6666666666666665,figure_read_estimate,TransDot Fig. 7(a) at 1 ns and Table II throughput

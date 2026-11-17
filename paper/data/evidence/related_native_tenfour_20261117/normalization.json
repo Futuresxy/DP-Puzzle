@@ -1,0 +1,29 @@
+{
+  "status": "analytical_uncalibrated",
+  "scope": "Text-only comparison; table retains original 7 nm values",
+  "sources": [
+    "https://arxiv.org/html/2512.00053v3#S4.T2",
+    "https://arxiv.org/html/2102.10195v1#S3.SS1"
+  ],
+  "factor_source": "data/process_normalization/comparison.json",
+  "factor_source_sha256": "e103c3e364c73e7eb11fac20e12d022f1a32fbe70417b101d50524b80f3ecb84",
+  "area_delay_multipliers_7_to_14": {
+    "area": 7.273,
+    "delay": 1.132
+  },
+  "method": "Area efficiency divided by area multiplier times delay multiplier; 14 nm is an approximate reference for native 12 nm, not a 12 nm tool output",
+  "rows": [
+    {
+      "config": "Q8",
+      "native_area_efficiency": 10.5,
+      "estimated_14nm_area_efficiency": 1.2753497008879837,
+      "ours_12nm_over_estimated_14nm": 3.1043572815964913
+    },
+    {
+      "config": "Q16",
+      "native_area_efficiency": 10.838709677419356,
+      "estimated_14nm_area_efficiency": 1.3164900138198543,
+      "ours_12nm_over_estimated_14nm": 3.0073461165466004
+    }
+  ]
+}

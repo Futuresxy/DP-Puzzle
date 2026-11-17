@@ -5,25 +5,25 @@
 \label{tab:related_dp}
 \begingroup\footnotesize\setlength{\tabcolsep}{1.5pt}
 \def\Eff#1{\begin{tabular}{@{}lr@{}}#1\end{tabular}}
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}l*{7}{c}@{}}\toprule
-Metric & MPICC~\cite{huangMPICCMultiplePrecisionInterCombined2025} & MXDOTP~\cite{islamoglu2025mxdotp} & FPnew~\cite{mach2021fpnew} & MiniFloats~\cite{bertaccini2024minifloats} & TransDot~\cite{transdot2026} & \multicolumn{2}{c}{DP-Puzzle} \\
-\cmidrule(lr){7-8}
- & & & & & & $1:2:4$ & $0:2:4$ \\
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}l*{8}{c}@{}}\toprule
+Metric & Ten-Four~\cite{rout2026tenfourv3} & MPICC~\cite{huangMPICCMultiplePrecisionInterCombined2025} & MXDOTP~\cite{islamoglu2025mxdotp} & FPnew~\cite{mach2021fpnew} & MiniFloats~\cite{bertaccini2024minifloats} & TransDot~\cite{transdot2026} & \multicolumn{2}{c}{DP-Puzzle} \\
+\cmidrule(lr){8-9}
+ & & & & & & & $1:2:4$ & $0:2:4$ \\
 \midrule
-Structure & $n$-term MAC & MX DP & SIMD FMA & SIMD wDotp & FMA / DP & MX DP & MX DP \\
-Technology (nm) & 28 & 12 & 22 & 12 & 12 & 12 & 12 \\
-Voltage (V) & 0.9 & 0.8 & 0.8 & 0.8 & 0.8 & 0.7 & 0.7 \\
-Frequency (GHz) & 1.43 & 1.09 & 0.923 & 1.26 & 1.0 & 1.0 & 1.0 \\
-Area ($\mu$m$^2$) & 2295 & 3150 & 49\,000 & 19\,000 & $\approx 6000^\dagger$ & 16\,165.12 & 11\,571.72 \\
-Accumulation & FP12/INT8 & FP32 & Per format & FP16/FP32 & FP32 & FP32/INT32 & FP32 \\
+Structure & Fused DP & $n$-term MAC & MX DP & SIMD FMA & SIMD wDotp & FMA / DP & MX DP & MX DP \\
+Technology (nm) & 7 & 28 & 12 & 22 & 12 & 12 & 12 & 12 \\
+Voltage (V) & 0.7 & 0.9 & 0.8 & 0.8 & 0.8 & 0.8 & 0.7 & 0.7 \\
+Frequency (GHz) & 1.58 & 1.43 & 1.09 & 0.923 & 1.26 & 1.0 & 1.0 & 1.0 \\
+Area ($\mu$m$^2$) & 2400 / 4650 & 2295 & 3150 & 49\,000 & 19\,000 & $\approx 6000^\dagger$ & 16\,165.12 & 11\,571.72 \\
+Accumulation & FP32/INT32 & FP12/INT8 & FP32 & Per format & FP16/FP32 & FP32 & FP32/INT32 & FP32 \\
 \midrule
-\shortstack[l]{Energy efficiency\\(TFLOP/s/W)} & \Eff{FP8 & 1.948\\FP4 & 5.931} & \Eff{MXFP8 & 2.035} & \Eff{FP16 & 0.498\\BF16 & 0.582\\FP8 & 1.245} & \Eff{FP8 & 1.63\\FP16 & 0.82} & \Eff{FP16 & 0.556\\FP8 & 1.190\\FP4 & 2.439} & \Eff{BF16 & 2.088\\MXFP8 & 4.000\\MXFP4 & 11.432} & \Eff{MXFP8 & 5.230\\MXFP4 & 13.928} \\
+\shortstack[l]{Energy efficiency\\(TFLOP/s/W)} & --- & \Eff{FP8 & 1.948\\FP4 & 5.931} & \Eff{MXFP8 & 2.035} & \Eff{FP16 & 0.498\\BF16 & 0.582\\FP8 & 1.245} & \Eff{FP8 & 1.63\\FP16 & 0.82} & \Eff{FP16 & 0.556\\FP8 & 1.190\\FP4 & 2.439} & \Eff{BF16 & 2.088\\MXFP8 & 4.000\\MXFP4 & 11.432} & \Eff{MXFP8 & 5.230\\MXFP4 & 13.928} \\
 \midrule
-\shortstack[l]{Area efficiency\\(TFLOP/s/mm$^2$)} & \Eff{FP8 & 1.246\\FP4 & 4.985} & \Eff{MXFP8 & 5.524} & \Eff{FP16 & 0.151\\BF16 & 0.151\\FP8 & 0.303} & \Eff{FP8 & 1.06\\FP16 & 0.53} & \Eff{FP16 & $\approx 0.67^{\dagger}$\\FP8 & $\approx 1.33^{\dagger}$\\FP4 & $\approx 2.67^{\dagger}$} & \Eff{BF16 & 1.980\\MXFP8 & 3.959\\MXFP4 & 7.918} & \Eff{MXFP8 & 5.531\\MXFP4 & 11.061} \\
+\shortstack[l]{Area efficiency\\(TFLOP/s/mm$^2$)} & \Eff{BF16 & 5.250 / 5.419\\MXFP8 & 10.500 / 10.839} & \Eff{FP8 & 1.246\\FP4 & 4.985} & \Eff{MXFP8 & 5.524} & \Eff{FP16 & 0.151\\BF16 & 0.151\\FP8 & 0.303} & \Eff{FP8 & 1.06\\FP16 & 0.53} & \Eff{FP16 & $\approx 0.67^{\dagger}$\\FP8 & $\approx 1.33^{\dagger}$\\FP4 & $\approx 2.67^{\dagger}$} & \Eff{BF16 & 1.980\\MXFP8 & 3.959\\MXFP4 & 7.918} & \Eff{MXFP8 & 5.531\\MXFP4 & 11.061} \\
 \bottomrule\end{tabular*}
 \par\smallskip
 \parbox{\textwidth}{\raggedright
-All values use the reported process nodes without technology normalization; supported formats are listed in Table~\ref{tab:related_features}. MiniFloats reports the standalone wDotp FPU, excluding the cluster.
+All values use the reported process nodes without technology normalization; supported formats are listed in Table~\ref{tab:related_features}. Ten-Four pairs denote full-format Q8/Q16 configurations; per-format DP energy efficiency is unreported. MiniFloats reports the standalone wDotp FPU, excluding the cluster.
 $\dagger$: TransDot cell area is estimated from the 1\,ns point in its Fig. 7(a), with area efficiency calculated using the throughput in its Table II. Its mean FP16/FP8 area-efficiency gains of 1.46$\times$/2.92$\times$ are relative to its own 12\,nm FPnew baseline and are not applied to the 22\,nm FPnew results here. --- denotes unreported or inapplicable values.}
 \endgroup
 \end{table*}
