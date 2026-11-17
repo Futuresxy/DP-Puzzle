@@ -1,0 +1,10 @@
+{
+  "config": "0:2:4",
+  "total_power_mw": {
+    "MXFP8": 12.236951,
+    "MXFP4": 9.189959
+  },
+  "source": "Author-provided power update in conversation, 2026-11-17",
+  "mapping_basis": "Interpreted in preceding table order: MXFP8 then MXFP4; units mW",
+  "run_id": null
+}

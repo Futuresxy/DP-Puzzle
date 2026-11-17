@@ -11,6 +11,7 @@ OUT = SOURCE_RECORD
 TABLE = ROOT/'tables/temp/related_ppa_native.tex'
 SOURCE = ROOT/'data/process_normalization/table_efficiencies.csv'
 AREA_UPDATE = ROOT/'data/evidence/related_native_area_update_20261117/author_area.json'
+POWER_UPDATE = ROOT/'data/evidence/related_native_power_update_20261117/author_power.json'
 
 
 def main():
@@ -19,7 +20,7 @@ def main():
     parser.add_argument('--official',action='store_true',help='Write the promoted official table and a separate evidence batch')
     args=parser.parse_args()
     if args.official:
-        OUT=AREA_UPDATE.parent
+        OUT=POWER_UPDATE.parent
         TABLE=ROOT/'tables/related_ppa_native.tex'
     with SOURCE.open() as f:
         rows = [dict(work=r['work'], node_nm=r['node_nm'], metric=r['metric'],
@@ -42,6 +43,12 @@ def main():
             row['value']=area_update['throughput_gflops'][row['format']]*1000/area_update['area_um2']
             row['status']='author_area_update'
             row['source']=str(AREA_UPDATE.relative_to(ROOT))
+    power_update=json.loads(POWER_UPDATE.read_text())
+    for row in rows:
+        if row['work']=='ours' and row['config']==power_update['config'] and row['metric']=='energy':
+            row['value']=area_update['throughput_gflops'][row['format']]/power_update['total_power_mw'][row['format']]
+            row['status']='author_power_update'
+            row['source']=str(POWER_UPDATE.relative_to(ROOT))
     assert all(r['value']>0 for r in rows)
     def eff(work,metric,config=''):
         selected=[r for r in rows if r['work']==work and r['metric']==metric and r['config']==config]
@@ -99,7 +106,7 @@ $\dagger$：TransDot 面积由原文图 7(a) 的 1\,ns 点估读，面效按表 
         writer=csv.DictWriter(f,fieldnames=list(rows[0]),lineterminator='\n');writer.writeheader();writer.writerows(rows)
     def fp(path):return {'path':str(path.relative_to(ROOT)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
     (OUT/'manifest.json').write_text(json.dumps(dict(scope=('official Table IV' if args.official else 'temporary Tables I and IV')+'; no process conversion',
-        inputs=[fp(SOURCE),fp(AREA_UPDATE),fp(Path(__file__)),fp(SOURCE_RECORD/'sources.json'),fp(SOURCE_RECORD/'user_comparison.png')],outputs=[fp(TABLE),fp(OUT/'efficiencies.csv')],
+        inputs=[fp(SOURCE),fp(AREA_UPDATE),fp(POWER_UPDATE),fp(Path(__file__)),fp(SOURCE_RECORD/'sources.json'),fp(SOURCE_RECORD/'user_comparison.png')],outputs=[fp(TABLE),fp(OUT/'efficiencies.csv')],
         transdot=dict(cell_area_um2_estimate=6000,period_ps=1000,frequency_ghz=1,
             local_fpnew_relative_area_efficiency={'FP16':dict(mean=1.46,range=[1.28,1.52]),'FP8':dict(mean=2.92,range=[1.56,3.04])},
             method='Absolute area efficiencies use figure-estimated cell area; quoted means span timing sweep and are not multiplied into 22 nm SIMD data'),
