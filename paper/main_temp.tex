@@ -340,24 +340,24 @@ C_{j,p}&=2fDn_jK_{j,p}.
 \end{aligned}
 \label{eq:core_area_budget}
 \end{equation}
-$K_{j,p}$ 为精度 $p$ 的原生点积长度，乘加计 2 FLOP。每种候选的核数在全部精度和负载场景中保持不变。
+$K_{j,p}$ 为精度 $p$ 的原生点积长度，乘加计 2 FLOP。图~\ref{fig:fixed_budget_compact}(a) 对比仅面积约束与联合约束下的部署核数；每种候选采用后者确定芯片算力，核数在全部精度和负载场景中保持不变。
 
 \subsection{精度迁移与统一评价}
 依据 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 的结构与执行流程，统计 batch=1、1K--1M 的 11 个对数间隔上下文下的冷启动 prefill GEMM 工作量。表~\ref{tab:five_stage_migrations} 的 A--E 逐步叠加精度变更，保持算子形状和总 FLOP 不变。A 中 W4A8 专家按 FP8 吞吐建模；indexer、Q-down、KV 等背景算子保留原精度并计入，FP32 单列。专家 W4A4 部署~\cite{nvidiav41routed2026} 与 FP8/FP4 注意力量化~\cite{flashattention3,sageattention3} 为迁移提供依据，共享专家及投影的进一步降精度作为未来负载假设。
 \input{tables/temp/five_stage_migrations}
 
-在充分供数、阵列完全利用下，将各精度 GEMM 工作量除以对应芯片峰值后相加，得到计算服务时间。图~\ref{fig:fixed_budget_compact} 的 A--E 分别平均 11 个上下文的时间，All 等权平均全部 55 个场景--上下文组合，以同负载基准与候选的平均时间之比 $S_j=\overline T_0/\overline T_j$ 评价固定芯片。
+在充分供数、阵列完全利用下，将各精度 GEMM 工作量除以对应芯片峰值后相加，估算 GEMM 计算时间。图~\ref{fig:fixed_budget_compact}(b) 的 A--E 分别平均 11 个上下文的时间，All 等权平均全部 55 个场景--上下文组合，以同负载基准与候选的平均时间之比 $S_j=\overline T_0/\overline T_j$ 评价固定芯片。
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{temp/v41_five_stage.pdf}
-\caption{五阶段迁移下相对 $1:2:4$ 的 GEMM 计算加速比。括号为部署核数，All 汇总 55 个组合，黑框标记最优配比。}
+\includegraphics[width=\columnwidth]{temp/v41_case_panels.pdf}
+\caption{固定预算下的部署规模与负载收益（$\alpha=0.327$，$\beta=1$）。(a) 仅面积约束及面积、功耗联合约束下的核心数。(b) 联合约束下五阶段迁移的 GEMM 计算加速比，All 汇总 55 个组合，黑框标记各列最优值。}
 \label{fig:fixed_budget_compact}
 \end{figure}
 
-\textbf{部署成本制约增配收益。} $1:2:8$ 与 $1:4:8$ 的单 DP FP4 吞吐相同，但分别部署 32、20 核，前者芯片 FP4 峰值高 60\%；更大的 $1:8:16$ 受功耗限制仅部署 10 核，All 为 $0.77\times$。
+\textbf{功耗约束改变增配收益。} 图~\ref{fig:fixed_budget_compact}(a) 中，加入功耗约束后，$1:4:8$、$1:8:16$ 分别由 29、22 核降至 20、10 核，$1:2:8$ 则保持 32 核。因此，单 DP FP4 吞吐相同的 $1:2:8$ 比 $1:4:8$ 获得高 60\% 的芯片 FP4 峰值；更大的 $1:8:16$ 在图~\ref{fig:fixed_budget_compact}(b) 中 All 仅为 $0.77\times$。
 
-\textbf{适度增配形成跨阶段优势。} A、E 分别偏好 $1:2:4$、$1:2:12$，而 $1:2:8$ 在 B--D 最优，并以 $1.13\times$（13.11\%）取得 All 最优。在本预算及迁移路径下，保留部署密度的适度 FP4 增配更能兼顾低精度演进与剩余混合精度计算。
+\textbf{适度增配形成跨阶段优势。} A、E 分别偏好 $1:2:4$、$1:2:12$，而 $1:2:8$ 在 B--D 最优，并以 $1.13\times$（13.11\%）取得 All 最优。固定芯片应兼顾迁移各阶段的工作量：在本预算与迁移路径下，适度 FP4 增配保留较高部署密度，同时维持剩余高精度计算能力，因而获得更低的平均计算时间。
 
 \section{结论}
 \label{sec:conclusion}

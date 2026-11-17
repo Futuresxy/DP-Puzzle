@@ -5,6 +5,7 @@ pdf-temp:
 	latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error main_temp.tex
 case-study:
 	$(PYTHON) scripts/v41_case_study.py
+	$(PYTHON) scripts/plot_v41_case_panels.py
 deployment-model:
 	$(PYTHON) scripts/build_deployment_capacity.py
 related-compact:
