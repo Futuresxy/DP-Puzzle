@@ -10,6 +10,7 @@ SOURCE_RECORD = ROOT/'data/evidence/related_native_20261116'
 OUT = SOURCE_RECORD
 TABLE = ROOT/'tables/temp/related_ppa_native.tex'
 SOURCE = ROOT/'data/process_normalization/table_efficiencies.csv'
+AREA_UPDATE = ROOT/'data/evidence/related_native_area_update_20261117/author_area.json'
 
 
 def main():
@@ -18,7 +19,7 @@ def main():
     parser.add_argument('--official',action='store_true',help='Write the promoted official table and a separate evidence batch')
     args=parser.parse_args()
     if args.official:
-        OUT=ROOT/'data/evidence/related_native_main_20261117'
+        OUT=AREA_UPDATE.parent
         TABLE=ROOT/'tables/related_ppa_native.tex'
     with SOURCE.open() as f:
         rows = [dict(work=r['work'], node_nm=r['node_nm'], metric=r['metric'],
@@ -35,6 +36,12 @@ def main():
     for mode,gflops in [('FP16',4),('FP8',8),('FP4',16)]:
         rows.append(dict(work='transdot',node_nm=12,metric='area',format=mode,config='',
             value=(gflops/1000)/(6000/1e6),status='figure_read_estimate',source='TransDot Fig. 7(a) at 1 ns and Table II throughput'))
+    area_update=json.loads(AREA_UPDATE.read_text())
+    for row in rows:
+        if row['work']=='ours' and row['config']==area_update['config'] and row['metric']=='area':
+            row['value']=area_update['throughput_gflops'][row['format']]*1000/area_update['area_um2']
+            row['status']='author_area_update'
+            row['source']=str(AREA_UPDATE.relative_to(ROOT))
     assert all(r['value']>0 for r in rows)
     def eff(work,metric,config=''):
         selected=[r for r in rows if r['work']==work and r['metric']==metric and r['config']==config]
@@ -58,7 +65,7 @@ Structure & $n$-term MAC & MX DP & SIMD FMA & SIMD wDotp & FMA / DP & MX DP & MX
 Technology (nm) & 28 & 12 & 22 & 12 & 12 & 12 & 12 \\
 Voltage (V) & 0.9 & 0.8 & 0.8 & 0.8 & 0.8 & 0.7 & 0.7 \\
 Frequency (GHz) & 1.43 & 1.09 & 0.923 & 1.26 & 1.0 & 1.0 & 1.0 \\
-Area ($\mu$m$^2$) & 2295 & 3150 & 49\,000 & 19\,000 & $\approx 6000^\dagger$ & 16\,165.12 & 11\,695.21 \\
+Area ($\mu$m$^2$) & 2295 & 3150 & 49\,000 & 19\,000 & $\approx 6000^\dagger$ & 16\,165.12 & AUTHOR_AREA_UM2 \\
 Accumulation & FP12/INT8 & FP32 & Per format & FP16/FP32 & FP32 & FP32/INT32 & FP32 \\
 \midrule
 '''
@@ -74,6 +81,7 @@ $\dagger$：TransDot 面积由原文图 7(a) 的 1\,ns 点估读，面效按表 
 \endgroup
 \end{table*}
 '''
+    table=table.replace('AUTHOR_AREA_UM2',f"{area_update['area_um2']:,.2f}".replace(',',r'\,'))
     if args.official:
         table=table.replace('temporary manuscript only','official manuscript')
         table=table.replace('已有单元与 DP-Puzzle 的原工艺实现条件及效率。',
@@ -91,7 +99,7 @@ $\dagger$：TransDot 面积由原文图 7(a) 的 1\,ns 点估读，面效按表 
         writer=csv.DictWriter(f,fieldnames=list(rows[0]),lineterminator='\n');writer.writeheader();writer.writerows(rows)
     def fp(path):return {'path':str(path.relative_to(ROOT)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
     (OUT/'manifest.json').write_text(json.dumps(dict(scope=('official Table IV' if args.official else 'temporary Tables I and IV')+'; no process conversion',
-        inputs=[fp(SOURCE),fp(Path(__file__)),fp(SOURCE_RECORD/'sources.json'),fp(SOURCE_RECORD/'user_comparison.png')],outputs=[fp(TABLE),fp(OUT/'efficiencies.csv')],
+        inputs=[fp(SOURCE),fp(AREA_UPDATE),fp(Path(__file__)),fp(SOURCE_RECORD/'sources.json'),fp(SOURCE_RECORD/'user_comparison.png')],outputs=[fp(TABLE),fp(OUT/'efficiencies.csv')],
         transdot=dict(cell_area_um2_estimate=6000,period_ps=1000,frequency_ghz=1,
             local_fpnew_relative_area_efficiency={'FP16':dict(mean=1.46,range=[1.28,1.52]),'FP8':dict(mean=2.92,range=[1.56,3.04])},
             method='Absolute area efficiencies use figure-estimated cell area; quoted means span timing sweep and are not multiplied into 22 nm SIMD data'),

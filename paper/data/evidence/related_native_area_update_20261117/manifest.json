@@ -1,0 +1,68 @@
+{
+  "scope": "official Table IV; no process conversion",
+  "inputs": [
+    {
+      "path": "data/process_normalization/table_efficiencies.csv",
+      "sha256": "1cb77ff7c79b9c36034a4d9976573388abe1a59cb21d8dd3f6dd98c7ef87e92a"
+    },
+    {
+      "path": "data/evidence/related_native_area_update_20261117/author_area.json",
+      "sha256": "1af6be2db4a03b39dfdf346c3b911117198098a54c6807a4f9c97f1427cec256"
+    },
+    {
+      "path": "scripts/build_related_native.py",
+      "sha256": "a8171a6e7b5b90bba7f4a496fbb651e402fa748846e0ad4ea0ba67dfad12fa92"
+    },
+    {
+      "path": "data/evidence/related_native_20261116/sources.json",
+      "sha256": "8de30cb9d3e3f5ded5b3f1349917e1ed90b2cf0285dfcdb2ee0b945d219b706f"
+    },
+    {
+      "path": "data/evidence/related_native_20261116/user_comparison.png",
+      "sha256": "7b3324cd730ee626f618cc980e6e96bfd3b88b746377dbe2646a892945da53ae"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "tables/related_ppa_native.tex",
+      "sha256": "89f79acb58d843522c32008c153f84b29c8e909f1d1ce8ac5dce6bf84521f618"
+    },
+    {
+      "path": "data/evidence/related_native_area_update_20261117/efficiencies.csv",
+      "sha256": "921038770f9fb2b10b44fb2854747680a915bf14c64959a47537e59633d6e30c"
+    }
+  ],
+  "transdot": {
+    "cell_area_um2_estimate": 6000,
+    "period_ps": 1000,
+    "frequency_ghz": 1,
+    "local_fpnew_relative_area_efficiency": {
+      "FP16": {
+        "mean": 1.46,
+        "range": [
+          1.28,
+          1.52
+        ]
+      },
+      "FP8": {
+        "mean": 2.92,
+        "range": [
+          1.56,
+          3.04
+        ]
+      }
+    },
+    "method": "Absolute area efficiencies use figure-estimated cell area; quoted means span timing sweep and are not multiplied into 22 nm SIMD data"
+  },
+  "minifloats": {
+    "energy": {
+      "FP8": 1.63,
+      "FP16": 0.82
+    },
+    "area": {
+      "FP8": 1.06,
+      "FP16": 0.53
+    },
+    "source": "Latest user screenshot supersedes transposed prose values"
+  }
+}
