@@ -1,0 +1,16 @@
+% Maps current A--E to previous A, B, D, E, F; no changes to operator shapes.
+\begin{table}[t]
+\centering
+\caption{Five sequential precision-migration scenarios.}
+\label{tab:five_stage_migrations}
+\begingroup\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}cccc@{}}\toprule
+Case & \shortstack{Routed\\experts} & \shortstack{Shared experts\\+ Q-up/O-up} & \shortstack{Main QK/PV\\+ Grouped O-down} \\\midrule
+A & FP8 & FP8 & BF16 \\
+B & FP4 & FP8 & BF16 \\
+C & FP4 & FP8 & FP8 \\
+D & FP4 & FP4 & FP8 \\
+E & FP4 & FP4 & FP4 \\\bottomrule
+\end{tabular}
+\endgroup
+\end{table}

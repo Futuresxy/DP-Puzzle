@@ -70,9 +70,9 @@ def render(figure, hardware, gains, scenario_ids):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--config', type=Path, default=ROOT/'data/inputs/v41_case_study_equal_budget.json')
-    parser.add_argument('--output', type=Path, default=ROOT/'data/evidence/v41_case_study_equal_budget_20261117')
-    parser.add_argument('--figure', type=Path, default=ROOT/'figures/temp/v41_case_study_equal_budget.pdf')
+    parser.add_argument('--config', type=Path, default=ROOT/'data/inputs/v41_five_stage.json')
+    parser.add_argument('--output', type=Path, default=ROOT/'data/evidence/v41_five_stage_20261117')
+    parser.add_argument('--figure', type=Path, default=ROOT/'figures/temp/v41_five_stage.pdf')
     args = parser.parse_args()
     config = json.loads(args.config.read_text())
     if (config['scope'] != 'ced_cold_prefill' or config['utilization'] != 1

@@ -11,11 +11,10 @@ Workload settings are unchanged: six precision mappings, batch-one full-CED cold
 From `paper/`:
 
 ```sh
-make case-study
-make pdf-temp
+python3 scripts/v41_case_study.py --config data/inputs/v41_case_study_equal_budget.json --output data/evidence/v41_case_study_equal_budget_20261117 --figure figures/temp/v41_case_study_equal_budget.pdf
 ```
 
-The script defaults to `data/inputs/v41_case_study_equal_budget.json`, this evidence directory and `figures/temp/v41_case_study_equal_budget.pdf`. Explicit `--config`, `--output` and `--figure` arguments retain the earlier case's replay path. No formal manuscript or formal figure is modified.
+This six-scenario batch is retained as history; `make case-study` now reproduces the five-stage batch. The explicit command above uses `data/inputs/v41_case_study_equal_budget.json`, this evidence directory and `figures/temp/v41_case_study_equal_budget.pdf`. Explicit `--config`, `--output` and `--figure` arguments retain the earlier case's replay path. No formal manuscript or formal figure is modified.
 
 ## Results
 

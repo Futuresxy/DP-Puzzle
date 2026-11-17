@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-17",
+  "scope": "Temporary Chinese Chapter V only",
+  "case_mapping": {
+    "A": "A",
+    "B": "B",
+    "C": "D",
+    "D": "E",
+    "E": "F"
+  },
+  "retained_case_ledger_matches_previous": 55,
+  "migration_steps_strictly_lower_precision": 4,
+  "scenario_table_matches_config": true,
+  "figure_cells": 54,
+  "workload_design_evaluations": 495,
+  "protected_manuscripts_and_other_draft_chapters_unchanged": true,
+  "compile": "passed; no undefined references or overfull boxes",
+  "figure": "vector PDF without embedded images; page 6 visually reviewed",
+  "chapter_sha256": "951628c5b00f1b4e2061c031d044c27c5bbed74b9290a7476f0432c396b9d4c9",
+  "table_sha256": "3ff1edf2693390be630ff198e825e0eef430263723ecd20e1007faee5983d5c1",
+  "new_hardware_or_inference_measurements": false
+}
