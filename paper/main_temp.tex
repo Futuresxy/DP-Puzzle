@@ -316,11 +316,11 @@ B_{\mathrm{in}}(K,x)=fbK\left(\frac{m}{x}+n\right),\qquad
 \subsection{与同类多精度单元比较}
 \label{sec:related_dp_evaluation}
 
-\input{tables/temp/related_ppa_native.tex}
+\input{tables/temp/related_ppa_compact.tex}
 
 表~\ref{tab:related_dp} 保留各工作的原工艺、电压与频率，不进行工艺归一化。FPnew 采用正式期刊报告的 SIMD FMA 数据，MiniFloats 采用扩展 wDotp 的独立 FPU 数据。TransDot 的绝对面效按原图的单元面积估读值计算，并以 $\dagger$ 标识；其相对 FPnew 的倍率对应原文内部的 12\,nm 对照。
 
-在本文相同的 12\,nm、1\,GHz 工况下，去除 T/H/INT8 通路的 $0:2:4$ 保持 Q32E64 容量，MXFP8 面效从全精度基线的 3.959 提升至 5.472\,TFLOP/s/mm$^2$，能效从 4.000 提升至 4.713\,TFLOP/s/W。其 MXFP4 面效与能效分别为 10.945\,TFLOP/s/mm$^2$ 和 12.527\,TFLOP/s/W。两列体现完整格式共享与低精度专用化的成本，九种全精度候选则用于后续统一功能范围的 DSE。
+在本文相同的 12\,nm、1\,GHz 工况下，去除 T/H/INT8 通路的 $0:2:4$ 保持 Q32E64 容量，MXFP8 面效从全精度基线的 3.96 提升至 6.56\,TFLOP/s/mm$^2$，能效从 4.00 提升至 5.23\,TFLOP/s/W。其 MXFP4 面效与能效分别为 13.11\,TFLOP/s/mm$^2$ 和 13.93\,TFLOP/s/W。两种配置体现完整格式共享与低精度专用化的成本，九种全精度候选用于后续案例分析。
 
 % END independent evaluation snapshot.
 
@@ -328,52 +328,36 @@ B_{\mathrm{in}}(K,x)=fbK\left(\frac{m}{x}+n\right),\qquad
 % Temporary manuscript only; the author promotes accepted text to the official manuscript.
 \section{案例研究：固定预算下的算力配比选择}
 \label{sec:workload}
-本节以 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 为例，将单 DP 的实测面积、功耗与模型精度迁移联系起来，分析在相同硬件预算下，哪种固定算力配比能够更好地覆盖未来低精度计算需求。
+\subsection{联合预算与芯片算力}
+以 $1:2:4$ 的 $N_0=36$ 核设计为基准，每核含 $D=256$ 个 DP，$f=1$\,GHz、II=1。参考 Cube 计算簇占 AI Core 面积 32.7\% 的公开评估~\cite{luo2024hifloat8area}，取基准阵列面积占比 $\alpha=0.327$，固定每核外围面积，并令功耗预算倍率 $\beta=1$。九种候选共享相同的核心集合面积与 DP 阵列功耗上限。
 
-\subsection{联合预算与芯片计算能力}
-\label{sec:k4_area}
-以 $1:2:4$ 的 $N_0=36$ 核设计为参照，每个 AI Core 包含 $D=256$ 个 DP，频率 $f=1$\,GHz、II=1。参考公开评估中 Cube 计算簇占 AI Core 面积的 32.7\%~\cite{luo2024hifloat8area}，取基准计算阵列面积占比 $\alpha=0.327$，并保持每核外围存储与控制面积不变。设 $a_j$ 为候选 $j$ 的单 DP 面积，$p_j^{\max}=\max_p p_{j,p}$ 为三种精度中测量功耗的最大值，则外围面积、共同面积预算和 DP 阵列功耗预算为
+设单 DP 面积倍率为 $r_j=a_j/a_0$，三模式最大测量功耗倍率为 $\rho_j=p_j^{\max}/p_0^{\max}$。部署核数及分精度峰值为
 \begin{equation}
 \begin{aligned}
-A_O&=Da_0(\alpha^{-1}-1),\qquad A_b=N_0Da_0/\alpha,\\
-P_b&=\beta N_0Dp_0^{\max}.
-\end{aligned}
-\label{eq:deployment_area}
-\end{equation}
-本例固定 $\beta=1$，使所有候选共享 455.59\,mm$^2$ 的 AI Core 集合面积预算和 147.47\,W 的 DP 阵列功耗预算。面积允许的实例数与功耗允许的并行规模共同决定部署核数：
-\begin{equation}
-\begin{aligned}
-n_j&=\min\!\left\{\left\lfloor\frac{A_b}{A_O+Da_j}\right\rfloor,
-\left\lfloor\frac{P_b}{Dp_j^{\max}}\right\rfloor\right\},\\
+n_j&=\min\!\left\{\left\lfloor\frac{N_0}{1+\alpha(r_j-1)}\right\rfloor,
+\left\lfloor\frac{\beta N_0}{\rho_j}\right\rfloor\right\},\\
 C_{j,p}&=2fDn_jK_{j,p}.
 \end{aligned}
 \label{eq:core_area_budget}
 \end{equation}
-其中 $K_{j,p}$ 为单 DP 在精度 $p$ 下的原生点积长度，乘加计 2 FLOP，$C_{j,p}$ 以 FLOP/s 表示。每种配比采用固定的 $n_j$，在所有精度模式、上下文及迁移场景中保持不变。各模式峰值分别使用。
+$K_{j,p}$ 为精度 $p$ 的原生点积长度，乘加计 2 FLOP。每种候选的核数在全部精度和负载场景中保持不变。
 
-\subsection{五阶段精度迁移}
-我们依据模型结构与执行流程统计 batch=1、1K--1M 的 11 个对数间隔上下文下的冷启动 prefill GEMM 工作量。统计覆盖专家 gate/up/down、Q/O 与 KV 投影、主注意力 QK/PV 及 indexer 等计算。矩阵维度与激活专家数决定线性层及专家工作量，窗口、压缩与候选位置数量决定注意力和索引计算量。
-
-表~\ref{tab:five_stage_migrations} 设置五个依次演进的场景，每一步均保留上一阶段的精度变更。\textbf{A} 采用参考映射，路由专家 W4A8 按 FP8 吞吐建模；\textbf{B} 将路由专家改为 FP4 计算；\textbf{C} 将主 SWA/CSA 注意力 QK/PV 及 Grouped O-down 从 BF16 改为 FP8；\textbf{D} 进一步将共享专家及 Q-up/O-up 投影改为 FP4；\textbf{E} 再将主注意力与 Grouped O-down 从 FP8 改为 FP4。由此形成专家低精度化、注意力 FP8 化、线性层 FP4 扩展及注意力 FP4 化的连续迁移路径。
+\subsection{精度迁移与统一评价}
+依据 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 的结构与执行流程，统计 batch=1、1K--1M 的 11 个对数间隔上下文下的冷启动 prefill GEMM 工作量。表~\ref{tab:five_stage_migrations} 的 A--E 逐步叠加精度变更，保持算子形状和总 FLOP 不变。A 中 W4A8 专家按 FP8 吞吐建模；indexer、Q-down、KV 等背景算子保留原精度并计入，FP32 单列。专家 W4A4 部署~\cite{nvidiav41routed2026} 与 FP8/FP4 注意力量化~\cite{flashattention3,sageattention3} 为迁移提供依据，共享专家及投影的进一步降精度作为未来负载假设。
 \input{tables/temp/five_stage_migrations}
 
-这些场景保持算子形状与总计算量不变，只改变所列算子的计算精度。Indexer、Q-down、KV 等其余算子继续按原精度计入，FP32 单独记录。专家 W4A4 的部署路线~\cite{nvidiav41routed2026} 以及 FP8/FP4 注意力的分块量化机制~\cite{flashattention3,sageattention3} 为精度演进提供依据，共享专家及投影的进一步迁移作为未来计算需求假设。原生 FP4 索引计算也随上下文增长：A 中 FP4 在三精度 GEMM 工作量中的占比从 1K 时的 0.06\% 增至 1M 时的 27.27\%，因此保留这些背景算子对长上下文的贡献。
-
-\subsection{统一评价与结果分析}
-对每一场景和上下文，将 BF16、FP8、FP4 的 GEMM 计算量分别除以候选芯片对应的峰值吞吐，再将各部分时间相加，得到充分供数、阵列完全利用条件下的计算服务时间。该指标覆盖所统计的三精度 GEMM，采用同场景、同上下文的 $1:2:4$ 计算时间作为基准。
-
-图~\ref{fig:fixed_budget_compact} 的 A--E 列分别对 11 个上下文的计算时间取均值；All 对五个场景和 11 个上下文组成的 55 个组合等权求均值，再以基准与候选的平均时间之比 $S_j=\overline T_0/\overline T_j$ 报告加速。评分先固定一款候选芯片，再汇总其在全部负载上的表现。等权对应相同请求概率，长上下文按实际计算时间贡献汇总结果。
+在充分供数、阵列完全利用下，将各精度 GEMM 工作量除以对应芯片峰值后相加，得到计算服务时间。图~\ref{fig:fixed_budget_compact} 的 A--E 分别平均 11 个上下文的时间，All 等权平均全部 55 个场景--上下文组合，以同负载基准与候选的平均时间之比 $S_j=\overline T_0/\overline T_j$ 评价固定芯片。
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{temp/v41_five_stage.pdf}
-\caption{五阶段迁移下的 GEMM 计算加速比，$\alpha=0.327$、$\beta=1$。括号内为部署核数；A--E 按表~\ref{tab:five_stage_migrations} 依次迁移，All 为 55 个场景--上下文组合的平均时间之比。各列相对同负载的 $1:2:4$ 归一化，黑框标记最优配比。}
+\caption{五阶段迁移下相对 $1:2:4$ 的 GEMM 计算加速比。括号为部署核数，All 汇总 55 个组合，黑框标记最优配比。}
 \label{fig:fixed_budget_compact}
 \end{figure}
 
-\textbf{部署成本决定低精度增配能否转化为芯片收益。} $1:2:8$ 与 $1:4:8$ 的单 DP FP4 吞吐相同，前者可部署 32 核，后者受较高 FP8 模式功耗限制仅能部署 20 核，使前者的芯片 FP4 峰值高 60\%。更大的 $1:8:16$ 在面积预算下允许 22 核，加入功耗约束后仅剩 10 核，All 加速为 $0.77\times$。因而单元层面的低精度吞吐增幅，需要结合可部署规模评价。
+\textbf{部署成本制约增配收益。} $1:2:8$ 与 $1:4:8$ 的单 DP FP4 吞吐相同，但分别部署 32、20 核，前者芯片 FP4 峰值高 60\%；更大的 $1:8:16$ 受功耗限制仅部署 10 核，All 为 $0.77\times$。
 
-\textbf{适度增配覆盖多个迁移阶段，形成整体最优。} A 中基准 $1:2:4$ 最优，最激进的 E 中 $1:2:12$ 最优，而 $1:2:8$ 在 B--D 中均获得最低平均计算时间。跨五阶段汇总后，$1:2:8$ 以 $1.13\times$（13.11\%）取得 All 最优，高于 $1:2:6$ 的 $1.10\times$ 和 $1:2:12$ 的 $0.93\times$。在本例固定预算及迁移路径下，适度 FP4 增配兼顾了新增低精度计算与剩余混合精度负载，从而为一款固定芯片提供更好的跨阶段收益。
+\textbf{适度增配形成跨阶段优势。} A、E 分别偏好 $1:2:4$、$1:2:12$，而 $1:2:8$ 在 B--D 最优，并以 $1.13\times$（13.11\%）取得 All 最优。在本预算及迁移路径下，保留部署密度的适度 FP4 增配更能兼顾低精度演进与剩余混合精度计算。
 
 \section{结论}
 \label{sec:conclusion}

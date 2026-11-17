@@ -1,0 +1,27 @@
+% Generated from the current shared comparison values; temporary single-column layout.
+\begin{table}[t]
+\centering
+\caption{Implementation conditions and efficiency at the reported process nodes.}
+\label{tab:related_dp}
+\begingroup\footnotesize\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lclrr@{}}\toprule
+\shortstack[l]{Design\\Accumulation} & nm/V/GHz & Format & AE & EE \\\midrule
+\begin{tabular}[c]{@{}l@{}}Ten-Four~\cite{rout2026tenfourv3}\\{\scriptsize FP32/INT32}\end{tabular} & 7/0.70/1.58 & \begin{tabular}[c]{@{}l@{}}BF16\\MXFP8\end{tabular} & \begin{tabular}[c]{@{}r@{}}5.25/5.42\\10.50/10.84\end{tabular} & \begin{tabular}[c]{@{}r@{}}---\\---\end{tabular} \\[1pt]
+\begin{tabular}[c]{@{}l@{}}MPICC~\cite{huangMPICCMultiplePrecisionInterCombined2025}\\{\scriptsize FP12/INT8}\end{tabular} & 28/0.90/1.43 & \begin{tabular}[c]{@{}l@{}}FP8\\FP4\end{tabular} & \begin{tabular}[c]{@{}r@{}}1.25\\4.99\end{tabular} & \begin{tabular}[c]{@{}r@{}}1.95\\5.93\end{tabular} \\[1pt]
+\begin{tabular}[c]{@{}l@{}}MXDOTP~\cite{islamoglu2025mxdotp}\\{\scriptsize FP32}\end{tabular} & 12/0.80/1.09 & \begin{tabular}[c]{@{}l@{}}MXFP8\end{tabular} & \begin{tabular}[c]{@{}r@{}}5.52\end{tabular} & \begin{tabular}[c]{@{}r@{}}2.04\end{tabular} \\[1pt]
+\begin{tabular}[c]{@{}l@{}}FPnew~\cite{mach2021fpnew}\\{\scriptsize Per format}\end{tabular} & 22/0.80/0.92 & \begin{tabular}[c]{@{}l@{}}FP16\\BF16\\FP8\end{tabular} & \begin{tabular}[c]{@{}r@{}}0.15\\0.15\\0.30\end{tabular} & \begin{tabular}[c]{@{}r@{}}0.50\\0.58\\1.24\end{tabular} \\[1pt]
+\begin{tabular}[c]{@{}l@{}}MiniFloats~\cite{bertaccini2024minifloats}\\{\scriptsize FP16/FP32}\end{tabular} & 12/0.80/1.26 & \begin{tabular}[c]{@{}l@{}}FP8\\FP16\end{tabular} & \begin{tabular}[c]{@{}r@{}}1.06\\0.53\end{tabular} & \begin{tabular}[c]{@{}r@{}}1.63\\0.82\end{tabular} \\[1pt]
+\begin{tabular}[c]{@{}l@{}}TransDot~\cite{transdot2026}\\{\scriptsize FP32}\end{tabular} & 12/0.80/1.00 & \begin{tabular}[c]{@{}l@{}}FP16\\FP8\\FP4\end{tabular} & \begin{tabular}[c]{@{}r@{}}$\approx 0.67^{\dagger}$\\$\approx 1.33^{\dagger}$\\$\approx 2.67^{\dagger}$\end{tabular} & \begin{tabular}[c]{@{}r@{}}0.56\\1.19\\2.44\end{tabular} \\[1pt]
+\midrule
+\begin{tabular}[c]{@{}l@{}}DP-Puzzle $1:2:4$\\{\scriptsize FP32/INT32}\end{tabular} & 12/0.70/1.00 & \begin{tabular}[c]{@{}l@{}}BF16\\MXFP8\\MXFP4\end{tabular} & \begin{tabular}[c]{@{}r@{}}1.98\\3.96\\7.92\end{tabular} & \begin{tabular}[c]{@{}r@{}}2.09\\4.00\\11.43\end{tabular} \\[1pt]
+\begin{tabular}[c]{@{}l@{}}DP-Puzzle $0:2:4$\\{\scriptsize FP32}\end{tabular} & 12/0.70/1.00 & \begin{tabular}[c]{@{}l@{}}MXFP8\\MXFP4\end{tabular} & \begin{tabular}[c]{@{}r@{}}6.56\\13.11\end{tabular} & \begin{tabular}[c]{@{}r@{}}5.23\\13.93\end{tabular} \\[1pt]
+\bottomrule\end{tabular*}
+\par\vspace{2pt}
+\parbox{\columnwidth}{\scriptsize\raggedright
+AE: TFLOP/s/mm$^2$; EE: TFLOP/s/W. Original process nodes; no technology scaling.
+Ten-Four pairs denote Q8/Q16. MiniFloats uses the standalone wDotp FPU.
+$\dagger$: TransDot area estimated from Fig.~7(a) at 1\,ns; throughput from Table~II.
+---: unreported. Supported formats: Table~\ref{tab:related_features}.}
+\endgroup
+\end{table}
