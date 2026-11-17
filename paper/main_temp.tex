@@ -181,72 +181,67 @@ $\dagger$ denotes an R\&D roadmap target.}
 \label{sec:architecture}
 \label{sec:brick_definition}
 
-DP-Puzzle 通过 Lane、Group 与 DP 三层结构组织多精度点积计算（图~\ref{fig:dp_architecture}）。Lane 共享乘法与局部规约资源，Group 融合块缩放因子并统一部分和表示，DP 完成全局对齐与融合累加。统一的 Group 接口使低精度专用通路能够与基础多精度通路组合，在保留格式支持的同时调整峰值算力配比，并共享最终累加与输出处理。
+DP-Puzzle 采用 Lane、Group 与 DP 三层结构：Lane 共享乘法与局部规约，Group 融合块缩放并统一部分和，DP 完成全局对齐与融合累加（图~\ref{fig:arch_overview}）。增配低精度专用 Group 可调整算力配比，并共享末端累加与输出处理。
+
+\begin{figure}[t]
+\centering
+\subfloat[Baseline datapath.\label{fig:dp_architecture}]{\includegraphics[width=\columnwidth]{baseline_arch.pdf}}
+\par\smallskip
+\subfloat[Expandable accumulation network.\label{fig:dynamic_add}]{\includegraphics[width=\columnwidth]{dynamic_add.pdf}}
+\caption{基线通路与组合式扩展。彩色出口对应新增 2/4/8/12 个 Group 的设计规模；MUX 按精度成对选择和、进位两行，送入共享 CPA。}
+\label{fig:arch_overview}
+\end{figure}
 
 \subsection{符号约定与架构概览}
 \label{sec:notation_conventions}
 
 本文以 T、H、Q、E 分别表示 TF32、FP16/BF16、MXFP8/6 和 MXFP4/NVFP4/HiF4。定点数采用 $\mathrm{Q}I.F$ 和 $\mathrm{UQ}I.F$ 记号，分别表示二进制补码有符号数和无符号数；$I$ 为不含符号位的整数位数，$F$ 为小数位数，总位宽分别为 $1+I+F$ 和 $I+F$~\cite{ti2003qformat}。
 
-计算并行度记为 $\mathrm{T}x_T\mathrm{H}x_H\mathrm{Q}x_Q\mathrm{E}x_E$，其中 $x_p$ 表示精度模式 $p$ 下每拍处理的点积元素对数，各模式互斥。基线 Lane 支持 T1H2Q4E8，两个 Lane 构成 T2H4Q8E16 Group，四个 Group 构成 T8H16Q32E64 DP；另支持每拍 32 项 INT8 乘积与 INT32 累加。每笔请求在运行时选择精度，Group 的类型与数量则在设计时确定。对于相同阵列规模和频率，各模式的原生点积长度 $K_H:K_Q:K_E$ 决定峰值算力配比。
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{baseline_arch.pdf}
-\caption{Lane--Group--DP 三层点积微架构。Lane 实现算术共享与局部规约，Group 融合缩放因子并输出统一部分和，DP 共享全局累加与输出通路。}
-\label{fig:dp_architecture}
-\end{figure}
+并行度记为 $\mathrm{T}x_T\mathrm{H}x_H\mathrm{Q}x_Q\mathrm{E}x_E$，其中 $x_p$ 为模式 $p$ 每拍处理的元素对数，各模式互斥。基线采用 T1H2Q4E8 Lane，两个 Lane 构成 T2H4Q8E16 Group，四个 Group 构成 T8H16Q32E64 DP，另支持每拍 32 项 INT8 乘积与 INT32 累加。精度随请求选择，Group 类型与数量在设计时确定；相同阵列规模和频率下，原生点积长度 $K_H:K_Q:K_E$ 决定峰值算力配比。
 
 \subsection{Lane：多精度算术共享}
 \label{sec:unpack_recode}
 \label{sec:full_brick}
 
-跨精度复用首先需要统一输入的算术表示。图~\ref{fig:data_unpack} 给出解码布局：T/H 分离指数与有效数；Q 将不同元素编码保值映射为内部 E5M3 表示；MXFP4/NVFP4 映射为 UQ3.1，HiF4 融合一级微指数后映射为 UQ2.2。后两类均采用独立符号与 4 位定点幅值，将元素指数吸收到幅值中。INT8 同样分离符号与幅值，使各格式共用无符号乘法资源。
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{unpack_layout.pdf}
-\caption{Mapping input formats to shared exponent, significand, and sign fields.}
-\label{fig:data_unpack}
-\end{figure}
+输入先映射为共享算术表示：T/H 分离指数与有效数，Q 保值映射为内部 E5M3；MXFP4/NVFP4 映射为 UQ3.1，HiF4 融合一级微指数后映射为 UQ2.2，均以独立符号和四位定点幅值吸收元素指数。INT8 同样分离符号与幅值，以复用无符号乘法器。
 
 每个 Lane 配置两组乘法器，每组由 $8\times8$、$8\times4$、$4\times8$ 和 $4\times4$ 四个单元组成。对于 TF32/FP16 的 11 位有效数，将低四位与其余高位分开，记 $a=2^4a_h+a_l$、$b=2^4b_h+b_l$，由四个部分积重构
 \begin{equation}
 ab=2^8a_hb_h+2^4(a_hb_l+a_lb_h)+a_lb_l.
 \label{eq:mantissa_reuse}
 \end{equation}
-TF32 启用一组，FP16 启用两组，分别形成一条和两条宽乘法通路；BF16 每组仅使用 $8\times8$ 单元。Q 模式在每组中使用两个独立的 $4\times4$ 乘积，E 模式则将四个单元全部用于独立的四位乘法，较宽输入端口高位补零。INT8 每组使用一个 $8\times8$ 单元，并由两路交叉乘积重构另一个 $8\times8$ 乘积。两组资源因此覆盖 T1H2Q4E8 及四路 INT8，而无需为每种格式配置独立乘法器组。
+TF32 启用一组，FP16 启用两组；BF16 每组仅使用 $8\times8$ 单元。Q 每组计算两个独立四位乘积，E 使用全部四个单元，较宽端口高位补零。INT8 每组使用一个 $8\times8$ 单元，并由两路交叉乘积重构另一个八位乘积。
 
 % Precision reference: MMA-Sim v3, Table III (Blackwell UTCQMMA) and Algorithm 7.
-指数对齐复用四路无符号右移器。T/H/Q 先由两条 Lane 的有效乘积指数求得 Group 内共同基准，再以基准与各乘积指数之差控制右移；T、H、Q 分别占用一、二、四路移位器。MMA-Sim 对 Blackwell FP8 指令的逆向分析采用保留 25 位小数、对齐时向零截断的内部求和模型~\cite{xie2025mmasim}。本文以此为精度参考，将局部保留小数位设为 26 位，并为有效数乘积预留两位整数，形成 UQ2.26 的 28 位幅值窗口。符号在移位期间独立传递，逻辑右移直接丢弃低位，随后恢复补码，实现正负数一致的向零截断。
+T/H/Q 按 Group 内共同的最大乘积指数对齐，分别复用四路无符号右移器中的一、二、四路。参考 MMA-Sim 在 Blackwell FP8 上识别的 25 位小数与向零截断~\cite{xie2025mmasim}，本文保留 26 位小数及两位乘积整数，采用 UQ2.26 的 28 位窗口。幅值逻辑右移后再恢复补码，使正负数均向零截断。
 
-E 与 INT8 旁路上述宽移位器。E 的八个乘积先恢复符号并两两相加，规约为四个有符号部分和，与 Q 的四路并行度一致；INT8 的四个乘积完成符号恢复后直接接入。同一棵四输入平衡累加树由此处理 T/H/Q、E 的两两部分和以及 INT8，输出统一为 31 位有符号数。各格式按自然增长位宽进行符号扩展，并通过低位补零匹配输出坐标；例如 T/H 的自然结果分别低补两位和一位，小数位数随之增加，数值保持不变。
+E 与 INT8 旁路宽移位器。E 的八个乘积先符号化并两两规约为四项，与 Q 的并行度一致；INT8 的四个乘积直接符号化接入。各模式共用四输入平衡累加树，输出统一为 31 位有符号数，较窄结果通过低位补零匹配坐标，小数位数同步调整。
 
-HiF4 的二级微指数由 Lane 内八个元素共享，可在局部求和后一次融入。将局部和扩位后，按两侧微指数之和 $e_{s2}^{(A)}+e_{s2}^{(B)}$ 左移 0--2 位，即完成该尺度的精确应用，无需逐元素移位或跨 Lane 比较微指数。MXFP4/NVFP4 则将两位小数的局部和低补两零，统一为四位小数。三类 E 结果均以 14 位有符号 Q9.4 表示，再低补 17 零接入公共 31 位 Lane 输出。
+HiF4 的二级微指数由 Lane 内八个元素共享，因此在求和后扩位并左移 $e_{s2}^{(A)}+e_{s2}^{(B)}$（0--2 位），即可一次完成尺度融合。MXFP4/NVFP4 的局部和则低补两零，将两位小数扩展为四位。三类 E 结果统一为 14 位 Q9.4，再低补 17 零接入公共 Lane 输出。
 
 \subsection{Group：尺度融合与统一部分和}
 
-Group 合并两条 Lane 的部分和，并完成块缩放与统一接口转换。两个 31 位有符号数相加形成 32 位组和，再分离符号与幅值，保留组内正负项的抵消。两个 Lane 的十六路 E 元素对应 NVFP4 的缩放块；MX 和 HiF4 的更大量化块通过跨 Group 广播缩放因子实现~\cite{ocpmx2023,hifloat4,nvidia2024nvfp4}。同组元素共享尺度，因此可按式~\eqref{eq:blockdot} 先规约再缩放，将尺度运算集中在组部分和上。
+Group 将两个 31 位 Lane 结果合并为 32 位有符号组和，再分离符号与幅值。两个 Lane 的十六路 E 元素对应 NVFP4 缩放块，MX 与 HiF4 的更大块通过跨 Group 广播尺度实现~\cite{ocpmx2023,hifloat4,nvidia2024nvfp4}。同组元素共享尺度，可按式~\eqref{eq:blockdot} 先规约再缩放。
 
-只有 NVFP4 和 HiF4 需要额外的缩放有效数乘法。两侧缩放因子的有效数均解码为不含符号位的四位 UQ1.3，先经 $4\times4$ 乘法得到八位 UQ2.6 系数；组和则在移除结构性低零后取 14 位 UQ10.4 幅值。两者通过一套 $14\times8$ 无符号乘法器生成 22 位 UQ12.10 结果，再低补九零形成公共 U31 幅值。MX 的 E8M0 缩放因子仅包含指数，旁路有效数乘法；其 E 类组幅值直接低补 17 零。上述补零只调整表示坐标，符号始终独立传递。
+NVFP4/HiF4 的两侧缩放有效数解码为无符号 UQ1.3，经 $4\times4$ 预乘得到 UQ2.6 系数；组幅值移除结构性低零后为 UQ10.4。两者通过共享 $14\times8$ 乘法器生成 22 位 UQ12.10 结果，再低补九零至公共 U31 接口。MX 的 E8M0 尺度只计入指数，其 E 类幅值直接低补 17 零，旁路尺度有效数乘法。
 
 % Layout cross-check: dp-top-v1.8.md, dp_group.v and dp_functions.vh;
 % the v1.8 HiF4 path uses the NVFP4 fractional layout after Lane-local e2 fusion.
-各浮点格式在 U31 接口中保留不同的小数点位置：T/H/Q 分别为 28/27/26 位小数，MXFP4 为 21 位，NVFP4/HiF4 为 19 位。令 $F_p$ 表示格式 $p$ 在该接口中的小数位数，$E_{\mathrm{loc}}$ 为已去除元素指数偏置的局部对齐基准，$E_{\mathrm{scale}}$ 为两侧缩放因子的无偏指数和，则幅值最高物理位的坐标为
+U31 接口的小数位数 $F_p$ 在 T/H/Q 下分别为 28/27/26，在 MXFP4、NVFP4/HiF4 下分别为 21、19。令 $E_{\mathrm{loc}}$ 为去偏后的局部对齐基准，$E_{\mathrm{scale}}$ 为两侧无偏尺度指数和，则最高物理位的坐标为
 \begin{equation}
 \mathrm{Anchor}_{\mathrm{raw}}
 =E_{\mathrm{loc}}+E_{\mathrm{scale}}+30-F_p.
 \label{eq:anchor_recompute}
 \end{equation}
-E 的元素指数与 HiF4 微指数已计入幅值，故 $E_{\mathrm{loc}}=0$；无块缩放的格式取 $E_{\mathrm{scale}}=0$。Anchor 可由指数和格式常量提前计算，与尾数规约并行；组部分和满足 $v=(-1)^s\mathrm{SoP}\,2^{\mathrm{Anchor}_{\mathrm{raw}}-30}$。
+E 的元素与微指数已融入幅值，取 $E_{\mathrm{loc}}=0$；无块缩放时取 $E_{\mathrm{scale}}=0$。坐标计算与尾数规约并行。
 
-组内相消会改变最高非零位的位置，因此在尺度融合后的有限非零幅值上进行前导零检测（LZD）。若前导零数为 $z$，则用于组间比较的真实指数为 $\mathrm{Anchor}_{\mathrm{eff}}=\mathrm{Anchor}_{\mathrm{raw}}-z$。Group 此时只计算指数，不左移幅值，统一输出独立符号、U31 幅值、原始 Anchor 与比较指数。这个接口既保留各格式的数值坐标，又使后端能够共享同一套组间对齐逻辑。
+尺度融合后，对有限非零幅值进行前导零检测（LZD），得到 $z$，并以 $\mathrm{Anchor}_{\mathrm{eff}}=\mathrm{Anchor}_{\mathrm{raw}}-z$ 表示最高非零位指数。Group 保留未左移的 U31 幅值、独立符号及两个指数坐标，为不同格式提供统一后端接口。
 
 \subsection{DP：共享对齐与融合累加}
 
-DP 在各 Group 完成规约与尺度融合后引入加数 $C$。这一组织使 E 类乘积先在窄定点通路内求和，块缩放仅作用于对应组的点积，再由全局通路统一处理组部分和与 FP32 加数。DP 在 Group 的比较指数与 $C$ 的解码指数间取最大值 $E_{\mathrm{max}}$，作为公共对齐基准。
+DP 在组内规约与尺度融合后引入 $C$，使低精度局部计算保持窄通路，尺度仅作用于对应组的点积。各 Group 的比较指数与 $C$ 的解码指数共同确定全局基准 $E_{\mathrm{max}}$。
 
-对每个 Group，先左移 $z$ 位规格化、再右移 $E_{\mathrm{max}}-\mathrm{Anchor}_{\mathrm{eff}}$ 位对齐，等价于净移位
+对 Group 先左移 $z$ 位规格化、再右移 $E_{\mathrm{max}}-\mathrm{Anchor}_{\mathrm{eff}}$ 位对齐，等价于
 \begin{equation}
 \begin{aligned}
 \Delta&=z-(E_{\mathrm{max}}-\mathrm{Anchor}_{\mathrm{eff}})\\
@@ -254,50 +249,21 @@ DP 在各 Group 完成规约与尺度融合后引入加数 $C$。这一组织使
 \end{aligned}
 \label{eq:net_alignment_shift}
 \end{equation}
-因此，原始幅值低补零至全局窗口后，只需经过一次双向移位：$\Delta$ 为正时左移，为负时右移，省去组内先规格化再组间对齐的两次移位。各源在对齐后恢复符号，与唯一的 $C$ 共同进入进位保存压缩树，最后经一次进位传播加法、规格化和舍入生成 FP32 结果。
+原幅值低补零至 39 位窗口后，只需一次双向移位，正值左移、负值右移，再恢复符号进入压缩树。最终通过一次进位传播加法、规格化与最近偶数舍入生成 FP32 结果，中间右移采用向零截断。
 
-全局对齐采用 39 位幅值窗口，中间右移向零截断，末级采用最近偶数舍入；Group 部分和不先舍入为 FP32。INT8/INT32 模式旁路浮点对齐和输出规格化，复用累加通路。各通路按请求精度控制寄存器更新，所有配置均保持八拍延迟与每拍接收一笔独立请求的吞吐。
+INT8/INT32 旁路浮点对齐与输出规格化，复用累加通路。寄存器按请求精度使能，所有配置保持八拍延迟与每拍一笔独立请求的吞吐。
 
 \subsection{Group 专用化与算力配比组合}
 \label{sec:specialized_midgroups}
 \label{sec:expansion}
 
-统一的部分和接口允许仅保留目标精度所需的局部资源。Q8 Group 支持 MXFP8/6，保留指数对齐与宽规约；E16 Group 支持三类 FP4 格式，采用窄定点乘法与规约，省去逐元素指数比较和宽移位；Q8E16 Group 则在 Q/E 之间复用乘法器与规约树。三类 Group 均沿用公共输出接口，因此能够在基础四个多精度 Group 之外独立增配。
+三类专用 Group 均删除 T/H/INT8 的解包、宽乘积重构及选择逻辑。Q8 每条 Lane 仅保留四个 $4\times4$ 乘法器和五位元素指数，维持 28 位对齐与 31 位有符号局部和，并删除 E 的微指数和尺度有效数乘法。E16 删除逐元素指数比较与宽移位，每条 Lane 保留八个 $4\times4$ 乘法器，Lane 和缩为 14 位，组幅值为 14 位，尺度乘积及 LZD 使用 22 位，最后补零接入 U31。Q8E16 每条 Lane 使用八个 $4\times4$ 乘法器，Q 启用其中四个；两模式共享规约，保留 Q 所需的宽对齐及组级 31 位 LZD。
 
-设新增 Q8、E16、Q8E16 Group 数分别为 $g_Q,g_E,g_{QE}$，则各精度的原生点积长度为
-\begin{equation}
-\begin{aligned}
-K_H&=16,\\
-K_Q&=32+8(g_Q+g_{QE}),\\
-K_E&=64+16(g_E+g_{QE}).
-\end{aligned}
-\label{eq:group_capacity}
-\end{equation}
-表~\ref{tab:ratio9_composition} 汇总本文的九种组合。例如，在基线中增加四个 E16 Group，即可将 $1:2:4$ 扩展为 $1:2:8$。各配置保留基线的 T/H/INT8 能力；新增 Group 处理同一输出的额外 $K$ 片段，缩放因子仍按原格式的量化块边界分发。
+四个多精度 Group 固定提供 $1:2:4$ 基线。增配 2/4/8/12 个 E16，分别得到 $1:2:6$、$1:2:8$、$1:2:12$、$1:2:16$；增配四个 Q8 得到 $1:4:4$；增配 4/8/12 个 Q8E16 得到 $1:4:8$、$1:6:12$、$1:8:16$，共九种配置。新增 Group 处理同一输出的额外 $K$ 片段，保持原格式的缩放块边界和基础 T/H/INT8 能力。
 
-\begin{table}[t]
-\centering
-\caption{Group composition of the nine throughput ratios.}
-\label{tab:ratio9_composition}
-\footnotesize
-\begin{tabular}{@{}lrrr@{}}\toprule
-H:Q:E & $g_Q$ & $g_E$ & $g_{QE}$ \\\midrule
-$1:2:4$ & 0 & 0 & 0 \\
-$1:2:6$ & 0 & 2 & 0 \\
-$1:2:8$ & 0 & 4 & 0 \\
-$1:4:4$ & 4 & 0 & 0 \\
-$1:4:8$ & 0 & 0 & 4 \\
-$1:2:12$ & 0 & 8 & 0 \\
-$1:2:16$ & 0 & 12 & 0 \\
-$1:6:12$ & 0 & 0 & 8 \\
-$1:8:16$ & 0 & 0 & 12 \\
-\bottomrule\end{tabular}
-\par\smallskip
-\parbox{\columnwidth}{\footnotesize\raggedright
-All configurations retain four baseline multi-precision Groups. $g_Q$, $g_E$, and $g_{QE}$ count additional Q8, E16, and Q8E16 Groups, respectively.}
-\end{table}
+图~\ref{fig:dynamic_add} 的输入已按共同指数对齐。基础四组经 4:2 CSA，再与唯一的 $C$ 经 3:2 CSA，形成和、进位两行。右侧新增两组直接输出两行；新增 4/8/12 组则每四组先压缩为两行，再逐层合并，分别使用 1/3/5 个 4:2 CSA。扩展两行与基础两行再经一个 4:2 CSA 合并。网络随设计规模构建，E、Q、QE 扩展分别在 E、Q、Q/E 模式启用；MUX 按精度成对选择基础或合并结果，送入唯一的共享 CPA。
 
-增配 Group 会扩大指数比较、各源对齐及压缩规约网络，而 $C$ 始终只加入一次。基础与扩展部分和在进位保存形式下合并，最终进位传播加法器、规格化与舍入通路仍各保留一套。这种组合方式将增配资源集中在目标精度的计算路径，同时保留共享后端；不同组合的实际面积与功耗由下一节的综合和活动驱动分析表征。
+增配会扩大对齐、压缩网络及累加位宽，最终 CPA、规格化与舍入仍各保留一套，其成本由下一节的综合与功耗分析量化。
 % END independent architecture draft.
 
 % BEGIN independent evaluation snapshot; related-work comparison and bandwidth analysis revised.
