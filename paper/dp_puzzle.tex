@@ -241,78 +241,35 @@ Fig.~\ref{fig:ratio4_costs} shows the area and power of the nine configurations.
 \end{figure*}
 % END REVIEW PAIR: 04_evaluation.tex
 
-% BEGIN REVIEW PAIR: 06_workload.tex
-\section{Case study:Workload-Driven Throughput-Ratio Analysis}
+% BEGIN REVIEW PAIR: 05_dse.tex
+\section{Case Study: Throughput-Ratio Selection Under Fixed Budgets}
 \label{sec:workload}
+Using the dominant GEMMs in DeepSeek-V4.1-Flash, we construct five successive precision-migration scenarios to examine which throughput ratio balances current workloads and future low-precision demand under fixed area and power budgets.
 
-The benefit of low-precision expansion depends on the trade-off among per-core throughput, deployment density, and workload precision composition. We compare $1:2:4$, $1:2:6$, $1:2:8$, and $1:4:8$ under a common area budget, identify their latency- and energy-optimal regions, and assess their applicability using compute-intensive DeepSeek prefill workloads.
+\subsection{Deployment Scale Under Joint Budgets}
+All nine candidates share the aggregate core-area budget and DP-array power limit of the $1:2:4$ baseline ($\beta=1$). The baseline comprises 36 cores, each containing 256 DPs operating at 1\,GHz with an initiation interval of one cycle. We set the baseline array-area fraction to $\alpha=0.327$, using the reported 32.7\% share of Cube computing clusters in an AI Core as a reference~\cite{luo2024hifloat8area}, and hold peripheral storage and control area per core constant. Synthesized area per DP and its maximum measured power across the three precision modes determine the integer core counts allowed by the two budgets. We take the smaller count and combine it with the number of DPs per core and their precision-specific throughput to obtain chip-level peak throughput. Each candidate uses the same deployment scale in every workload scenario.
 
-\begin{figure}[!t]
+Fig.~\ref{fig:fixed_budget_compact}(a) compares core counts under the area budget alone and under joint area and power budgets. The latter counts are used to evaluate GEMM compute time.
+
+\subsection{Ratio Selection Across Precision Migrations}
+The case study covers cold-start prefill GEMMs in DeepSeek-V4.1-Flash~\cite{deepseekv41source} at batch size one and 11 context lengths, doubling from 1K to 1M tokens. Table~\ref{tab:five_stage_migrations} defines five successive scenarios, A--E, that progressively lower the precision of major GEMM operators from their original assignments. Other operators retain their original precision. We aggregate operation counts into BF16, FP8, and FP4 workloads. Routed-expert W4A4 deployment~\cite{nvidiav41routed2026} and FP8/FP4 attention quantization~\cite{flashattention3,sageattention3} motivate these assumptions about future workloads. GEMM compute time is estimated by dividing each precision's operation count by its corresponding chip-level peak throughput and summing the results, assuming sufficient data supply and full array utilization. We average compute times with equal weight per request across the 55 scenario--context combinations, then divide the baseline's mean time by the candidate's mean time for the same workloads. Longer contexts contribute time in proportion to their operation counts.
+\input{tables/five_stage_migrations}
+
+\begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{k4_n12_prefill_comparison.png}
-\caption{Equal-area ratio selection for (a) compute latency with integer core deployment and (b) DP compute energy. Each region is labeled by its optimal H:Q:E ratio and geometric area fraction. The inset illustrates H/Q/E = 20\%/30\%/50\%. Trajectories are model-derived DeepSeek prefill workloads: dashed/solid lines use routed-expert W4A8/W4A4, with other computations unchanged. Arrows follow contexts of 1K, 4K, 16K, 64K, 256K, 512K, and 1M; filled markers denote 1M. NVFP4 energy uses the MXFP4 power proxy.}
-\label{fig:k4_time_prefill}
+\includegraphics[width=\columnwidth]{v41_case_panels_overlay.pdf}
+\caption{Deployment scale and workload benefits under fixed budgets ($\alpha=0.327$, $\beta=1$). (a) Gray bars show core counts under the area budget alone; blue bars show counts under joint area and power budgets. (b) Ideal GEMM compute speedups across five migration scenarios. Each column A--E aggregates 11 equally weighted contexts; All aggregates all 55 combinations. Black outlines mark the best value in each column.}
+\label{fig:fixed_budget_compact}
 \end{figure}
 
-\subsection{Throughput Model Under an Equal-Area Constraint}
-\label{sec:k4_area}
+As Fig.~\ref{fig:fixed_budget_compact}(b) shows, aggressive low-precision expansion does not yield the best aggregate performance under this case study's area and strict power budgets. The moderate FP4 expansion of $1:2:8$ achieves the highest aggregate benefit, with an ideal GEMM compute speedup of $1.13\times$ over $1:2:4$. Within the same budgets, $1:2:8$ retains relatively high deployment density and high-precision throughput, balancing low-precision gains against the remaining mixed-precision workload.
+% END REVIEW PAIR: 05_dse.tex
 
-Each AI compute core contains an $m=n=16$ DP array. Using the compute-unit area breakdown reported by Luo et al.~\cite{luo2024hifloat8area} and the published core count~\cite{huawei950} as references, we set $\alpha=0.30$ and $N_0=36$ to construct an equivalent area budget, rather than reproduce an actual chip area.
-
-For ratio $j$, let $a_j$ be the area of one DP and $A_{T,j}=256a_j$ the array area; subscript 0 denotes $1:2:4$. The baseline core area, fixed peripheral area, and total budget are
-\begin{equation}
-A_{C,0}=\frac{A_{T,0}}{\alpha},\quad
-A_O=A_{C,0}-A_{T,0},\quad
-A_{\mathrm{bud}}=N_0A_{C,0}.
-\label{eq:k4_area_definition}
-\end{equation}
-Keeping peripheral area $A_O$ fixed per core, complete cores are deployed within $A_{\mathrm{bud}}=496.59$\,mm$^2$:
-\begin{equation}
-n_j=\left\lfloor\frac{A_{\mathrm{bud}}}{A_O+A_{T,j}}\right\rfloor.
-\label{eq:core_area_budget}
-\end{equation}
-Let $d\in\{H,Q,E\}$ index precision, $m_{j,d}$ denote MACs per cycle per DP, and $p_{j,d}$ denote the full-throughput active power measured in Section V. Counting two FLOPs per MAC at clock frequency $f=1$\,GHz, the deployed peak throughput and DP active power are
-\begin{equation}
-C_{j,d}=2f\,256n_jm_{j,d},\qquad
-P_{j,d}=256n_jp_{j,d}.
-\label{eq:k4_capacity_power}
-\end{equation}
-
-The fixed area budget accommodates 36, 34, 32, and 29 cores for the four ratios, respectively (Table~\ref{tab:k4_absolute}). Low-precision expansion raises per-core throughput but reduces deployment density; its net benefit depends on whether low-precision acceleration offsets the loss of H throughput.
-
-\input{tables/legacy/area_deployment.tex}
-
-\subsection{Optimal Regions for Mixed-Precision Workloads}
-\label{sec:k4_simplex}
-
-Let $F=\sum_d F_d$ be the total useful H/Q/E GEMM work, with $x_d=F_d/F$ and $\sum_d x_d=1$. Assuming precision phases execute sequentially and fully utilize all cores, compute latency and DP energy are
-\begin{align}
-T_j&=F\sum_d\frac{x_d}{C_{j,d}},&
-C_{\mathrm{eff},j}&=\frac{F}{T_j},
-\label{eq:k4_time}\\
-\mathcal E_j&=\sum_d P_{j,d}\frac{Fx_d}{C_{j,d}}.
-\label{eq:k4_energy}
-\end{align}
-We evaluate 5,151 compositions at one-percentage-point intervals over the H/Q/E triangle, minimizing $T_j$ and $\mathcal E_j$ separately. For fixed $F$, both are linear in $\boldsymbol x$, so equal-cost conditions between ratios define straight region boundaries (Fig.~\ref{fig:k4_time_prefill}). Labels report the geometric fraction of the triangle where each ratio is optimal, not hardware area or application probability. Following grid lines parallel to the opposite sides gives the H/Q/E FLOP shares of a point, which sum to $100\%$.
-
-H-, E-, and Q-heavy regions favor $1:2:4$, $1:2:8$, and $1:4:8$, respectively. For H/E mixtures with little Q work, $1:2:6$ balances E acceleration against lost H throughput with a smaller area increment. Latency benefits depend on each phase's $F_d/C_{j,d}$, rather than an individual FLOP share. Energy per FLOP, $P_{j,d}/C_{j,d}=p_{j,d}/(2fm_{j,d})$, is independent of core count, so the latency- and energy-optimal regions differ.
-
-\subsection{DeepSeek Precision Demand and Ratio Selection}
-\label{sec:k4_prefill}
-
-Using official configurations~\cite{deepseekv4,deepseekv4flashsource,deepseekv4prosource,deepseekv41source}, we count cold-prefill work for V4-Flash, V4-Pro, and V4.1-Flash at batch size 1 across seven contexts from 1K to 1M. GEMMs contribute $2MNK$ FLOPs; only active experts are counted, with sparse/compressed attention and V4.1 CED and index reuse included. BF16 attention and grouped output projections map to H; W4A8 expert computation and FP8 projections to Q; and MXFP4 indexer dot products to E. The NVFP4 W4A4 mapping moves only routed experts from FP8 to FP4. Each mapping contains 21 points and covers 97.11\%--99.37\% of GEMM work.
-
-All W4A8 points favor $1:4:8$ for both latency and energy. With W4A4 experts, V4-Flash's energy optimum shifts to $1:2:8$ at 512K and its latency optimum at 1M; the other two models retain $1:4:8$ through 1M. At the V4-Flash 1M point, $1:2:8$ improves latency and estimated energy by 1.45\% and 2.03\%, respectively, relative to $1:4:8$, indicating limited gains near the boundary. Thus, $1:4:8$ is generally favored by the representative workloads evaluated here. If FP4 execution extends to attention and other operations as contexts grow longer, $1:2:8$ may become more attractive.
-% END REVIEW PAIR: 06_workload.tex
-
-% BEGIN REVIEW PAIR: 07_conclusion.tex
+% BEGIN REVIEW PAIR: 06_conclusion.tex
 \section{Conclusion}
 \label{sec:conclusion}
-
-This paper proposes a microarchitecture for shared multi-precision dot-product operations, decoupling multi-precision coverage from capacity expansion for low-precision computations. The baseline architecture reuses multi-precision compute paths through unified decoding, segmented multiplication, hierarchical alignment, and fused output stages. Dedicated low-precision optimization units further prune unnecessary high-precision resources, achieving a 3× improvement in energy efficiency compared to the Ten-Four~\cite{rout2026tenfourv2} multi-precision design, while maintaining competitive area efficiency. The architecture supports internal reduction expansion along the $K$ dimension and independent output combination along the $N$ dimension. At equivalent peak performance, the evaluated $K$-expansion scheme offers a smaller area footprint and lower active power consumption for low-precision operations, while exhibiting a more moderate growth in bandwidth requirements under typical Weight-Stationary (WS) dataflow and matrix-size conditions.
-
-Furthermore, under a fixed-area constraint, this work evaluates the impact of dot-product units within the context of AI chip systems and real-world computational workloads. By identifying the optimal operating regimes for four distinct configuration ratios—and analyzing the deployment of three DeepSeek mixed-precision models—we determine that a $1:4:8$ ratio is well-suited for W4A8 expert-based deployments, while certain W4A4 long-context configurations favor a $1:2:8$ ratio (with diminishing returns near the boundaries). Our findings suggest that configuration ratios should be determined based on the workload distribution across precisions and the time spent during the post-deployment compute-evaluation phase; specifically, low-precision acceleration can compensate for reduced deployment density, and energy consumption should be evaluated independently. Neither weight bit-width nor peak performance alone is sufficient to dictate the optimal ratio. By exploring various configuration ratios within the dot-product microarchitecture—analyzing both $K$-expansion and $N$-combination approaches—this paper provides a framework for selecting and designing compute-ratio architectures for future AI chips, based on latency and energy-efficiency analysis across real-world workloads and their evolving usage scenarios.
-% END REVIEW PAIR: 07_conclusion.tex
+DP-Puzzle combines shared multi-precision dot-product datapaths with precision-specific Groups to construct nine throughput ratios. Synthesis and activity-driven power evaluation quantify their implementation costs and efficiency, supporting chip-level throughput modeling under common area and power budgets. Under the budgets and precision-migration assumptions of our case study, moderate low-precision expansion balances deployment density and mixed-precision demand, providing guidance for throughput-ratio selection as workloads evolve.
+% END REVIEW PAIR: 06_conclusion.tex
 
 
 \section*{Content Generated by AI}

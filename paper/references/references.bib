@@ -1,3 +1,5 @@
+% IEEEtran rendering: archiveurl/source* retain provenance without printing.
+% DOI notes are explicit because bundled IEEEtran.bst 1.14 ignores doi fields.
 @inproceedings{egiazarian2026bridging,
   author    = {Egiazarian, Vage and
                Castro, Roberto and
@@ -12,7 +14,7 @@
                Alistarh, Dan},
   title     = {Bridging the Gap Between Promise and Performance
                for Microscaling {FP4} Quantization},
-  booktitle = {International Conference on Learning Representations},
+  booktitle = {Proc. Int. Conf. Learn. Represent. (ICLR)},
   year      = {2026},
   url       = {https://proceedings.iclr.cc/paper_files/paper/2026/hash/b87bb4f6346d727b265088235e5bc389-Abstract-Conference.html}
 }
@@ -27,16 +29,15 @@
                Yu, Xianzhi},
   title     = {Benchmarking Post-Training Quantization of Large
                Language Models under Microscaling Floating Point Formats},
-  booktitle = {Proceedings of the 64th Annual Meeting of the
-               Association for Computational Linguistics
-               (Volume 1: Long Papers)},
+  booktitle = {Proc. 64th Annu. Meeting Assoc. Comput. Linguistics (ACL), Vol. 1: Long Papers},
   year      = {2026},
   month     = jul,
   pages     = {39907--39923},
-  address   = {San Diego, California, United States},
-  publisher = {Association for Computational Linguistics},
+  sourceaddress   = {San Diego, California, United States},
+  sourcepublisher = {Association for Computational Linguistics},
   doi       = {10.18653/v1/2026.acl-long.1854},
-  url       = {https://aclanthology.org/2026.acl-long.1854/}
+  archiveurl       = {https://aclanthology.org/2026.acl-long.1854/},
+  note = {doi: \href{https://doi.org/10.18653/v1/2026.acl-long.1854}{\nolinkurl{10.18653/v1/2026.acl-long.1854}}}
 }
 
 @inproceedings{abdelaziz2021overheads,
@@ -45,7 +46,7 @@
   booktitle     = {Proc. Mach. Learn. Syst. (MLSys)},
   volume        = {3},
   year          = {2021},
-  url           = {https://proceedings.mlsys.org/paper_files/paper/2021/hash/e96c462898b47600c6f0b1c40979e8ca-Abstract.html},
+  archiveurl           = {https://proceedings.mlsys.org/paper_files/paper/2021/hash/e96c462898b47600c6f0b1c40979e8ca-Abstract.html},
   pages = {223--239}
 }
 @inproceedings{bertaccini2022minifloat,
@@ -56,7 +57,7 @@
   pages         = {1--8},
   doi           = {10.1109/ARITH54963.2022.00010},
   month = {Sep.},
-  address = {Lyon, France},
+  sourceaddress = {Lyon, France},
   note = {doi: \href{https://doi.org/10.1109/ARITH54963.2022.00010}{\nolinkurl{10.1109/ARITH54963.2022.00010}}},
   archiveurl = {https://arxiv.org/abs/2207.03192}
 }
@@ -88,11 +89,12 @@
   title         = {{HiFloat4} Format for Language Model Inference},
   year          = {2026},
   month         = feb,
-  howpublished  = {arXiv preprint arXiv:2602.11287},
+  sourcehowpublished  = {arXiv preprint arXiv:2602.11287},
   doi           = {10.48550/arXiv.2602.11287},
-  url           = {https://arxiv.org/abs/2602.11287},
+  archiveurl           = {https://arxiv.org/abs/2602.11287},
   eprint        = {2602.11287},
-  archivePrefix = {arXiv}
+  archivePrefix = {arXiv},
+  note = {\href{https://arxiv.org/abs/2602.11287}{arXiv:2602.11287}}
 }
 
 @misc{nvidia2024nvfp4,
@@ -109,17 +111,18 @@
 @inproceedings{burgess2019bfloat16,
   author        = {Burgess, Neil and Milanovic, Jelena and Stephens, Nigel and Monachopoulos, Konstantinos and Mansell, David},
   title         = {{Bfloat16} Processing for Neural Networks},
-  booktitle     = {2019 IEEE 26th Symposium on Computer Arithmetic (ARITH)},
+  booktitle = {Proc. IEEE Symp. Comput. Arithmetic (ARITH)},
   year          = {2019},
   pages         = {88--91},
-  publisher     = {IEEE}
+  sourcepublisher     = {IEEE}
 }
 
 @misc{nvidiahgx,
   author        = {{NVIDIA}},
   title         = {{NVIDIA HGX}: Specifications},
   url           = {https://www.nvidia.com/en-us/data-center/hgx/},
-  note          = {Accessed Oct. 5, 2026}
+  sourcenote          = {Accessed Oct. 5, 2026},
+  note = {{Accessed}: Oct. 5, 2026}
 }
 
 @misc{nvidiaverarubin,
@@ -127,7 +130,8 @@
   title         = {{NVIDIA Vera Rubin NVL72}: Specifications},
   year          = {2026},
   url           = {https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/},
-  note          = {Single Rubin GPU; dense FP16/BF16, FP8/FP6 training, and NVFP4 training specifications; accessed Oct. 25, 2026}
+  sourcenote          = {Single Rubin GPU; dense FP16/BF16, FP8/FP6 training, and NVFP4 training specifications; accessed Oct. 25, 2026},
+  note = {{Accessed}: Oct. 25, 2026}
 }
 
 @misc{amdmi455x,
@@ -136,7 +140,8 @@
   year          = {2026},
   month         = jul,
   url           = {https://www.amd.com/content/dam/amd/en/documents/products/accelerators/instinct/amd-instinct-mi455x_brochure.pdf},
-  note          = {Accessed Oct. 5, 2026; July 2026 brochure, p. 1}
+  sourcenote          = {Accessed Oct. 5, 2026; July 2026 brochure, p. 1},
+  note = {{Accessed}: Oct. 5, 2026}
 }
 
 @misc{amdmi355x,
@@ -144,7 +149,8 @@
   title         = {{AMD Instinct MI355X GPU}: Datasheet},
   year          = {2025},
   url           = {https://www.amd.com/content/dam/amd/en/documents/instinct-tech-docs/product-briefs/amd-instinct-mi355x-gpu-brochure.pdf},
-  note          = {Accessed Oct. 22, 2026}
+  sourcenote          = {Accessed Oct. 22, 2026},
+  note = {{Accessed}: Oct. 22, 2026}
 }
 
 @techreport{huawei950,
@@ -153,18 +159,20 @@
   institution   = {Huawei},
   year          = {2026},
   url           = {https://public-download.obs.cn-east-2.myhuaweicloud.com/ascend/%E6%98%87%E8%85%BE950%20NPU%E6%9E%B6%E6%9E%84%E7%99%BD%E7%9A%AE%E4%B9%A6.pdf},
-  note          = {In Chinese; Table 3-1, PDF pp. 13--14; accessed Oct. 22, 2026}
+  sourcenote          = {In Chinese; Table 3-1, PDF pp. 13--14; accessed Oct. 22, 2026},
+  note = {In Chinese. {Accessed}: Oct. 22, 2026}
 }
 
 % 该文字稿用于引用路线图时间，不作为 960PR 三档峰值的原始规格来源。
 
 @misc{huawei960roadmap,
   author        = {{Huawei}},
-  title         = {{HUAWEI CONNECT 2026}: Wang Tao Keynote},
+  title = {{HUAWEI CONNECT 2026}: {Wang Tao} Keynote},
   year          = {2026},
   month         = sep,
   url           = {https://www.huawei.com/cn/news/2026/9/hc-wang-keynote},
-  note          = {Published Sep. 17, 2026; in Chinese; accessed Oct. 22, 2026}
+  sourcenote          = {Published Sep. 17, 2026; in Chinese; accessed Oct. 22, 2026},
+  note = {In Chinese. {Accessed}: Oct. 22, 2026}
 }
 
 % ===== 2. 多精度算术、点积与资源复用 =====
@@ -179,10 +187,11 @@
 @inproceedings{paretomac2025,
   author        = {Brian Crafton and Xiaochen Peng and Xiaoyu Sun and Ashwin Lele and Bo Zhang and Win-San Khwa and Kerem Akarvardar},
   title         = {Finding the Pareto Frontier of Low-Precision Data Formats and {MAC} Architecture for {LLM} Inference},
-  booktitle     = {Proc. Design Automation Conference (DAC)},
+  booktitle = {Proc. Design Autom. Conf. (DAC)},
   year          = {2025},
   doi           = {10.1109/DAC63849.2025.11132989},
-  url           = {https://doi.org/10.1109/DAC63849.2025.11132989}
+  archiveurl           = {https://doi.org/10.1109/DAC63849.2025.11132989},
+  note = {doi: \href{https://doi.org/10.1109/DAC63849.2025.11132989}{\nolinkurl{10.1109/DAC63849.2025.11132989}}}
 }
 
 @misc{zhao2026mxlike,
@@ -190,11 +199,12 @@
   title         = {{MX-Like Tensor Core} for {LLM} Inference with {NPU} Integration via Hardware-Software Co-Design Exploration},
   year          = {2026},
   month         = oct,
-  howpublished  = {arXiv preprint arXiv:2610.26083},
+  sourcehowpublished  = {arXiv preprint arXiv:2610.26083},
   doi           = {10.48550/arXiv.2610.26083},
-  url           = {https://arxiv.org/abs/2610.26083},
+  archiveurl           = {https://arxiv.org/abs/2610.26083},
   eprint        = {2610.26083},
-  archivePrefix = {arXiv}
+  archivePrefix = {arXiv},
+  note = {\href{https://arxiv.org/abs/2610.26083}{arXiv:2610.26083}}
 }
 
 @manual{ti2003qformat,
@@ -203,8 +213,9 @@
   organization  = {Texas Instruments},
   year          = {2003},
   month         = oct,
-  note          = {SPRU565B, Appendix A.2: Fractional Q Formats},
-  url           = {https://www.ti.com/lit/ug/spru565b/spru565b.pdf}
+  sourcenote          = {SPRU565B, Appendix A.2: Fractional Q Formats},
+  url           = {https://www.ti.com/lit/ug/spru565b/spru565b.pdf},
+  note = {{SPRU565B}}
 }
 
 @inproceedings{bitfusion2018,
@@ -214,9 +225,10 @@
   year          = {2018},
   pages         = {764--775},
   doi           = {10.1109/ISCA.2018.00069},
-  url           = {https://arxiv.org/abs/1712.01507},
+  archiveurl           = {https://arxiv.org/abs/1712.01507},
   eprint        = {1712.01507},
-  archivePrefix = {arXiv}
+  archivePrefix = {arXiv},
+  note = {doi: \href{https://doi.org/10.1109/ISCA.2018.00069}{\nolinkurl{10.1109/ISCA.2018.00069}}}
 }
 
 @inproceedings{transdot2026,
@@ -226,33 +238,36 @@
   year          = {2026},
   pages         = {171--175},
   doi           = {10.1109/FCCM68464.2026.00034},
-  url           = {https://arxiv.org/abs/2605.07245},
+  archiveurl           = {https://arxiv.org/abs/2605.07245},
   eprint        = {2605.07245},
-  archivePrefix = {arXiv}
+  archivePrefix = {arXiv},
+  note = {doi: \href{https://doi.org/10.1109/FCCM68464.2026.00034}{\nolinkurl{10.1109/FCCM68464.2026.00034}}}
 }
 
 @misc{xie2025mmasim,
   author        = {Xie, Peichen and Xu, Shuotao and Wang, Yang and Yang, Fan and Yang, Mao},
   title         = {Bit-Accurate Modeling of {GPU} Matrix Multiply-Accumulate Units: Demystifying Numerical Discrepancy and Accuracy},
   year          = {2025},
-  howpublished  = {arXiv preprint arXiv:2511.10909},
+  sourcehowpublished  = {arXiv preprint arXiv:2511.10909},
   doi           = {10.48550/arXiv.2511.10909},
-  url           = {https://arxiv.org/abs/2511.10909v3},
+  archiveurl           = {https://arxiv.org/abs/2511.10909v3},
   eprint        = {2511.10909},
   archivePrefix = {arXiv},
-  note          = {Version 3, revised Sep. 28, 2026}
+  sourcenote          = {Version 3, revised Sep. 28, 2026},
+  note = {\href{https://arxiv.org/abs/2511.10909v3}{arXiv:2511.10909v3}, rev. Sep. 28, 2026}
 }
 
 @inproceedings{huangMPICCMultiplePrecisionInterCombined2025,
   author        = {Huang, Leran and Liu, Yongpan and Lin, Xinyuan and Wei, Chenhan and Sun, Wenyu and Wang, Zengwei and Cao, Boran and Zhang, Chi and Fu, Xiaoxia and Zhao, Wentao and Zhang, Sheng},
   title         = {{MPICC}: Multiple-Precision Inter-Combined {MAC} Unit with Stochastic Rounding for Ultra-Low-Precision Training},
-  booktitle     = {Proceedings of the 30th Asia and South Pacific Design Automation Conference},
+  booktitle = {Proc. 30th Asia South Pacific Design Autom. Conf. (ASP-DAC)},
   year          = {2025},
   month         = jan,
   pages         = {554--559},
-  publisher     = {ACM},
+  sourcepublisher     = {ACM},
   doi           = {10.1145/3658617.3697641},
-  url           = {https://dl.acm.org/doi/10.1145/3658617.3697641}
+  archiveurl           = {https://dl.acm.org/doi/10.1145/3658617.3697641},
+  note = {doi: \href{https://doi.org/10.1145/3658617.3697641}{\nolinkurl{10.1145/3658617.3697641}}}
 }
 
 % 原 arXiv 条目与 mxdotp 合并，保留原键并补入 ASAP 2025 正式会议出处。
@@ -260,13 +275,14 @@
 @inproceedings{lutzFusedFP84Way2024,
   author        = {Lutz, David R. and Saini, Anisha and Kroes, Mairin and Elmer, Thomas and Valsaraju, Harsha},
   title         = {Fused {FP8} 4-Way Dot Product with Scaling and {FP32} Accumulation},
-  booktitle     = {2024 IEEE 31st Symposium on Computer Arithmetic (ARITH)},
+  booktitle = {Proc. IEEE Symp. Comput. Arithmetic (ARITH)},
   year          = {2024},
   month         = jun,
   pages         = {40--47},
-  publisher     = {IEEE},
+  sourcepublisher     = {IEEE},
   doi           = {10.1109/ARITH61463.2024.00016},
-  url           = {https://ieeexplore.ieee.org/document/10579354/}
+  archiveurl           = {https://ieeexplore.ieee.org/document/10579354/},
+  note = {doi: \href{https://doi.org/10.1109/ARITH61463.2024.00016}{\nolinkurl{10.1109/ARITH61463.2024.00016}}}
 }
 
 % Methodology checked against the authors' manuscript, Sec. III-A (2026-11-03).
@@ -297,9 +313,10 @@
   year          = {2022},
   month         = feb,
   pages         = {246--248},
-  publisher     = {IEEE},
+  sourcepublisher     = {IEEE},
   doi           = {10.1109/ISSCC42614.2022.9731639},
-  url           = {https://ieeexplore.ieee.org/document/9731639/}
+  archiveurl           = {https://ieeexplore.ieee.org/document/9731639/},
+  note = {doi: \href{https://doi.org/10.1109/ISSCC42614.2022.9731639}{\nolinkurl{10.1109/ISSCC42614.2022.9731639}}}
 }
 
 % 期刊版：IEEE JSSC 58(1), 189--202, Jan. 2023；不与 ISSCC 2022 前身合并。
@@ -319,11 +336,12 @@
   title         = {{DeepSeek-V3} Technical Report},
   year          = {2024},
   month         = dec,
-  howpublished  = {arXiv preprint arXiv:2412.19437},
+  sourcehowpublished  = {arXiv preprint arXiv:2412.19437},
   doi           = {10.48550/arXiv.2412.19437},
-  url           = {https://arxiv.org/abs/2412.19437},
+  archiveurl           = {https://arxiv.org/abs/2412.19437},
   eprint        = {2412.19437},
-  archivePrefix = {arXiv}
+  archivePrefix = {arXiv},
+  note = {\href{https://arxiv.org/abs/2412.19437}{arXiv:2412.19437}}
 }
 
 @misc{deepseekv4,
@@ -358,11 +376,12 @@
   author        = {{Qwen Team}},
   title         = {{Qwen3} Technical Report},
   year          = {2025},
-  howpublished  = {arXiv preprint arXiv:2505.09388},
+  sourcehowpublished  = {arXiv preprint arXiv:2505.09388},
   doi           = {10.48550/arXiv.2505.09388},
-  url           = {https://arxiv.org/abs/2505.09388},
+  archiveurl           = {https://arxiv.org/abs/2505.09388},
   eprint        = {2505.09388},
-  archivePrefix = {arXiv}
+  archivePrefix = {arXiv},
+  note = {\href{https://arxiv.org/abs/2505.09388}{arXiv:2505.09388}}
 }
 
 @article{luo2024hifloat8area,
@@ -372,7 +391,7 @@
   year = {2024},
   month = jun,
   pages = {76--98},
-  note = {Sec. 6.1, p. 93},
+  sourcenote = {Sec. 6.1, p. 93},
   url = {https://www-file.huawei.com/-/media/corp2020/pdf/publications/huawei-research/2024/huawei-research-issue6-en.pdf}
 }
 
@@ -421,8 +440,10 @@
   title = {{DeepSeek-V4.1-Flash}: Pushing the Limits of {KV} Cache Compression},
   institution = {DeepSeek-AI},
   year = {2026},
-  note = {Secs. 2.3 and 3.2; accompanying inference sources at revision 314113f; accessed Nov. 4, 2026},
-  url = {https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/314113f8a7dadb388215396ba5fbee2c610a04d6/DeepSeek_V41_Tech_Report.pdf}
+  sourcenote = {Secs. 2.3 and 3.2; accompanying inference sources at revision 314113f; accessed Nov. 4, 2026},
+  archiveurl = {https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/314113f8a7dadb388215396ba5fbee2c610a04d6/DeepSeek_V41_Tech_Report.pdf},
+  note = {Rev. 314113f. {Accessed}: Nov. 4, 2026},
+  url = {https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash}
 }
 
 % Microarchitecture comparison sources checked 2026-11-10; versions kept explicit.
@@ -438,16 +459,18 @@
   author = {Gamze {\.{I}}slamo{\u{g}}lu and Luca Bertaccini and Arpan Suravi Prasad and Francesco Conti and Angelo Garofalo and Luca Benini},
   title = {{MXDOTP}: A {RISC-V ISA} Extension for Enabling Microscaling ({MX}) Floating-Point Dot Products},
   year = {2025},
-  howpublished = {arXiv:2505.13159v1},
-  url = {https://arxiv.org/abs/2505.13159v1}
+  sourcehowpublished = {arXiv:2505.13159v1},
+  archiveurl = {https://arxiv.org/abs/2505.13159v1},
+  note = {\href{https://arxiv.org/abs/2505.13159v1}{arXiv:2505.13159v1}}
 }
 
 @misc{mach2020fpnew,
   author = {Stefan Mach and Fabian Schuiki and Florian Zaruba and Luca Benini},
   title = {{FPnew}: An Open-Source Multi-Format Floating-Point Unit Architecture for Energy-Proportional Transprecision Computing},
   year = {2020},
-  howpublished = {arXiv:2007.01530v1},
-  url = {https://arxiv.org/abs/2007.01530v1}
+  sourcehowpublished = {arXiv:2007.01530v1},
+  archiveurl = {https://arxiv.org/abs/2007.01530v1},
+  note = {\href{https://arxiv.org/abs/2007.01530v1}{arXiv:2007.01530v1}}
 }
 
 @misc{nvidia2026tmem,
@@ -481,17 +504,19 @@
   author = {Nikhil Rout and Blaise Tine},
   title = {{Ten-Four}: An Open-Source Fused Dot Product Unit for Mixed-Precision {GPGPU} Tensor Cores},
   year = {2026},
-  howpublished = {arXiv:2512.00053v3},
-  url = {https://arxiv.org/abs/2512.00053v3}
+  sourcehowpublished = {arXiv:2512.00053v3},
+  archiveurl = {https://arxiv.org/abs/2512.00053v3},
+  note = {\href{https://arxiv.org/abs/2512.00053v3}{arXiv:2512.00053v3}}
 }
 
 @inproceedings{sarangi2021deepscaletool,
   author = {Satyabrata Sarangi and Bevan Baas},
   title = {{DeepScaleTool}: A Tool for the Accurate Estimation of Technology Scaling in the Deep-Submicron Era},
-  booktitle = {2021 IEEE International Symposium on Circuits and Systems (ISCAS)},
+  booktitle = {Proc. IEEE Int. Symp. Circuits Syst. (ISCAS)},
   year = {2021},
   doi = {10.1109/ISCAS51556.2021.9401196},
-  url = {https://arxiv.org/abs/2102.10195}
+  archiveurl = {https://arxiv.org/abs/2102.10195},
+  note = {doi: \href{https://doi.org/10.1109/ISCAS51556.2021.9401196}{\nolinkurl{10.1109/ISCAS51556.2021.9401196}}}
 }
 
 
@@ -499,8 +524,9 @@
   author = {{NVIDIA}},
   title = {{DeepSeek-V4.1-Flash-NVFP4}: Routed-Expert {W4A4} Quantization},
   year = {2026},
-  note = {Model card accessed November 16, 2026},
-  url = {https://huggingface.co/nvidia/DeepSeek-V4.1-Flash-NVFP4}
+  sourcenote = {Model card accessed November 16, 2026},
+  url = {https://huggingface.co/nvidia/DeepSeek-V4.1-Flash-NVFP4},
+  note = {{Accessed}: Nov. 16, 2026}
 }
 
 @inproceedings{megablocks2023,
@@ -516,16 +542,18 @@
   author = {Jay Shah and Ganesh Bikshandi and Ying Zhang and Vijay Thakkar and Pradeep Ramani and Tri Dao},
   title = {{FlashAttention-3}: Fast and Accurate Attention with Asynchrony and Low-precision},
   year = {2024},
-  howpublished = {arXiv:2407.08608},
-  url = {https://arxiv.org/abs/2407.08608}
+  sourcehowpublished = {arXiv:2407.08608},
+  archiveurl = {https://arxiv.org/abs/2407.08608},
+  note = {\href{https://arxiv.org/abs/2407.08608}{arXiv:2407.08608}}
 }
 
 @misc{sageattention3,
   author = {Jintao Zhang and others},
   title = {{SageAttention3}: Microscaling {FP4} Attention for Inference and An Exploration of 8-bit Training},
   year = {2025},
-  howpublished = {arXiv:2505.11594v3},
-  url = {https://arxiv.org/html/2505.11594v3}
+  sourcehowpublished = {arXiv:2505.11594v3},
+  archiveurl = {https://arxiv.org/html/2505.11594v3},
+  note = {\href{https://arxiv.org/abs/2505.11594v3}{arXiv:2505.11594v3}}
 }
 
 @misc{nvidiahgxmemory2026,
@@ -539,42 +567,46 @@
 @article{bertaccini2024minifloats,
   author = {Luca Bertaccini and Gianna Paulin and Matheus Cavalcante and Tim Fischer and Stefan Mach and Luca Benini},
   title = {{MiniFloats} on {RISC-V} Cores: {ISA} Extensions With Mixed-Precision Short Dot Products},
-  journal = {IEEE Transactions on Emerging Topics in Computing},
+  journal = {IEEE Trans. Emerg. Topics Comput.},
   volume = {12},
   number = {4},
   pages = {1040--1055},
   year = {2024},
   month = oct,
-  doi = {10.1109/TETC.2024.3365354}
+  doi = {10.1109/TETC.2024.3365354},
+  note = {doi: \href{https://doi.org/10.1109/TETC.2024.3365354}{\nolinkurl{10.1109/TETC.2024.3365354}}}
 }
 @article{mach2021fpnew,
   author = {Stefan Mach and Fabian Schuiki and Florian Zaruba and Luca Benini},
   title = {{FPnew}: An Open-Source Multiformat Floating-Point Unit Architecture for Energy-Proportional Transprecision Computing},
-  journal = {IEEE Transactions on Very Large Scale Integration (VLSI) Systems},
+  journal = {IEEE Trans. Very Large Scale Integr. (VLSI) Syst.},
   volume = {29},
   number = {4},
   pages = {774--787},
   year = {2021},
   month = apr,
-  doi = {10.1109/TVLSI.2020.3044752}
+  doi = {10.1109/TVLSI.2020.3044752},
+  note = {doi: \href{https://doi.org/10.1109/TVLSI.2020.3044752}{\nolinkurl{10.1109/TVLSI.2020.3044752}}}
 }
 
 
 % Systolic matrix execution: Sec. 2, Fig. 4; checked against the authors' ISCA paper.
 @inproceedings{jouppi2017tpu,
-  author = {Jouppi, Norman P. and Young, Cliff and Patil, Nishant and Patterson, David and others},
+  sourceauthor = {Jouppi, Norman P. and Young, Cliff and Patil, Nishant and Patterson, David and others},
+  author = {Jouppi, Norman P. and others},
   title = {In-Datacenter Performance Analysis of a {Tensor Processing Unit}},
-  booktitle = {Proceedings of the 44th Annual International Symposium on Computer Architecture (ISCA)},
+  booktitle = {Proc. 44th Annu. Int. Symp. Comput. Archit. (ISCA)},
   year = {2017},
   url = {https://arxiv.org/abs/1704.04760}
 }
 
 % WikiText corpus introduction; metadata checked against arXiv on 2026-11-17.
-@article{merity2016pointer,
+@misc{merity2016pointer,
   author = {Stephen Merity and Caiming Xiong and James Bradbury and Richard Socher},
   title = {Pointer Sentinel Mixture Models},
-  journal = {arXiv preprint arXiv:1609.07843},
+  sourcejournal = {arXiv preprint arXiv:1609.07843},
   year = {2016},
   doi = {10.48550/arXiv.1609.07843},
-  url = {https://arxiv.org/abs/1609.07843}
+  archiveurl = {https://arxiv.org/abs/1609.07843},
+  note = {\href{https://arxiv.org/abs/1609.07843}{arXiv:1609.07843}}
 }
