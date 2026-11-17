@@ -54,3 +54,6 @@
 2026-11-16 引言四处补引：按用户指定位置，同步中英文引言的 DeepSeek-V3 低精度模型研究、OCP MX 标准、Jouppi 等 ISCA 2017 TPU 脉动执行论文及 Qwen3 技术报告引用。复用三条文献，仅新增 jouppi2017tpu；查阅原文并将 TPU 引用紧邻脉动一词，保持事实范围。仅插入引用，不改作者正文措辞或实验数字，保留过程中作者已加入的英文 OCP 引用。来源定位见 data/evidence/introduction_citations_20261116.md。
 
 2026-11-16 英文工业芯片表引用修复：tab:vendor_ratios 同时在引言外部插表和背景章节旧内嵌表中定义，后者编号 II 覆盖了前者 I。保留当前引言的 tables/vendor_ratios.tex 插入，删除背景重复旧表，使用自动编号并重新编译核对唯一标签与 Table I 引用。仅处理英文表格入口，不改正文或数值；将作者当前工业表入口作为此修复的依赖一并记录。
+
+
+2026-11-17 英文微架构翻译：按用户要求，使用项目 academic-humanizer 规范，将当前正式中文第三章翻译到 dp_puzzle.tex。以 Lane、Group、DP 及 Group 专用化/九种配比组合组织五个小节，替换旧英文分立的微架构与扩展章节，并同步引言中章节组织的一句引用。统一 exponent、significand、scale factor、alignment、LZD、CSA/CPA 和舍入术语；保留位宽、公式、引用及共用英文表格/作者 PDF。章节级结构与技术标记核对、英文编译及第 3–5 页检查通过。所有中文源和其他英文正文保持原样；未将后续旧版评估/DSE/结论自动同步为新内容。范围、术语与检查记录见 data/evidence/architecture_translation_20261117.md。

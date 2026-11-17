@@ -60,7 +60,7 @@ Our contributions are as follows:
 \item \textbf{Workload-driven ratio selection:} Six current and prospective precision scenarios for DeepSeek-V4.1-Flash, evaluated over 1K--1M contexts, connect workload migration to estimated GEMM compute latency. Adding a matched compute-power budget shifts the best aggregate ratio from \mbox{$1:8:16$} to \mbox{$1:2:8$}, yielding a modeled $1.147\times$ speedup over \mbox{$1:2:4$} across equally weighted scenarios. Moderate expansion thus balances remaining high-precision demand with future low-precision workloads.
 \end{enumerate}
 
-The rest of this paper is organized as follows. Section~\ref{sec:background} presents the background and motivation. Sections~\ref{sec:architecture} and~\ref{sec:expansion} describe the shared multi-precision microarchitecture and its low-precision specialization and throughput-ratio expansion, respectively. Section~\ref{sec:evaluation} presents the evaluation methodology and hardware cost results. Section~\ref{sec:workload} analyzes workload-driven throughput-ratio selection. Section~\ref{sec:conclusion} concludes the paper.
+The rest of this paper is organized as follows. Section~\ref{sec:background} presents the background and motivation. Section~\ref{sec:architecture} describes the shared multi-precision microarchitecture, Group specialization, and throughput-ratio composition. Section~\ref{sec:evaluation} presents the evaluation methodology and hardware cost results. Section~\ref{sec:workload} analyzes workload-driven throughput-ratio selection. Section~\ref{sec:conclusion} concludes the paper.
 
 
 % END REVIEW PAIR: 01_introduction.tex
@@ -110,141 +110,102 @@ Table~\ref{tab:vendor_ratios} summarizes recent products and development roadmap
 % END REVIEW PAIR: 02_background.tex
 
 % BEGIN REVIEW PAIR: 03_architecture.tex
-\section{Shared Multi-Precision Dot-Product Microarchitecture}
+\section{Composable Dot-Product Microarchitecture for Throughput-Ratio Exploration}
 \label{sec:architecture}
 \label{sec:brick_definition}
 
-DP-Puzzle uses a composable Lane--Group--DP hierarchy (Fig.~\ref{fig:dp_architecture}). Each Lane shares element multiplication, local alignment, and reduction across precision modes, mapping their different product parallelisms to a common partial-sum output. Groups incorporate block scales and unify partial-sum representation, while the DP shares global alignment and accumulation. A uniform Group interface allows low-precision units to be specialized and added independently, forming the composition boundary for subsequent throughput-ratio expansion.
+Fig.~\ref{fig:dp_architecture} shows the $1:2:4$ baseline datapath of DP-Puzzle, organized into three levels: Lane, Group, and dot-product unit (DP). Each Lane shares multiplication and local reduction across precisions. Each Group incorporates block scaling and produces a unified partial-sum representation, while the DP performs global alignment and accumulation. Adding specialized low-precision Groups to this baseline yields DP designs with different throughput ratios.
 
-\subsection{Notation and Conventions}
+\subsection{Notation and Architecture Overview}
 \label{sec:notation_conventions}
 
-We use T, H, Q, and E to denote four precision families: T denotes TF32; H denotes FP16/BF16; Q denotes MXFP8 (E4M3/E5M2) and MXFP6 (E2M3/E3M2); and E denotes MXFP4, NVFP4, and HiF4. These abbreviations identify the corresponding datapaths and throughput ratios throughout the following sections.
+We use T, H, Q, and E to denote TF32, FP16/BF16, MXFP8/6, and MXFP4/NVFP4/HiF4, respectively. Fixed-point values use $\mathrm{Q}I.F$ and $\mathrm{UQ}I.F$ notation for signed two's-complement and unsigned representations. Here, $I$ is the number of integer bits excluding the sign bit, and $F$ is the number of fractional bits; the total widths are $1+I+F$ and $I+F$, respectively~\cite{ti2003qformat}.
 
-Fixed-point values use $\mathrm{Q}I.F$ and $\mathrm{UQ}I.F$ notation, where $I$ and $F$ are the integer and fractional widths, respectively, and $I$ excludes the sign bit~\cite{ti2003qformat}. $\mathrm{Q}I.F$ denotes a signed two's-complement value with $1+I+F$ bits; $\mathrm{UQ}I.F$ denotes an unsigned value with $I+F$ bits. For example, UQ2.26 is a 28-bit unsigned value with 2 integer and 26 fractional bits. Separately encoded magnitudes use the unsigned notation. Context distinguishes the Q precision family from Q fixed-point notation.
-
-We denote compute parallelism by $\mathrm{T}x_T\mathrm{H}x_H\mathrm{Q}x_Q\mathrm{E}x_E$, where $x_T$, $x_H$, $x_Q$, and $x_E$ count the A/B element pairs processed per cycle in the corresponding mode, each producing one product. For example, T1H2Q4E8 computes 1/2/4/8 element-pair products per cycle in T/H/Q/E modes, respectively. The modes are mutually exclusive, so these counts specify separate per-mode peaks and cannot be summed as simultaneously available throughput.
-
-One Lane supports T1H2Q4E8; two Lanes form a Group, and four Groups form the T8H16Q32E64 baseline. Each Lane also supports four INT8 multiplications, with INT32 accumulation at the DP level. All modes use an eight-stage pipeline that accepts one independent request per cycle.
+Compute parallelism is denoted by $\mathrm{T}x_T\mathrm{H}x_H\mathrm{Q}x_Q\mathrm{E}x_E$, where $x_p$ is the number of element pairs processed per cycle in precision mode $p$; the modes are mutually exclusive. A baseline Lane supports T1H2Q4E8, two Lanes form a T2H4Q8E16 Group, and four Groups form a T8H16Q32E64 DP. The DP also supports 32 INT8 products per cycle with INT32 accumulation. At a fixed array size and clock frequency, the H:Q:E throughput ratio therefore equals the ratio of their respective parallelisms within each DP.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{baseline_arch_singlepage.pdf}
-\caption{Lane--Group--DP organization follows scaling granularity. A HiF4 second-level micro-exponent is shared by eight elements, matching the eight E products in a Lane. An NVFP4 scale is shared by 16 elements, so two Lanes form a Group. Larger quantization blocks broadcast the same scale to multiple Groups, preserving the format's scaling granularity.}
+\includegraphics[width=\columnwidth]{baseline_arch.pdf}
+\caption{DP-Puzzle's $1:2:4$ baseline microarchitecture. Each T2H4Q8E16 Group contains two shared multi-precision Lanes, and four Groups form a T8H16Q32E64 DP. Other throughput ratios are constructed by adding specialized low-precision Groups.}
 \label{fig:dp_architecture}
 \end{figure}
 
-\subsection{Lane: Decoding and Arithmetic Reuse}
+\subsection{Lane: Shared Multi-Precision Arithmetic}
 \label{sec:unpack_recode}
 \label{sec:full_brick}
 
-Fig.~\ref{fig:data_unpack} shows the unpacked representation for shared arithmetic. T/H retain exponents and significands; Q uses a common internal E5M3 representation; INT8 is separated into sign and magnitude. MXFP4/NVFP4 element exponents are folded into UQ3.1 fixed-point magnitudes. HiF4 folds its first-level micro-exponent into a UQ2.2 magnitude and retains the second-level micro-exponent shared by the Lane. E formats therefore require no per-element floating-point alignment.
+Each Lane provides T1H2Q4E8 parallelism, matching the eight-element sharing granularity of HiF4's second-level micro-exponent. During decoding (Fig.~\ref{fig:data_unpack}), T/H operands are separated into exponents and significands, while Q operands are mapped exactly to an internal E5M3 representation. MXFP4/NVFP4 and HiF4 with its first-level micro-exponent incorporated are mapped to UQ3.1 and UQ2.2, respectively. These four-bit fixed-point magnitudes absorb the element exponents. All formats, including INT8, separate signs from magnitudes to share unsigned multipliers.
 
 \begin{figure}[t]
 \centering
-% Author figure update: whole-Lane counts should read 2x FP16 and 8x E.
-% The 10/16/4-bit fields describe one field group; each Lane contains two.
-\includegraphics[width=\columnwidth]{unpack_layout.png}
-\caption{Input-format mapping to shared exponent, significand, and sign fields. Q uses a common internal encoding, while E folds element exponents into fixed-point magnitudes. Unused fields are zero-filled; special-value flags propagate separately.}
+\includegraphics[width=\columnwidth]{unpack_layout.pdf}
+\caption{Mapping input formats to shared exponent, significand, and sign fields.}
 \label{fig:data_unpack}
 \end{figure}
 
-% Park multiplier composition follows the author's supplied reading;
-% verification against the original circuit figure remains pending.
-\textbf{Multiplier reuse.} BitFusion combines four $2\times2$ multipliers into one $4\times4$ multiplier or uses them for parallel low-bit-width computation~\cite{bitfusion2018}. Park et al. reuse four $4\times8$ multipliers and one $4\times4$ multiplier for one FP16, two INT8, or four INT4 multiplications~\cite{parkMultimode8KMACHWutilizationaware2022}. Following this partial-product decomposition and composition approach, we use two sets of $8\times8$, $8\times4$, $4\times8$, and $4\times4$ multipliers. Combining partial products or routing them independently supports different operand widths and parallelisms without replicating a complete multiplier array for each format.
-
-\textbf{Shifter reuse.} T/H/Q products are statically zero-padded according to their binary-point positions before entering four shared right shifters. MMA-Sim's reverse-engineering analysis reports 25 fractional bits for Blackwell MXFP8 fused summation~\cite{xie2025mmasim}. Using this as a width-selection reference, we adopt a 28-bit unsigned UQ2.26 local alignment window with 26 fractional bits. Both Lanes align to a common maximum product exponent. E/INT8 bypass this network and reuse the downstream reduction tree; HiF4 applies a small left shift to the Lane partial sum using its second-level micro-exponent.
-
-\subsection{Group: Scale Fusion and Anchor Recompute}
-
-\textbf{Scale fusion after reduction.} The two Lanes share scales, allowing the Group to sum their outputs and extract the magnitude before multiplying by $\mathrm{Scale}_{\mathrm{mant}}$, the product of the two input scale significands. The compact Group magnitude and scale-significand product have widths of 14 and 8 bits, respectively, for NVFP4/HiF4. These formats share one unsigned $14\times8$ multiplier, avoiding per-element scale multiplication. MX power-of-two scales contribute only to the exponent and bypass significand multiplication.
-
-\textbf{Unified partial-sum representation.} Let $\mathrm{SoP}$ (sum of products) denote the Group output magnitude, with total width $\mathrm{Group}_{\mathrm{mag}}$ and fractional width $\mathrm{Group}_{\mathrm{frac}}$; we use a 31-bit magnitude. $\mathrm{Anchor}$ is the exponent associated with its most significant physical bit. It is determined by the local alignment exponent $\mathrm{Anchor}_{\mathrm{lane}}$, the sum of the two unbiased scale exponents $\mathrm{Scale}_{\mathrm{exp}}$, and the element exponent bias $\mathrm{Bias}$:
+Each Lane contains two multiplier sets, each comprising one $8\times8$, one $8\times4$, one $4\times8$, and one $4\times4$ unit. For TF32/FP16, the 11-bit significands are split into upper and lower portions, with four bits in the latter: $a=2^4a_h+a_l$ and $b=2^4b_h+b_l$. The product is reconstructed from partial products as
 \begin{equation}
-\begin{aligned}
-\mathrm{Anchor}={}&\mathrm{Anchor}_{\mathrm{lane}}+\mathrm{Scale}_{\mathrm{exp}}\\
- &+\mathrm{Group}_{\mathrm{mag}}-1-\mathrm{Group}_{\mathrm{frac}}-2\mathrm{Bias}.
-\end{aligned}
+ab=2^8a_hb_h+2^4(a_hb_l+a_lb_h)+a_lb_l.
+\label{eq:mantissa_reuse}
+\end{equation}
+TF32 and FP16 activate one and two sets, respectively; BF16 uses only the $8\times8$ unit in each set. Q computes two independent four-bit products per set, whereas E uses all four units. INT8 uses one $8\times8$ unit per set and reconstructs a second eight-bit product from the cross partial products.
+
+% Precision reference: MMA-Sim v3, Table III (Blackwell UTCQMMA) and Algorithm 7.
+T/H/Q use one, two, and four shared unsigned right shifters, respectively, to align products to the maximum valid product exponent within the Group. Guided by reverse engineering of Blackwell FP8 arithmetic~\cite{xie2025mmasim}, we use a UQ2.26 alignment window with 26 fractional bits. Magnitudes are right-shifted before conversion to two's complement, implementing truncation toward zero. E/INT8 bypass the wide shifters. E's eight products are converted to signed values and reduced pairwise to four terms; INT8's four terms enter directly. All modes share a balanced four-input adder tree that produces a 31-bit signed partial sum. HiF4's second-level micro-exponent is incorporated by shifting the Lane sum.
+
+\subsection{Group: Scale-Factor Integration and Unified Partial Sums}
+
+Two Lanes form a T2H4Q8E16 Group, matching NVFP4's 16-element scaling block; larger blocks broadcast the same scale factor across Groups. The Group first combines the Lane results and separates the sign and magnitude, then applies the shared scale factors. Only NVFP4/HiF4 require scale-significand multiplication. The two four-bit scale significands are premultiplied into an eight-bit coefficient. After removing structurally zero low-order bits, the 14-bit Group magnitude is multiplied by this coefficient using a shared $14\times8$ multiplier. The resulting 22-bit value is mapped to the U31 magnitude interface. MX's E8M0 scale factors contribute only to the exponent.
+
+% Layout cross-check: dp-top-v1.8.md, dp_group.v and dp_functions.vh;
+% the v1.8 HiF4 path uses the NVFP4 fractional layout after Lane-local e2 fusion.
+The U31 interface has $F_p=28/27/26$ fractional bits for T/H/Q and 21 and 19 fractional bits for MXFP4 and NVFP4/HiF4, respectively. Let $E_{\mathrm{loc}}$ denote the unbiased local alignment exponent and $E_{\mathrm{scale}}$ the sum of the two unbiased scale exponents. The exponent associated with the most significant physical bit of the magnitude is
+\begin{equation}
+\mathrm{Anchor}_{\mathrm{raw}}
+=E_{\mathrm{loc}}+E_{\mathrm{scale}}+30-F_p.
 \label{eq:anchor_recompute}
 \end{equation}
-Format-dependent corrections can be determined in advance, allowing Anchor Recompute to proceed in parallel with significand reduction. E element exponents are already folded into the magnitudes, so both the local alignment exponent and element bias are zero. Formats without scales use a zero scale-exponent sum.
+For E, the element exponents and micro-exponents are already incorporated into the magnitude, so $E_{\mathrm{loc}}=0$. Formats without block scaling use $E_{\mathrm{scale}}=0$. This exponent calculation proceeds in parallel with significand reduction.
 
-\textbf{Leading zeros and bidirectional shifting.} The Group detects leading zeros in the scaled SoP and subtracts this count from the original Anchor to obtain the exponent of the leading significant bit for comparison. Participation masks exclude zero finite products and zero Group magnitudes from their respective exponent MAX operations, preventing zero terms from raising the alignment reference while keeping the pipeline request valid. Let $\mathrm{Exp}_{\mathrm{max}}$ be the maximum comparison exponent among participating Groups and $C$, and let $\Delta=\mathrm{Anchor}-\mathrm{Exp}_{\mathrm{max}}$. Appending low-order zeros to SoP forms $\mathrm{SoP}_{\mathrm{pad}}$ in the $W$-bit unsigned global window. The aligned result is
+For finite nonzero magnitudes, leading-zero detection (LZD) produces a count $z$ and the exponent of the most significant nonzero bit, $\mathrm{Anchor}_{\mathrm{eff}}=\mathrm{Anchor}_{\mathrm{raw}}-z$. Each Group outputs the U31 magnitude without normalization shifts, a separate sign, and both exponent coordinates.
+
+\subsection{DP: Shared Alignment and Fused Accumulation}
+
+The DP introduces the addend $C$ after within-Group reduction and scale-factor integration. It determines the global reference exponent $E_{\mathrm{max}}$ from the Group comparison exponents and the decoded exponent of $C$. Left-shifting a Group magnitude by $z$ bits for normalization and then right-shifting it for alignment gives the net shift
 \begin{equation}
-\mathrm{SoP}_{\mathrm{align}}=
-\begin{cases}
-0, & |\Delta|\ge W,\\
-\mathrm{SoP}_{\mathrm{pad}}\ll\Delta, & 0\le\Delta<W,\\
-\mathrm{SoP}_{\mathrm{pad}}\gg(-\Delta), & -W<\Delta<0.
-\end{cases}
-\label{eq:bidirectional_alignment}
+\begin{aligned}
+\Delta&=z-(E_{\mathrm{max}}-\mathrm{Anchor}_{\mathrm{eff}})\\
+      &=\mathrm{Anchor}_{\mathrm{raw}}-E_{\mathrm{max}}.
+\end{aligned}
+\label{eq:net_alignment_shift}
 \end{equation}
-Here, $\ll$ and $\gg$ denote $W$-bit logical left and right shifts; a shift reaching the window width produces zero magnitude. A participating nonzero Group result shifts left by at most its leading-zero count, preserving its significant high-order bits. Computing the net shift from the original Anchor combines leading-zero normalization and global alignment into one shift.
+After zero-padding the original magnitude to a 39-bit window, a single bidirectional shift suffices; right shifts truncate toward zero. Signs are restored before summation through a carry-save adder (CSA) compression tree and a single carry-propagate adder (CPA). The result is then normalized and rounded to FP32 using round-to-nearest, ties-to-even.
 
-\subsection{DP: Shared Accumulation and Integer Bypass}
+INT8/INT32 bypass floating-point alignment and output normalization while sharing the accumulation datapath. Registers are enabled according to the request's precision. All configurations retain an eight-cycle latency and a throughput of one independent request per cycle.
 
-Ten-Four includes $C$ in the frontend maximum-exponent comparison~\cite{rout2026tenfourv2}, whereas Lutz et al.'s early-accumulation scheme aligns $C$ in parallel with product computation~\cite{lutzFusedFP84Way2024}. We defer $C$ alignment and accumulation to the DP level. E elements have a narrow exponent range, and their actual magnitudes also depend on Group scales. Performing Group reduction and scale fusion first avoids premature right-shift truncation of local products when $C$ has a large exponent. This organization is consistent with MMA-Sim's grouped Blackwell NVFP4 model: compute each Group dot product, apply its scales, and then align and sum the Group results with $C$~\cite{xie2025mmasim}.
-
-$C$ retains its original encoding until the backend, where it aligns with Group results in a 39-bit unsigned global window. Signs are restored before the shared accumulator. The baseline performs fused accumulation using 4:2 and 3:2 carry-save compression followed by one carry-propagate addition. Intermediate partial sums are not converted to FP32; normalization and rounding occur only at the final output. INT8/INT32 use fixed integer coordinates and share the accumulation path while bypassing floating-point alignment, normalization, and rounding. Floating-point magnitude right shifts truncate toward zero, and final FP32 results use round-to-nearest, ties-to-even.
-% END REVIEW PAIR: 03_architecture.tex
-
-% BEGIN REVIEW PAIR: 04_expansion.tex
-\section{Low-Precision Specialization and Throughput-Ratio Expansion}
+\subsection{Group Specialization and Throughput-Ratio Composition}
+\label{sec:specialized_midgroups}
 \label{sec:expansion}
 
-Dot-product tensor units organize DPs into an $m\times n$ array supplied through a systolic or broadcast network. At full steady-state utilization, with each DP accepting one set of inputs per cycle, the homogeneous baseline's theoretical peak throughput in precision $p$ is
-\begin{equation}
-\mathrm{Peak}_{p}=2mnK_{p}f \quad (\mathrm{FLOP/s}),
-\label{eq:array_peak_throughput}
-\end{equation}
-where $K_p$ is the native dot-product length of one DP in precision $p$, $f$ is the clock frequency, and the factor of two counts two operations per MAC. With high-precision capacity unchanged, the throughput ratio can be adjusted by increasing $K_p$ in low-precision paths or adding specialized low-precision DPs along M/N. Fig.~\ref{fig:kn_datapaths} illustrates these alternatives for expansion from $1:2:4$ to $1:2:8$. We derive E-only and shared Q/E Lanes and Groups from the baseline, retaining its pipeline depth and Group output interface.
+Specialization preserves the numerical mappings, precision, and rounding rules of supported formats while removing decoding and arithmetic for unsupported formats. Each Lane in a Q8E16 Group uses eight $4\times4$ multipliers; Q activates four, whereas E activates all eight. It retains Q's 28-bit alignment path, the 31-bit Lane output, and E's scale-significand multiplication. Q8 retains only four $4\times4$ multipliers per Lane and removes E decoding, micro-exponent processing, and scale-significand multiplication. E8M0 scale factors contribute only to exponent updates.
+
+E16 further reduces the alignment and reduction hardware. Each Lane retains eight $4\times4$ multipliers but removes element-exponent comparison, local alignment-reference generation across Lanes, and wide shifters. A narrow adder tree performs reduction, with HiF4's second-level micro-exponent incorporated after local summation; the Lane output is reduced to 14 signed bits. Combining two Lanes produces a 15-bit Group sum. Scaling and LZD operate on a 22-bit result, which is mapped to the common U31 magnitude and Anchor interface. E16 expansion therefore avoids the cost of Q's wide alignment and reduction paths.
+
+Table~\ref{tab:ratio9_composition} lists the Group compositions of the nine DP configurations. Each retains four baseline multi-precision Groups and adds Q8, E16, or Q8E16 Groups to adjust low-precision throughput. Added Groups process additional $K$ segments for the same output, with scale factors distributed according to the original quantization-block boundaries.
+
+\input{tables/group_compositions.tex}
+
+The DP adds bidirectional shifters for the new Groups, extends exponent comparison, and widens accumulation so that all participating sources align to a common reference. As shown in Fig.~\ref{fig:dp_csa_expansion}, a 4:2 CSA network compresses the added results into two rows. A further 4:2 CSA merges these with the two baseline rows, which already include the single $C$ contribution. When only two Groups are added, their results enter the merge stage directly. A precision-controlled multiplexer (MUX) selects either the baseline or merged sum/carry pair for the shared CPA. Q8, E16, and Q8E16 participate in Q, E, and Q/E modes, respectively. When expansion is inactive, the MUX selects the baseline path, and the added Groups are excluded from exponent comparison and special-value reduction, preserving the original high-precision results.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.85\columnwidth]{kn_composition.png}
-\caption{Two ways to expand from $1:2:4$ to $1:2:8$. Left: add E resources inside each DP without changing the output count. Right: add E-only DP columns to compute independent outputs.}
-\label{fig:kn_datapaths}
-\end{figure}
-\subsection{Resource Pruning in Specialized Lanes and Groups}
-\label{sec:specialized_midgroups}
-
-Input unpacking and its registers account for a substantial part of baseline area. Specialization therefore covers both decoding and arithmetic: field extraction, numerical mapping, classification, and selection logic for unsupported formats are removed, and the corresponding registers are narrowed.
-
-\textbf{E-only design.} An E8 Lane retains only MXFP4/NVFP4/HiF4 unpacking and removes T/H/Q/INT8 branches, feeding compact magnitudes, signs, and scaling information to the datapath. Eight unsigned $4\times4$ multipliers and a narrow reduction tree replace the general datapath; 8- and 5-bit element-exponent adders, significand-alignment shifters, and cross-Lane exponent MAX logic are removed. Adding HiF4's two 1-bit second-level exponents produces a 2-bit shift amount for local scaling after reduction, yielding a 14-bit signed Lane output. Two Lanes form an E16 Group, whose outputs are added in common fixed-point coordinates to produce a 15-bit signed sum and a 14-bit magnitude. Significand scaling, when required, uses $\mathrm{U14}\times\mathrm{U8}$ multiplication. Low-order zero padding extends the result to the common 31-bit output interface while preserving the Anchor coordinate system.
-
-\textbf{Shared Q/E design.} A Q4E8 Lane retains Q/E unpacking and removes T/H/INT8 decoding and arithmetic. Q retains exponent, significand, and special-value classification, while E uses the compact magnitude representation. Q mode activates four of the eight $4\times4$ multipliers and retains element-exponent comparison, local alignment, and the wide reduction tree. E bypasses alignment and incorporates HiF4's second-level scaling exponent after the tree. Two Lanes form a Q8E16 Group, retaining Q's wide Group sum and leading-zero detection while reusing E scale-significand multiplication. Both Group types expose a common magnitude, exponent, and status interface for shared or independent DP backends.
-
-\subsection{Internal Expansion Along K}
-\label{sec:k_expansion}
-
-The baseline contains four multi-precision Groups and provides H16Q32E64 peak throughput. Adding two E16, four E16, or four Q8E16 Groups realizes the three ratios in Table~\ref{tab:brick_compositions}, retaining baseline TF32 and INT8 support. Added Groups receive further A/B segments and scales for the same output, sharing one $C$ input and the final normalization and rounding path.
-
-The DP adds two, four, and four global bidirectional shifters for $1:2:6$, $1:2:8$, and $1:4:8$, respectively, retaining the unsigned alignment window and including added Group exponents in the global MAX. Fig.~\ref{fig:dp_csa_expansion} shows the expanded reduction: added Group results merge with the baseline's two carry-save rows, and a row-pair selector feeds one shared carry-propagate adder (CPA). For a total of $N_{\mathrm{group}}$ baseline and added Groups and an unsigned alignment width $W$, the retained sum width is
-\begin{equation}
-W_{\mathrm{sum}}=W+1+\left\lceil\log_2(N_{\mathrm{group}}+1)\right\rceil.
-\label{eq:expanded_sum_width}
-\end{equation}
-Here, $W+1$ is the width after global alignment and sign restoration, $N_{\mathrm{group}}+1$ includes the single $C$ input, and the ceiling term accounts for carry growth. Expansion preserves pipeline depth and initiation interval.
-
-E extensions activate only in E mode, and QE extensions only in Q/E modes. Masks jointly control frontend updates, MAX participation, shifting, reduction, and special-value propagation.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.70\columnwidth]{DP_CSAmodule.png}
-\caption{Carry-save reduction for K expansion. The dashed upper-right 4:2 compressor is used only for $1:2:8$ and $1:4:8$, reducing four added sources to two rows. The two added sources in $1:2:6$ feed the lower-right merge directly. The bottom selector chooses the baseline or extended row pair for the shared final CPA.}
+\includegraphics[width=\columnwidth]{dynamic_add.pdf}
+\caption{Accumulation network for low-precision expansion. Results from 2/4/8/12 added Groups are merged with the baseline into sum and carry rows. A precision-controlled MUX selects the baseline or merged pair for the shared final CPA.}
 \label{fig:dp_csa_expansion}
 \end{figure}
 
-\input{tables/legacy/brick_compositions.tex}
-
-\subsection{Array Composition Along M/N}
-\label{sec:n_expansion}
-\label{sec:brick_composition}
-
-A two-dimensional DP array can add independent outputs along M or N. We denote the shorter output dimension by N and add low-precision DPs along it. Four E16 or Q8E16 Groups with an independent backend form E64 or Q32E64, respectively; their H/Q/E peaks, normalized to baseline H throughput, are $0:0:4$ and $0:2:4$. These specialized DPs retain the baseline hierarchy and floating-point flow while removing unsupported-format control and the integer accumulation bypass, preserving the interface and throughput. At the array level, added units share A with the baseline in each row; each column uses independent B and $C$ inputs and produces its own D.
-
-Table~\ref{tab:brick_compositions} lists resources added to the same baseline array. The $1:2:6$ configuration adds half as many E64 units as baseline DPs, requiring an even baseline column count when adding complete columns. The $1:2:8$ and $1:4:8$ configurations add E64 and Q32E64 units, respectively, equal in number to the baseline DPs. For comparison, K expansion replaces each DP in the baseline array with the corresponding expanded design, matching peak throughput in every precision. K expansion shares output processing, whereas N composition adds independent accumulation and output state. The next section compares these implementations.
-% END REVIEW PAIR: 04_expansion.tex
+This composition maps throughput-ratio choices to the addition of specialized Groups. The next section compares the area and power of the nine configurations at the same process node and frequency, providing the hardware costs for chip-level throughput-ratio exploration.
+% END REVIEW PAIR: 03_architecture.tex
 
 % BEGIN REVIEW PAIR: 05_evaluation.tex
 \section{Hardware Implementation and Evaluation}
