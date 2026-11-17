@@ -1,5 +1,11 @@
 # DAC 2027 论文
 
+## 微架构正式同步（2026-11-17）
+
+本轮审阅的微架构已从 `main_temp.tex` 迁入 `sections/03_architecture.tex`，通过 `main.tex` 编译为正式稿。内容包括 $1:2:4$ 基线的 Lane--Group--DP 通路、Q8E16/Q8/E16 专用化、九种配比的 Group 构成及 CSA 扩展选通。构成表使用单一英文表体 `tables/group_compositions.tex`；基线、解码与 CSA 图沿用作者提供的 PDF。正式稿与临时稿分别通过 `make pdf`、`make pdf-temp` 编译。
+
+表 III 增加总 DP 并行度列，以 T8H16Q32E64 等记号列出各精度模式每拍处理的元素对数，并与 Group 数量逐项核对。迁移保留正式稿其他章节的后续编辑及首页右栏工业芯片表，不以临时稿旧快照覆盖引言、背景或 DSE；英文稿尚未同步。本次范围及编译检查见 `data/evidence/architecture_promotion_20261117/review.json`。
+
 ## 中英文共享英文表格（2026-11-16）
 
 原 Table III 的格式简称、定点数表示和计算并行度记号已移入第三章首个小节“符号与记号约定 / Notation and Conventions”，中英文正文分别维护；不再使用符号表，后续表号自动递减。

@@ -176,7 +176,7 @@ $\dagger$ denotes an R\&D roadmap target.}
 % END independent background snapshot.
 
 % BEGIN independent architecture draft; author review, 2026-11-17.
-% Migrate this section manually after review; the shared architecture source is unchanged.
+% Promoted to sections/03_architecture.tex on 2026-11-17; retained as a review snapshot.
 \section{面向配比探索的组合式点积微架构}
 \label{sec:architecture}
 \label{sec:brick_definition}
@@ -260,7 +260,7 @@ E16 的裁剪进一步覆盖宽对齐与规约通路。每条 Lane 保留八个 
 
 表~\ref{tab:ratio9_composition} 给出九种 DP 的 Group 构成。各配置均保留四个基线复用型 Group，通过增配 Q8、E16 或 Q8E16 调整低精度吞吐；新增组处理同一输出的额外 $K$ 片段，尺度仍按原量化块边界分发。
 
-\input{tables/temp/group_compositions.tex}
+\input{tables/group_compositions.tex}
 
 DP 为新增 Group 配置双向移位器，并扩展指数比较与累加位宽，使所有参与源在共同基准下对齐。如图~\ref{fig:dp_csa_expansion} 所示，新增结果经 4:2 CSA 网络压缩为两行，再与包含唯一 $C$ 的基础两行经一次 4:2 CSA 合并；仅新增两组时直接接入合并级。MUX 按精度成对选择基础或合并后的和、进位两行，送入共享 CPA。Q8、E16、Q8E16 分别在 Q、E、Q/E 模式参与；未启用扩展时选通基线路径，并屏蔽新增组对指数比较及特殊值归约的贡献，保持原有高精度计算结果。
 

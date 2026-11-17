@@ -1,5 +1,11 @@
 # 论文编辑授权范围（用户于 2026-11-16 更新）
 
+## 微架构正式同步（2026-11-17）
+
+用户明确授权将本轮 `main_temp.tex` 修改更新到正式稿。当前第三章已迁入 `sections/03_architecture.tex`，由 `main.tex` 引用；九种配比的 Group 构成表统一使用 `tables/group_compositions.tex`，正式稿与临时稿共用这一表体。基线、解码与扩展累加图分别使用作者提供的 `baseline_arch.pdf`、`unpack_layout.pdf`、`dynamic_add.pdf`。
+
+此次迁移保留正式稿已有的摘要、引言、背景、评估、DSE 和结论，以及首页右栏 Table I；临时稿中这些章节属于较早快照，不用于覆盖正式稿后续编辑。英文稿未同步。后续正式稿修改仍须用户明确要求。
+
 ## 共享表格（2026-11-16）
 
 用户随后要求将原 Table III 的格式简称、定点格式和并行度记号改为第三章首个小节的文字说明；`tables/precision_families.tex` 已移除，相关内容在中英文正文的 `sec:notation_conventions` 处维护。
