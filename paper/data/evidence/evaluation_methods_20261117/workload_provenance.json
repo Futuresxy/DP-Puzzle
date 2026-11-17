@@ -1,0 +1,57 @@
+{
+  "source_repository": "Quant_LLM_Chip_Codesign",
+  "metadata_path": "HW/tests/data/petile_test_data/power_data/PETileRatio_Qwen8BMLPPower_1027202452/sources/source_metadata.json",
+  "metadata_sha256": "36a89f3b8c37a17edd5be5172f4a5d145cd24cd5a3b7d4cbf44e3e983f2fc707",
+  "model": "Qwen/Qwen3-8B",
+  "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+  "context_length": 256,
+  "context_count": 4,
+  "tokens": 1024,
+  "activation_dtype": "torch.bfloat16",
+  "projection": "model.layers.0.mlp.down_proj",
+  "dataset": "wikitext-2-raw-v1",
+  "split": "train",
+  "dataset_sha256": "e83889baabc497075506f91975be5fac0d45c5290b6b20582c8cd1e853d0c9f7",
+  "dataset_snapshot": "b08601e04326c79dfdd32d625aee71d232d685c3",
+  "dataset_resolution": "Local Hugging Face snapshot train-00000-of-00001.parquet resolves to the metadata text SHA-256.",
+  "token_policy": "Read WikiText text with the source reader; tokenize using the model tokenizer; take the first 1024 tokens and reshape into four 256-token contexts.",
+  "implementation_source": "HW/tests/python/gen_mlp_power_vectors.py",
+  "implementation_sha256": "9caed40d6928e2c4832893270400330b4a65bc8de5e15c9e86152c0ae32da65e",
+  "sample_policy": "Same token, output channel, and K start; native contiguous K slice per precision/configuration.",
+  "c_policy": "FP32-rounded prefix accumulator computed from BF16-reference GEMM operands.",
+  "window": {
+    "transactions": 1024,
+    "issue_interval_cycles": 1,
+    "start_source_index": 256,
+    "end_source_index_exclusive": 768,
+    "cycles": 512,
+    "duration_ns": 512
+  },
+  "tools": {
+    "rtl_simulator": "Verilator 5.030",
+    "dc": "Synopsys Design Compiler X-2025.06",
+    "gate_simulator": "Synopsys VCS X-2025.06-1",
+    "power": "Synopsys Power Compiler X-2025.06"
+  },
+  "condition": {
+    "process": "TSMC CLN12FFCLL",
+    "corner": "TT",
+    "voltage_v": 0.7,
+    "temperature_c": 85,
+    "frequency_hz": 1000000000,
+    "scope": "post-synthesis zero-delay gate activity, pre-CTS and pre-route"
+  },
+  "bibliography_verification": {
+    "key": "merity2016pointer",
+    "title": "Pointer Sentinel Mixture Models",
+    "authors": [
+      "Stephen Merity",
+      "Caiming Xiong",
+      "James Bradbury",
+      "Richard Socher"
+    ],
+    "year": 2016,
+    "source_url": "https://arxiv.org/abs/1609.07843",
+    "checked_on": "2026-11-17"
+  }
+}

@@ -57,3 +57,6 @@
 
 
 2026-11-17 英文微架构翻译：按用户要求，使用项目 academic-humanizer 规范，将当前正式中文第三章翻译到 dp_puzzle.tex。以 Lane、Group、DP 及 Group 专用化/九种配比组合组织五个小节，替换旧英文分立的微架构与扩展章节，并同步引言中章节组织的一句引用。统一 exponent、significand、scale factor、alignment、LZD、CSA/CPA 和舍入术语；保留位宽、公式、引用及共用英文表格/作者 PDF。章节级结构与技术标记核对、英文编译及第 3–5 页检查通过。所有中文源和其他英文正文保持原样；未将后续旧版评估/DSE/结论自动同步为新内容。范围、术语与检查记录见 data/evidence/architecture_translation_20261117.md。
+
+
+2026-11-17 中文 Evaluation 方法补充与精简：按用户要求，仅完善正式中文第四章。将 A/B 合并为“实验设置与验证”，用三个简短段落说明 Verilog 实现、DC X-2025.06、TSMC 12 nm TT/0.7 V/85°C/1 GHz 及 Qwen3-8B/WikiText-2 负载驱动的门级活动功耗分析；数值验证段说明 Verilator、每配置 11 格式/10,747 笔验证、架构模型逐位一致和相对独立精确有理数参考的 FP32 ULP 结果。九种配置的 99 项逐格式摘要与功耗源 metadata 哈希已核对，WikiText 文献元数据经 arXiv 原始页面核验；详细采样与测试组成留在 data/evidence/evaluation_methods_20261117/，不展开于正文。沿用既有测试及测量记录，本轮未执行新 RTL/EDA 实验。中文编译通过，正文 6 页、参考文献 2 页；英文稿、临时稿和其余正文保持原样。

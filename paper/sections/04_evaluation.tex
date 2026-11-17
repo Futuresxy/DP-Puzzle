@@ -2,10 +2,15 @@
 \section{算力配比的硬件成本表征}
 \label{sec:evaluation}
 
-\subsection{实验方法}
+\subsection{实验设置与验证}
 \label{sec:eval_setup}
+\label{sec:numerical_validation}
 
-九种全精度 DP 均使用 Synopsys Design Compiler，在 12\,nm、TT、0.7\,V、85$^\circ$C 下以 1\,GHz 综合，采用集成时钟门控，保持八级流水与 II=1，并满足时序和电气约束。面积包含组合逻辑、流水寄存器及门控单元。功耗输入来自 Qwen3-8B 首层 MLP 下投影~\cite{qwen3technicalreport}，分别编码为 BF16、MXFP8 E4M3 和 MXFP4 E2M1，作为 H/Q/E 的测量代表。VCS 门级仿真连续发出 1024 笔独立请求，取中间 512 拍生成 SAIF；Power Compiler 基于完整活动注释估计内部、切换及泄漏功耗~\cite{synopsysActivityPower}。面积和功耗统一取综合后、CTS/布线前的单 DP 边界。
+九种点积单元以 Verilog 实现，使用 Synopsys Design Compiler X-2025.06 在 TSMC 12\,nm 工艺、TT（0.7\,V、85$^\circ$C）工况下以 1\,GHz 综合，启用集成时钟门控，并通过时序与电气检查。面积统计包含组合逻辑、流水寄存器和门控单元。
+
+功耗输入取自 Qwen3-8B 在 WikiText-2 上运行时第一层 MLP 下投影的激活与权重~\cite{qwen3technicalreport,merity2016pointer}，分别编码为 BF16、MXFP8 E4M3 和 MXFP4 E2M1。VCS 门级仿真连续发出 1024 笔原生点积请求，取中间 512 拍的活动生成 SAIF，由 Power Compiler 估计总功耗~\cite{synopsysActivityPower}。面积与功耗均对应综合后、CTS/布局布线前的单 DP。
+
+使用 Verilator 5.030 验证 RTL，每种配置覆盖 11 种格式、10,747 笔随机及模型负载测试，输出均与 C++ 架构模型逐位一致。数值精度以量化输入的精确有理数点积加 $C$、再一次舍入至 FP32 为参考。在该测试集上，BF16 的最大 FP32 ULP 误差为 3，其余浮点格式不超过 1，其中 HiF4 为 0；INT8/INT32 结果精确匹配。
 
 \subsection{九种配比的面积与功耗}
 \label{sec:lowp_costs}
@@ -41,6 +46,6 @@ B_{\mathrm{in}}(K,x)=fbK\left(\frac{m}{x}+n\right),\qquad
 
 \input{tables/related_ppa_native.tex}
 
-表~\ref{tab:related_dp} 保留各工作的原工艺、电压与频率，不进行工艺归一化。FPnew 采用正式期刊报告的 SIMD FMA 数据，MiniFloats 采用扩展 wDotp 的独立 FPU 数据。TransDot 的绝对面效按原图的单元面积估读值计算，并以 $\dagger$ 标识；其相对 FPnew 的倍率对应原文内部的 12\,nm 对照。
+表~\ref{tab:related_dp} 按各工作的原工艺与报告条件比较面积及能量效率。FPnew 采用正式期刊报告的 SIMD FMA 数据，MiniFloats 采用扩展 wDotp 的独立 FPU 数据。TransDot 的绝对面效按原图的单元面积估读值计算，并以 $\dagger$ 标识；其相对 FPnew 的倍率对应原文内部的 12\,nm 对照。
 
 在本文相同的 12\,nm、1\,GHz 工况下，去除 T/H/INT8 通路的 $0:2:4$ 保持 Q32E64 容量，MXFP8 面效从全精度基线的 3.959 提升至 5.472\,TFLOP/s/mm$^2$，能效从 4.000 提升至 4.713\,TFLOP/s/W。其 MXFP4 面效与能效分别为 10.945\,TFLOP/s/mm$^2$ 和 12.527\,TFLOP/s/W。两列体现完整格式共享与低精度专用化的成本，九种全精度候选则用于后续统一功能范围的 DSE。
