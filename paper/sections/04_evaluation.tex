@@ -13,7 +13,6 @@
 \subsection{基线设计与同类多精度单元比较}
 \label{sec:related_dp_evaluation}
 
-\input{tables/related_features.tex}
 \input{tables/related_ppa_native.tex}
 
 表~\ref{tab:related_features} 与表~\ref{tab:related_dp} 分别比较格式覆盖与实现效率。本文选取 $1:2:4$ 基线作为完整多精度设计的代表，支持 TF32、FP16/BF16、MXFP8/6/4、NVFP4、HiF4 及 INT8，浮点与整型运算分别采用 FP32 和 INT32 累加。相比表中已有单元，该设计在共享通路中覆盖更完整的低精度块缩放格式，兼容 MXFP8/6/4、NVFP4 和 HiF4，并支持多种算力配比，为不同量化方案提供统一的计算基础。
