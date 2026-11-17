@@ -1,0 +1,87 @@
+{
+  "model": "DeepSeek-V4.1-Flash",
+  "model_config": "data/inputs/models/DeepSeek-V4.1-Flash/inference/config.json",
+  "scope": "ced_cold_prefill",
+  "batch": 1,
+  "contexts": [
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    131072,
+    262144,
+    524288,
+    1048576
+  ],
+  "alpha": "0.327",
+  "beta": "1.2",
+  "baseline_cores": 36,
+  "dp_per_core": 256,
+  "utilization": 1,
+  "weighting": "equal_requests_and_scenarios",
+  "scenarios": [
+    {
+      "id": "A",
+      "label": "Original",
+      "routed": "FP8",
+      "shared": "FP8",
+      "projections": "FP8",
+      "attention": "BF16",
+      "output": "BF16",
+      "basis": "frozen reference mapping"
+    },
+    {
+      "id": "B",
+      "label": "Routed FP4",
+      "routed": "FP4",
+      "shared": "FP8",
+      "projections": "FP8",
+      "attention": "BF16",
+      "output": "BF16",
+      "basis": "routed W4A4 deployment path; other work fixed"
+    },
+    {
+      "id": "C",
+      "label": "Linear FP4",
+      "routed": "FP4",
+      "shared": "FP4",
+      "projections": "FP4",
+      "attention": "BF16",
+      "output": "BF16",
+      "basis": "conditional FP4 migration of shared experts and Q-up/O-up"
+    },
+    {
+      "id": "D",
+      "label": "Attention FP8",
+      "routed": "FP4",
+      "shared": "FP8",
+      "projections": "FP8",
+      "attention": "FP8",
+      "output": "FP8",
+      "basis": "branch from B: FP8 attention and grouped output"
+    },
+    {
+      "id": "E",
+      "label": "Linear4 + Attn8",
+      "routed": "FP4",
+      "shared": "FP4",
+      "projections": "FP4",
+      "attention": "FP8",
+      "output": "FP8",
+      "basis": "combined C and D"
+    },
+    {
+      "id": "F",
+      "label": "Core FP4",
+      "routed": "FP4",
+      "shared": "FP4",
+      "projections": "FP4",
+      "attention": "FP4",
+      "output": "FP4",
+      "basis": "aggressive core GEMM scenario; background remains unchanged"
+    }
+  ]
+}

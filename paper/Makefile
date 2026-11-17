@@ -1,8 +1,10 @@
 PYTHON ?= python3
-.PHONY: all pdf watch reproduce portfolio pdf-temp presentation portfolio-stress reproduce-legacy petile17 diagrams cost-figures dp-share-figures check test test-legacy clean
+.PHONY: all pdf watch reproduce portfolio pdf-temp presentation portfolio-stress reproduce-legacy petile17 diagrams cost-figures dp-share-figures check test test-legacy clean case-study
 all: pdf
 pdf-temp:
 	latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error main_temp.tex
+case-study:
+	$(PYTHON) scripts/v41_case_study.py
 pdf:
 	latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error main.tex
 reproduce:

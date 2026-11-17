@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-17",
+  "manuscript_scope": "main_temp.tex Chapter V only; formal and English manuscripts unchanged",
+  "figure_label": "fig:fixed_budget_compact; currently auto-numbered Figure 6 in the review draft",
+  "existing_tests_passed": {
+    "hardware_cost": 8,
+    "v41_core": 6
+  },
+  "case_count_matches_frozen_audit": 66,
+  "compile": "latexmk XeLaTeX main_temp.tex passed; no undefined references or overfull boxes",
+  "pdf_check": "Vector figure; pdfimages lists no embedded image objects; pages 5 and 6 visually inspected",
+  "preexisting_warnings": [
+    "fontspec CJK font shape warning",
+    "full review draft exceeds six main-text pages"
+  ],
+  "provenance": "AI-assisted analysis and Chinese draft; no new hardware or inference measurements",
+  "draft_section_sha256": "07c451c459d27d89c344a898f4f507a030346928def9fe92c63efd2e576eed84",
+  "receipts": {
+    "case_hw_tests.log": "test_baseline_exact_boundary (test_hardware_cost.HardwareCostTests.test_baseline_exact_boundary) ... ok\ntest_budget_constraints_and_maximality (test_hardware_cost.HardwareCostTests.test_budget_constraints_and_maximality) ... ok\ntest_full_precision_candidate_set (test_hardware_cost.HardwareCostTests.test_full_precision_candidate_set) ... ok\ntest_invalid_parameters (test_hardware_cost.HardwareCostTests.test_invalid_parameters) ... ok\ntest_physical_count_is_common_to_all_modes (test_hardware_cost.HardwareCostTests.test_physical_count_is_common_to_all_modes) ... ok\ntest_relaxing_power_never_reduces_deployment (test_hardware_cost.HardwareCostTests.test_relaxing_power_never_reduces_deployment) ... ok\ntest_topology_scaling_and_fixed_reference (test_hardware_cost.HardwareCostTests.test_topology_scaling_and_fixed_reference) ... ok\ntest_unsupported_and_zero_deployment_are_distinct (test_hardware_cost.HardwareCostTests.test_unsupported_and_zero_deployment_are_distinct) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.013s\n\nOK\n",
+    "case_work_tests.log": "test_background_kept_and_branch_composition (test_v41_core.CoreTests.test_background_kept_and_branch_composition) ... ok\ntest_conservation_all_contexts_and_cases (test_v41_core.CoreTests.test_conservation_all_contexts_and_cases) ... ok\ntest_invalid_utilization_fails (test_v41_core.CoreTests.test_invalid_utilization_fails) ... ok\ntest_original_and_routed_migration_match_previous_ledger (test_v41_core.CoreTests.test_original_and_routed_migration_match_previous_ledger) ... ok\ntest_summary_preserves_previous_fixed_chip_metrics (test_v41_core.CoreTests.test_summary_preserves_previous_fixed_chip_metrics) ... ok\ntest_utilization_changes_routed_service_only (test_v41_core.CoreTests.test_utilization_changes_routed_service_only) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.048s\n\nOK\n"
+  }
+}
