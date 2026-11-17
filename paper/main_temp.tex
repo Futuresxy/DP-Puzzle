@@ -324,62 +324,53 @@ B_{\mathrm{in}}(K,x)=fbK\left(\frac{m}{x}+n\right),\qquad
 
 % END independent evaluation snapshot.
 
-% BEGIN independent Case Study draft; fixed budget and two findings, 2026-11-17.
+% BEGIN independent deployment model; hardware budgets and absolute peaks, 2026-11-17.
 % Temporary manuscript only; the author promotes accepted text to the official manuscript.
-\section{案例研究：预算约束下的算力配比选择}
+\section{从点积单元到预算约束下的芯片算力}
 \label{sec:workload}
-本节以 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 为例，研究在相同面积和计算阵列功耗预算下，如何选择一款适应模型精度演进的计算芯片。我们将九种 DP 的实测成本与算子级工作量结合，在统一预算下比较各配比的 GEMM 计算收益。
+单 DP 的吞吐配比决定局部计算能力，其面积与功耗则影响芯片内可部署的实例数量。本节将九种 DP 的实测成本映射为统一预算下的核心数量与分精度绝对峰值算力。
 
-\subsection{主要算子与精度迁移}
-依据模型公开结构建立 GEMM 公式，脚本自动计算 batch=1、$L\in\mathcal L=\{2^{10},\ldots,2^{20}\}$ 下的冷启动 prefill 工作量：线性层按 $2MNK$ 统计，专家与注意力分别按激活专家数和有效位置对展开。表~\ref{tab:case_migrations} 用精度映射 $\pi_s(o)$ 描述三类主要算子的六种配置，保持形状与总 FLOP 不变；其余计算保留原精度，包括原生 FP4 索引器，FP32 单独记录。
-
-A 为参考映射（W4A8 专家按 FP8 吞吐建模）；B--F 组合专家、线性层与注意力的降精度路线。专家 W4A4 部署~\cite{nvidiav41routed2026} 和 FP8/FP4 注意力量化~\cite{flashattention3,sageattention3} 提供迁移依据，表中扩展到共享专家及投影的配置用于刻画未来计算需求。
-\input{tables/temp/case_migrations}
-
-\subsection{面积、功耗与计算时间模型}
+\subsection{面积与功耗预算}
 \label{sec:k4_area}
-以 $1:2:4$ 的 $N_0=36$ 核设计为参照，每核包含 $D=256$ 个 DP，频率为 $f=1$\,GHz，II=1。参考公开评估中 Cube 计算簇占 AI Core 面积的 32.7\%~\cite{luo2024hifloat8area}，取基准计算阵列面积占比 $\alpha=0.327$；取 $\beta=1$，要求计算阵列总功耗不超过基准。各候选保持每核外围存储与控制资源的面积不变，使用相同面积上限和功耗上限。
-
-设 $a_j$ 为单 DP 面积，$p_j^{\max}=\max_p p_{j,p}$ 为三种精度下测量功耗的最大值，$r_j=a_j/a_0$、$\rho_j=p_j^{\max}/p_0^{\max}$。基准校准得到面积预算 $A_b=N_0Da_0/\alpha$ 和 DP 阵列功耗预算 $P_b=\beta N_0Dp_0^{\max}$，可部署核数为
-\begin{equation}
-n_j=\min\!\left\{
-\left\lfloor\frac{N_0}{1+\alpha(r_j-1)}\right\rfloor,
-\left\lfloor\frac{\beta N_0}{\rho_j}\right\rfloor\right\}.
-\label{eq:core_area_budget}
-\end{equation}
-其中两项分别对应面积与功耗限制，确定后的核数在所有场景和上下文中保持不变。该预算下 $1:2:8$、$1:2:12$ 与 $1:8:16$ 分别部署 32、24 与 10 核。
-
-令 $p\in\{\mathrm{BF16},\mathrm{FP8},\mathrm{FP4}\}$，$K_{j,p}$ 为单 DP 的原生点积长度，则工作量、芯片峰值吞吐及计算时间统一为
+以 $1:2:4$ 配比为基准，每个 AI Core 包含 $D$ 个同构 DP，基准芯片含 $N_0$ 个核心。设 $a_j$ 为候选 $j$ 的单 DP 面积，$\alpha$ 为基准核心中 DP 阵列的面积占比。保持每核外围存储与控制面积不变，外围面积、候选核心面积与共同面积预算为
 \begin{equation}
 \begin{aligned}
-F_{s,p}(L)&=\sum_{o:\,\pi_s(o)=p}F_o(L),\quad C_{j,p}=2fDn_jK_{j,p},\\
-\widehat T_{j,s,L}&=\sum_p\frac{F_{s,p}(L)}{C_{j,p}}.
+A_{\mathrm{other}}&=Da_0(\alpha^{-1}-1),\\
+A_{\mathrm{core},j}&=A_{\mathrm{other}}+Da_j,\\
+A_b&=N_0Da_0/\alpha.
 \end{aligned}
-\label{eq:case_compute_time}
+\label{eq:deployment_area}
 \end{equation}
-该式按充分供数和阵列完全利用估计所统计 GEMM 的计算服务时间，各精度模式的时间相加；访存、通信及非 GEMM 开销不纳入这一计算指标。
+因此，$\alpha$ 用于校准基准的面积构成；更换 DP 配比后，候选核心的总面积及阵列占比随 $a_j$ 改变。面积预算对应 AI Core 集合，包含核心内固定的外围资源。
 
-\subsection{统一评价与配比选择}
-图~\ref{fig:fixed_budget_compact} 的 A--F 列分别对 11 个上下文的计算时间取均值，All 列进一步对六场景等权汇总。统一评分为基准与候选的平均时间之比：
+令 $p_j^{\max}=\max_{p}p_{j,p}$ 为 BF16、MXFP8、MXFP4 三种模式中测量功耗的最大值，以此确定所有已部署 DP 同时运行的功耗预算：$P_b=\beta N_0Dp_0^{\max}$。其中 $\beta$ 表示相对基准的计算阵列功耗上限倍率；本节取 $\beta=1$，使各候选共享相同的 DP 阵列功耗预算。
+
+\subsection{核心数量与绝对峰值算力}
+面积与功耗分别给出核心数量上限，最终部署规模取两者的较小值：
 \begin{equation}
-S_j(\mathcal S)=
-\frac{\displaystyle\sum_{s\in\mathcal S}\sum_{L\in\mathcal L}w_{s,L}\widehat T_{0,s,L}}
-{\displaystyle\sum_{s\in\mathcal S}\sum_{L\in\mathcal L}w_{s,L}\widehat T_{j,s,L}},\quad
-w_{s,L}=\frac{1}{|\mathcal S||\mathcal L|}.
-\label{eq:case_score}
+\begin{aligned}
+n_j^A&=\left\lfloor\frac{A_b}{A_{\mathrm{core},j}}\right\rfloor,\qquad
+n_j^P=\left\lfloor\frac{P_b}{Dp_j^{\max}}\right\rfloor,\\
+n_j&=\min\{n_j^A,n_j^P\}.
+\end{aligned}
+\label{eq:core_area_budget}
 \end{equation}
-单场景列取 $|\mathcal S|=1$，All 取 $\mathcal S=\{A,\ldots,F\}$。这一指标对应等请求概率下的平均计算时间，长上下文按其实际计算时间贡献收益；比较过程中始终使用同一候选芯片。
+同一候选在各精度模式下均采用这一固定部署数，共包含 $Dn_j$ 个 DP。取最大模式功耗约束部署，可使所有核心在任一被测精度模式下同时工作。
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{temp/v41_case_study_equal_budget.pdf}
-\caption{固定预算下的 GEMM 计算加速比（$\alpha=0.327$，$\beta=1$）。括号内为部署核数，A--F 为六种精度迁移场景，All 按式~\eqref{eq:case_score} 汇总 66 个场景--上下文组合。每列相对同负载 $1:2:4$ 归一化，黑框标记未舍入数值下的最优配置。}
-\label{fig:fixed_budget_compact}
-\end{figure}
+设 $K_{j,p}$ 为单 DP 在精度 $p$ 下每周期处理的乘积数，频率 $f$ 以 Hz 计、II=1，则模式 $p$ 的芯片绝对峰值为
+\begin{equation}
+C_{j,p}=2fDn_jK_{j,p}\times10^{-12}\quad\mathrm{TFLOP/s}.
+\label{eq:deployment_peak}
+\end{equation}
+这里按每次乘加计 2 FLOP。各模式的峰值分别计算，不同时相加；$C_{j,p}$ 表示充分供数和阵列完全利用时的计算能力。
 
-\textbf{额外低精度并行度受到部署成本制约。} 从 $1:2:8$ 增至 $1:2:12$，单 DP 的 FP4 吞吐增加 50\%，但功耗约束使部署数由 32 降为 24 核。因此，芯片 FP4 吞吐仅增加 12.50\%，BF16/FP8 吞吐却下降 25\%，六场景综合加速由 $1.15\times$ 降为 $0.95\times$。更高的低精度并行度只有与剩余精度工作量相匹配，才能转化为整体收益。
+\subsection{九种配比的部署结果}
+参考公开评估中 Cube 计算簇占 AI Core 面积的 32.7\%~\cite{luo2024hifloat8area}，取 $\alpha=0.327$，并设置 $N_0=36$、$D=256$、$f=1$\,GHz。由基准实测成本得到共同面积预算 455.59\,mm$^2$ 和 DP 阵列功耗预算 147.47\,W。表~\ref{tab:deployment_capacity} 列出各候选的部署数量及绝对峰值算力。
+\input{tables/temp/deployment_capacity}
 
-\textbf{适度增配形成跨迁移场景的综合优势。} A、F 分别偏好 $1:2:4$ 与 $1:2:12$，而 $1:2:8$ 在 B--E 中均取得最低平均计算时间，并以 $1.15\times$（14.73\%）获得 All 最优；去除最激进的 F 后仍以 $1.10\times$ 居首。在本例相同面积与功耗预算下，适度 FP4 增配兼顾了低精度需求增长与混合精度计算所需的部署规模。
+\textbf{功耗约束改变面积允许的部署规模。} $1:8:16$ 按面积可容纳 22 核，加入功耗约束后仅能部署 10 核，其 FP8/FP4 峰值与部署 20 核的 $1:4:8$ 相同，BF16 峰值则减半。由此可见，单 DP 的低精度吞吐增幅并不直接等于芯片吞吐增幅。
+
+\textbf{专用增配的成本优势可转化为芯片算力。} $1:2:8$ 与 $1:4:8$ 的单 DP FP4 吞吐相同，但前者可部署 32 核，芯片 FP4 峰值达到 2097.15\,TFLOP/s，比后者高 60\%。因此，不同配比应以预算内的三精度算力向量 $(C_{j,\mathrm{BF16}},C_{j,\mathrm{FP8}},C_{j,\mathrm{FP4}})$ 进行比较，而非仅比较单 DP 的名义比例。
 
 \section{结论}
 \label{sec:conclusion}

@@ -1,0 +1,8 @@
+{
+  "alpha": "0.327",
+  "beta": "1",
+  "baseline_cores": 36,
+  "dp_per_core": 256,
+  "scope": "AI-core area and DP-array power budgets",
+  "budget_rationale": "Same area and same DP-array power ceiling as the baseline; one fixed deployment across precision modes."
+}

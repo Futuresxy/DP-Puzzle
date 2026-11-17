@@ -1,0 +1,11 @@
+{
+  "date": "2026-11-17",
+  "scope": "Temporary Chinese Chapter V only",
+  "formal_and_other_draft_chapters_unchanged": true,
+  "hardware_tests": "test_baseline_exact_boundary (test_hardware_cost.HardwareCostTests.test_baseline_exact_boundary) ... ok\ntest_budget_constraints_and_maximality (test_hardware_cost.HardwareCostTests.test_budget_constraints_and_maximality) ... ok\ntest_full_precision_candidate_set (test_hardware_cost.HardwareCostTests.test_full_precision_candidate_set) ... ok\ntest_invalid_parameters (test_hardware_cost.HardwareCostTests.test_invalid_parameters) ... ok\ntest_physical_count_is_common_to_all_modes (test_hardware_cost.HardwareCostTests.test_physical_count_is_common_to_all_modes) ... ok\ntest_relaxing_power_never_reduces_deployment (test_hardware_cost.HardwareCostTests.test_relaxing_power_never_reduces_deployment) ... ok\ntest_topology_scaling_and_fixed_reference (test_hardware_cost.HardwareCostTests.test_topology_scaling_and_fixed_reference) ... ok\ntest_unsupported_and_zero_deployment_are_distinct (test_hardware_cost.HardwareCostTests.test_unsupported_and_zero_deployment_are_distinct) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.013s\n\nOK\n",
+  "nine_deployments_and_27_peaks_match_previous_hardware_data": true,
+  "input_output_hashes_verified": true,
+  "latex_compile": "passed; no undefined references or overfull boxes",
+  "chapter_sha256": "fc1e073c3de74a8da2ee95c9181a31718716406adc1eb55894441b33d89845af",
+  "new_hardware_or_inference_measurements": false
+}
