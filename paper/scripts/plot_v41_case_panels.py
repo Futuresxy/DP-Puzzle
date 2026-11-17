@@ -1,4 +1,5 @@
 """Plot deployment counts beside the existing five-stage case-study scores."""
+import argparse
 import csv
 import hashlib
 import json
@@ -30,6 +31,14 @@ def read_verified(name, manifest):
 
 
 def main():
+    global OUTPUT, FIGURE
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--official', action='store_true',
+                        help='Render the promoted official figure with a separate evidence record')
+    args = parser.parse_args()
+    if args.official:
+        OUTPUT = ROOT / 'data/evidence/v41_case_panels_main_20261118'
+        FIGURE = ROOT / 'figures/v41_case_panels_overlay.pdf'
     source_manifest = json.loads((SOURCE / 'manifest.json').read_text())
     hardware = read_verified('hardware', source_manifest)
     gains = read_verified('gains', source_manifest)
@@ -110,7 +119,8 @@ def main():
 
     OUTPUT.mkdir(parents=True, exist_ok=True)
     manifest = {
-        'status': 'analytical_uncalibrated', 'scope': 'Temporary Chinese Chapter V only',
+        'status': 'analytical_uncalibrated',
+        'scope': 'Official Chinese Chapter V' if args.official else 'Temporary Chinese Chapter V only',
         'inputs': [fingerprint(p) for p in (Path(__file__), SOURCE/'manifest.json',
                                           SOURCE/'hardware.csv', SOURCE/'gains.csv')],
         'outputs': [fingerprint(FIGURE)], 'config': source_manifest['config'],

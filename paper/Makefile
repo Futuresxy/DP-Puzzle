@@ -18,7 +18,7 @@ reproduce:
 	$(MAKE) presentation
 presentation:
 	$(PYTHON) scripts/build_related_native.py --official
-	$(PYTHON) scripts/plot_dse_fixed_budget.py --official
+	$(PYTHON) scripts/plot_v41_case_panels.py --official
 portfolio:
 	$(PYTHON) scripts/v41_core.py
 portfolio-stress:

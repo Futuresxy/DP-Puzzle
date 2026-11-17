@@ -1,46 +1,22 @@
 % !TeX root = ../main.tex
-\section{面积与功耗约束下的算力配比探索}
+\section{案例研究：固定预算下的算力配比选择}
 \label{sec:workload}
+本节以 DeepSeek-V4.1-Flash 的主要 GEMM 为例，构造五阶段精度迁移假设，分析固定面积与功耗预算下，哪种算力配比能够兼顾当前负载和未来低精度需求。
+
+\subsection{联合预算下的部署规模}
+九种候选共享与 $1:2:4$ 基准相同的核心集合面积预算和 DP 阵列功耗上限（$\beta=1$）。基准含 36 核，每核 256 个 DP，工作于 1\,GHz、II=1；参考 Cube 计算簇占 AI Core 面积 32.7\% 的公开评估~\cite{luo2024hifloat8area}，取基准阵列面积占比 $\alpha=0.327$，保持每核外围存储与控制面积不变。以单 DP 综合面积和三精度实测功耗的最大值确定两项预算各自允许的整数核数，取较小值，并结合每核 DP 数量及分精度吞吐得到芯片峰值算力。每种候选在所有负载场景中采用同一部署规模。
+
+图~\ref{fig:fixed_budget_compact}(a) 对比仅面积约束与联合约束下的部署核数，后者用于各负载场景的计算时间评价。
+
+\subsection{精度迁移下的配比选择}
+案例覆盖 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 在 batch=1、1K--1M 共 11 个按二倍递增上下文下的冷启动 prefill GEMM。表~\ref{tab:five_stage_migrations} 针对占据主要GEMM计算的算子，构造从 A 到 E 的五阶段精度迁移假设，基于模型原始精度选择逐步降低计算精度，其他算子保持原有精度,统计BF16、FP8、FP4的计算负载。专家 W4A4 部署~\cite{nvidiav41routed2026} 和 FP8/FP4 注意力量化~\cite{flashattention3,sageattention3} 为这一未来负载假设提供可行依据。以各精度计算量除以对应芯片峰值再求和，估算充分供数、阵列满利用下的 GEMM 计算时间。55 个场景--上下文组合按请求等权平均时间，再求同负载基准与候选的平均时间之比；较长上下文按其实际计算量贡献时间。
+\input{tables/five_stage_migrations}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{dse_fixed_budget_v2.pdf}
-\caption{九配比部署与理想计算收益，$\alpha=0.3$。(a) 仅面积与双约束核数，数字为后者；(b) $\beta=1$ 时相对同场景 $1:2:4$ 的平均计算加速比。实框/虚框分别标记双约束/仅面积的最优配比，格内数值均为双约束结果。A--F 迁移定义见正文，All 为六场景等权汇总。}
+\includegraphics[width=\columnwidth]{v41_case_panels_overlay.pdf}
+\caption{固定预算下的部署规模与负载收益（$\alpha=0.327$，$\beta=1$）。(a) 灰色为仅面积约束的核数，蓝色为面积、功耗联合约束的核数。(b) 五阶段迁移的理想 GEMM 计算加速比；A--E 各等权汇总 11 个上下文，All 汇总 55 个组合，黑框标记各列最优值。}
 \label{fig:fixed_budget_compact}
 \end{figure}
 
-\subsection{联合成本与计算模型}
-\label{sec:k4_area}
-考察 TensorCore 局部增配、每 SM 的 shared memory 容量及控制配置不变、由本地复用充分供数的场景，将每核外围面积近似固定。B200/B300 的 HBM 带宽均为最高 8\,TB/s~\cite{nvidiahgx,nvidiahgxmemory2026}，体现了低精度吞吐与存储带宽可以不同步增长；固定外围面积仍是本模型的设计前提。
-
-以 $1:2:4$ 为基准，每 SM 含 $D=256$ 个 DP，基准为 $N_0=36$ 核。设单 DP 面积为 $a_j$，$\alpha$ 为基准 TensorCore 面积占 SM 的比例。华为公开的 Ascend XXX1 面积评估中，Cube 计算簇占 AI Core 面积的 32.7\%~\cite{luo2024hifloat8area}；本文参考这一实例取 $\alpha=0.3$。令 $p_j^{\max}=\max_{p\in\{H,Q,E\}}p_{j,p}$ 为三模式最大测量功耗。外围面积、面积预算和 DP 池功耗预算为
-\begin{equation}
-\begin{aligned}
-A_O&=Da_0(\alpha^{-1}-1),& A_b&=N_0Da_0/\alpha,\\
-P_b&=\beta N_0D p_0^{\max}.&&
-\end{aligned}
-\end{equation}
-实际部署核心数、模式峰值及计算服务时间为
-\begin{equation}
-\begin{aligned}
-n_j&=\min\!\left\{\left\lfloor\frac{A_b}{A_O+Da_j}\right\rfloor,
-\left\lfloor\frac{P_b}{Dp_j^{\max}}\right\rfloor\right\},\\
-C_{j,p}&=2fDn_jK_{j,p},\qquad
-\widehat T_j=\sum_p F_p/C_{j,p}.
-\end{aligned}
-\label{eq:core_area_budget}
-\end{equation}
-其中 $f=1$\,GHz、II=1，$K_{j,p}$ 为原生点积长度，$F_p$ 为 GEMM 工作量。各精度顺序执行，部署不随模式或上下文变化。模型按阵列近满利用率（计算时取 100\%）估算，仅以工作量除以峰值算力，不计访存、通信和非 GEMM 开销，$\widehat T_j$ 不代表端到端延迟。
-
-\subsection{迁移假设与三点发现}
-DeepSeek-V4.1-Flash~\cite{deepseekv41source} 冷启动 prefill 取 batch=1、1K--1M 的 11 个对数间隔上下文。A 为原始映射；B 将路由专家 Q$\to$E；C 在 B 上将共享专家、Q-up/O-up 转 E；D 从 B 将主注意力 QK/PV、Grouped O-down 的 H$\to$Q；E 合并 C/D；F 将 E 的主注意力及 Grouped O-down 再转 E。其余算子保持原精度，FP32 单列。专家 W4A4 部署~\cite{nvidiav41routed2026} 与 FP8/FP4 attention 的分块量化机制~\cite{flashattention3,sageattention3} 为分阶段迁移提供依据；C--F 用作未来负载情景。
-
-图~\ref{fig:fixed_budget_compact} 固定 $\alpha=0.3$、$\beta=1$，各上下文等权，报告 $S_j=\overline{\widehat T}_0/\overline{\widehat T}_j$；All 进一步对六场景的时间等权求均值，用于选择跨上下文、跨迁移场景的一款固定芯片。
-
-\textbf{(1) 功耗约束改变面积模型的扩展偏好。} 仅面积约束时，A/C 分别选择 $1:8:16$/$1:2:16$；加入功耗后变为 $1:2:4$/$1:2:8$。较大低精度容量的面积收益不能直接转化为相同功耗预算下的收益。
-
-\textbf{(2) 非对称增配保留更多可部署核心。} $1:2:8$ 与 $1:4:8$ 的单 DP E 吞吐相同，后者受更高 Q 模式功耗限制，只能部署 20 核，前者可部署 32 核，整芯片 E 算力高 60\%。
-
-\textbf{(3) 适度增配形成跨场景的整体优势。} $1:2:8$ 在 B--E 均为平均时间最优，A--F 等权汇总加速为 1.15 倍；即使不计最激进的 F，仍以 1.10 倍居首。因此，在相同面积和功耗预算下，适度 E 增配可覆盖多种迁移路径，无需随上下文或精度策略更换设计。
-
-\textit{作者确认：C--F 的模型质量可行范围。}
+图~\ref{fig:fixed_budget_compact}(b) 表明，在本案例的面积与严格功耗约束下，大幅增加低精度算力的配比未取得综合优势；适度 FP4 增配的 $1:2:8$ 取得最佳综合收益，相对 $1:2:4$ 的理想 GEMM 计算加速比为 $1.13\times$。在相同预算下，$1:2:8$ 保留较高部署密度与高精度吞吐，兼顾低精度增益和剩余混合精度工作量。

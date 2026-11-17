@@ -1,5 +1,11 @@
 # 论文编辑授权范围（用户于 2026-11-16 更新）
 
+## 第五章与结论正式同步（2026-11-18）
+
+用户明确授权将当前 `main_temp.tex` 的第五章及结论更新至正式稿。正文已迁入 `sections/05_dse.tex`、`sections/06_conclusion.tex`，继续由 `main.tex` 引用。第五章采用五阶段案例分析：$\alpha=0.327$、$\beta=1$，五场景与 11 个上下文共 55 个组合按请求等权平均计算时间，综合最优为 `1:2:8`，理想 GEMM 计算加速比为 1.13 倍。结论为一小段凝练总结。
+
+正式图为 `figures/v41_case_panels_overlay.pdf`，由 `scripts/plot_v41_case_panels.py --official` 复现，记录见 `data/evidence/v41_case_panels_main_20261118/`；`make presentation` 已切换到该图。迁移表单一表体为 `tables/five_stage_migrations.tex`，`tables/temp/five_stage_migrations.tex` 仅作临时稿兼容引用。旧六场景及三角图保留为历史预览。此次同步不修改摘要、引言、前四章或英文稿，也不授权后续自动修改正式稿。
+
 ## 微架构正式同步（2026-11-17）
 
 用户明确授权将本轮 `main_temp.tex` 修改更新到正式稿。当前第三章已迁入 `sections/03_architecture.tex`，由 `main.tex` 引用；九种配比的 Group 构成表统一使用 `tables/group_compositions.tex`，正式稿与临时稿共用这一表体。基线、解码与扩展累加图分别使用作者提供的 `baseline_arch.pdf`、`unpack_layout.pdf`、`dynamic_add.pdf`。

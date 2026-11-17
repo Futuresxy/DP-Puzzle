@@ -1,20 +1,2 @@
-% Maps current A--E to previous A, B, D, E, F; no changes to operator shapes.
-\begin{table}[t]
-\centering
-\caption{Five assumed precision-migration scenarios.}
-\label{tab:five_stage_migrations}
-\begingroup\footnotesize\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}cccc@{}}\toprule
-Case & \shortstack{Routed\\experts} & \shortstack{Shared experts\\+ Q-up/O-up} & \shortstack{Main QK/PV\\+ Grouped O-down} \\\midrule
-A & FP8 & FP8 & BF16 \\
-B & FP4 & FP8 & BF16 \\
-C & FP4 & FP8 & FP8 \\
-D & FP4 & FP4 & FP8 \\
-E & FP4 & FP4 & FP4 \\\bottomrule
-\end{tabular}
-\par\vspace{2pt}\begin{minipage}{0.98\columnwidth}\scriptsize
-Experts include gate/up/down; Main QK/PV includes SWA/CSA.
-Each stage retains earlier migrations; other operators keep their original precision.
-\end{minipage}
-\endgroup
-\end{table}
+% Compatibility entry for the review draft; shared table body promoted on 2026-11-18.
+\input{tables/five_stage_migrations}
