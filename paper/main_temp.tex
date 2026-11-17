@@ -328,18 +328,17 @@ B_{\mathrm{in}}(K,x)=fbK\left(\frac{m}{x}+n\right),\qquad
 % Temporary manuscript only; the author promotes accepted text to the official manuscript.
 \section{案例研究：预算约束下的算力配比选择}
 \label{sec:workload}
-本节以 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 为例，研究在固定面积、允许有限功耗增长时，如何选择一款适应模型精度演进的计算芯片。我们将九种 DP 的实测成本与算子级工作量结合，在统一预算下比较各配比的 GEMM 计算收益。
+本节以 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 为例，研究在相同面积和计算阵列功耗预算下，如何选择一款适应模型精度演进的计算芯片。我们将九种 DP 的实测成本与算子级工作量结合，在统一预算下比较各配比的 GEMM 计算收益。
 
 \subsection{主要算子与精度迁移}
-我们依据公开配置与执行结构建立算子级解析模型，分析 batch=1、$L\in\mathcal L=\{2^{10},\ldots,2^{20}\}$ 的冷启动 prefill。计算过程包括 20 层编码器、解码器全局 KV 构建，以及最近 $\min(L,128)$ 个 token 的 20 层解码器重放。主要 GEMM 包括路由与共享专家的 gate/up/down、Q/O 投影、SWA/CSA 注意力的 QK/PV，以及索引器点积。稠密 GEMM 按 $2MNK$ 统计，专家计算按激活专家数展开，注意力与索引器按窗口、压缩率和候选数量累加有效位置对。
+依据模型公开结构建立 GEMM 公式，脚本自动计算 batch=1、$L\in\mathcal L=\{2^{10},\ldots,2^{20}\}$ 下的冷启动 prefill 工作量：线性层按 $2MNK$ 统计，专家与注意力分别按激活专家数和有效位置对展开。表~\ref{tab:case_migrations} 用精度映射 $\pi_s(o)$ 描述三类主要算子的六种配置，保持形状与总 FLOP 不变；其余计算保留原精度，包括原生 FP4 索引器，FP32 单独记录。
 
-脚本根据模型维度和上下文自动生成算子工作量 $F_o(L)$，通过可配置映射 $\pi_s(o)$ 指定场景 $s$ 中算子 $o$ 的计算精度。迁移保持算子形状与总运算量不变，改变 BF16、FP8、FP4 三类工作量的分布；FP32 算子单独记录。我们设置六种场景：\textbf{A} 保留参考执行映射，专家与主要线性投影采用 FP8，主注意力与 Grouped O-down 采用 BF16；\textbf{B} 将路由专家转为 FP4；\textbf{C} 在 B 上将共享专家及 Q-up/O-up 转为 FP4；\textbf{D} 从 B 出发，将主 QK/PV 与 Grouped O-down 转为 FP8；\textbf{E} 合并 C、D；\textbf{F} 在 E 上进一步将这两类算子转为 FP4。其余算子保持原精度，原生 FP4 索引器始终计入。
-
-A 中路由专家的 W4A8 计算按 FP8 吞吐建模，B 对应 W4A4 路线~\cite{nvidiav41routed2026}。FP8 与 FP4 注意力的分块量化机制~\cite{flashattention3,sageattention3} 为注意力迁移提供技术依据；共享专家、投影及 Grouped O-down 的迁移构成未来精度分配假设。上下文也会改变精度构成：A 的三精度 GEMM 中，FP4 工作量占比从 1K 时的 0.06\% 增至 1M 时的 27.27\%，主要来自索引器点积的增长。因此，选型需要同时覆盖精度迁移与上下文变化。
+A 为参考映射（W4A8 专家按 FP8 吞吐建模）；B--F 组合专家、线性层与注意力的降精度路线。专家 W4A4 部署~\cite{nvidiav41routed2026} 和 FP8/FP4 注意力量化~\cite{flashattention3,sageattention3} 提供迁移依据，表中扩展到共享专家及投影的配置用于刻画未来计算需求。
+\input{tables/temp/case_migrations}
 
 \subsection{面积、功耗与计算时间模型}
 \label{sec:k4_area}
-以 $1:2:4$ 的 $N_0=36$ 核设计为参照，每核包含 $D=256$ 个 DP，频率为 $f=1$\,GHz，II=1。参考公开评估中 Cube 计算簇占 AI Core 面积的 32.7\%~\cite{luo2024hifloat8area}，取基准计算阵列面积占比 $\alpha=0.327$；设计算阵列功耗预算为基准的 $\beta=1.2$ 倍。各候选保持每核外围存储与控制资源的面积不变，使用相同面积上限和功耗上限。
+以 $1:2:4$ 的 $N_0=36$ 核设计为参照，每核包含 $D=256$ 个 DP，频率为 $f=1$\,GHz，II=1。参考公开评估中 Cube 计算簇占 AI Core 面积的 32.7\%~\cite{luo2024hifloat8area}，取基准计算阵列面积占比 $\alpha=0.327$；取 $\beta=1$，要求计算阵列总功耗不超过基准。各候选保持每核外围存储与控制资源的面积不变，使用相同面积上限和功耗上限。
 
 设 $a_j$ 为单 DP 面积，$p_j^{\max}=\max_p p_{j,p}$ 为三种精度下测量功耗的最大值，$r_j=a_j/a_0$、$\rho_j=p_j^{\max}/p_0^{\max}$。基准校准得到面积预算 $A_b=N_0Da_0/\alpha$ 和 DP 阵列功耗预算 $P_b=\beta N_0Dp_0^{\max}$，可部署核数为
 \begin{equation}
@@ -348,7 +347,7 @@ n_j=\min\!\left\{
 \left\lfloor\frac{\beta N_0}{\rho_j}\right\rfloor\right\}.
 \label{eq:core_area_budget}
 \end{equation}
-其中两项分别对应面积与功耗限制，确定后的核数在所有场景和上下文中保持不变。该预算下 $1:2:8$、$1:2:12$ 与 $1:8:16$ 分别部署 32、29 与 13 核。
+其中两项分别对应面积与功耗限制，确定后的核数在所有场景和上下文中保持不变。该预算下 $1:2:8$、$1:2:12$ 与 $1:8:16$ 分别部署 32、24 与 10 核。
 
 令 $p\in\{\mathrm{BF16},\mathrm{FP8},\mathrm{FP4}\}$，$K_{j,p}$ 为单 DP 的原生点积长度，则工作量、芯片峰值吞吐及计算时间统一为
 \begin{equation}
@@ -373,14 +372,14 @@ w_{s,L}=\frac{1}{|\mathcal S||\mathcal L|}.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{temp/v41_case_study.pdf}
-\caption{固定预算下的 GEMM 计算加速比（$\alpha=0.327$，$\beta=1.2$）。括号内为部署核数，A--F 为六种精度迁移场景，All 按式~\eqref{eq:case_score} 汇总 66 个场景--上下文组合。每列相对同负载 $1:2:4$ 归一化，黑框标记未舍入数值下的最优配置。}
+\includegraphics[width=\columnwidth]{temp/v41_case_study_equal_budget.pdf}
+\caption{固定预算下的 GEMM 计算加速比（$\alpha=0.327$，$\beta=1$）。括号内为部署核数，A--F 为六种精度迁移场景，All 按式~\eqref{eq:case_score} 汇总 66 个场景--上下文组合。每列相对同负载 $1:2:4$ 归一化，黑框标记未舍入数值下的最优配置。}
 \label{fig:fixed_budget_compact}
 \end{figure}
 
-\textbf{部署成本改变低精度增配的收益。} $1:2:16$ 在 F 中获得 $2.00\times$ 的计算加速，All 却仅为 $0.96\times$；$1:8:16$ 的 All 为 $0.93\times$。较大的单 DP 低精度吞吐伴随更高面积或功耗，压缩可部署规模，并降低残余高精度工作量的处理能力。因此，配比选择取决于各精度工作量与整芯片可用吞吐的匹配。
+\textbf{额外低精度并行度受到部署成本制约。} 从 $1:2:8$ 增至 $1:2:12$，单 DP 的 FP4 吞吐增加 50\%，但功耗约束使部署数由 32 降为 24 核。因此，芯片 FP4 吞吐仅增加 12.50\%，BF16/FP8 吞吐却下降 25\%，六场景综合加速由 $1.15\times$ 降为 $0.95\times$。更高的低精度并行度只有与剩余精度工作量相匹配，才能转化为整体收益。
 
-\textbf{适度增配提供接近最优的迁移收益。} $1:2:12$ 在 All 中的平均时间收益最优，加速为 $1.15\times$（15.13\%）；$1:2:8$ 为 $1.15\times$（14.73\%），平均计算时间仅比前者高 0.35\%，DP 阵列总功耗却低 17.25\%。两者分别体现平均计算收益最优与保留功耗余量的折中。对于本例预算及迁移集合，适度 FP4 增配能够兼顾未来低精度需求与现有混合精度计算，而最大低精度配比并未带来最佳综合收益。
+\textbf{适度增配形成跨迁移场景的综合优势。} A、F 分别偏好 $1:2:4$ 与 $1:2:12$，而 $1:2:8$ 在 B--E 中均取得最低平均计算时间，并以 $1.15\times$（14.73\%）获得 All 最优；去除最激进的 F 后仍以 $1.10\times$ 居首。在本例相同面积与功耗预算下，适度 FP4 增配兼顾了低精度需求增长与混合精度计算所需的部署规模。
 
 \section{结论}
 \label{sec:conclusion}

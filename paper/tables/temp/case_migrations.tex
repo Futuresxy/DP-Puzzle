@@ -1,0 +1,17 @@
+% Equal-budget review draft; mappings match v41_case_study_equal_budget.json.
+\begin{table}[t]
+\centering
+\caption{Compute-precision assignments for migration scenarios.}
+\label{tab:case_migrations}
+\begingroup\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}cccc@{}}\toprule
+Case & \shortstack{Routed\\experts} & \shortstack{Shared experts\\+ Q-up/O-up} & \shortstack{Main QK/PV\\+ Grouped O-down} \\\midrule
+A & FP8 & FP8 & BF16 \\
+B & FP4 & FP8 & BF16 \\
+C & FP4 & FP4 & BF16 \\
+D & FP4 & FP8 & FP8 \\
+E & FP4 & FP4 & FP8 \\
+F & FP4 & FP4 & FP4 \\\bottomrule
+\end{tabular}
+\endgroup
+\end{table}

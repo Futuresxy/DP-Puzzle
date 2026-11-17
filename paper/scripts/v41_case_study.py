@@ -36,8 +36,11 @@ def render(figure, hardware, gains, scenario_ids):
                          'font.size': 8, 'pdf.fonttype': 42})
     fig, ax = plt.subplots(figsize=(3.49, 2.72))
     fig.subplots_adjust(left=.25, right=.985, top=.88, bottom=.26)
+    lower = min(.9, np.floor(matrix.min()*10)/10)
+    upper = max(1.1, np.ceil(matrix.max()*10)/10)
+    norm = TwoSlopeNorm(vmin=lower, vcenter=1, vmax=upper)
     image = ax.pcolormesh(np.arange(len(columns)+1)-.5, np.arange(len(hardware)+1)-.5,
-                         matrix, cmap='RdBu', norm=TwoSlopeNorm(vmin=.6, vcenter=1, vmax=2.1),
+                         matrix, cmap='RdBu', norm=norm,
                          shading='flat', rasterized=False)
     ax.set_xlim(-.5, len(columns)-.5)
     ax.set_ylim(len(hardware)-.5, -.5)
@@ -51,12 +54,12 @@ def render(figure, hardware, gains, scenario_ids):
         for j in range(matrix.shape[1]):
             value = matrix[i, j]
             ax.text(j, i, f'{value:.2f}', ha='center', va='center', fontsize=7.3,
-                    color='white' if value < .73 or value > 1.8 else '#202020')
+                    color='white' if norm(value) < .16 or norm(value) > .87 else '#202020')
             if np.isclose(value, matrix[:, j].max(), rtol=1e-12):
                 ax.add_patch(Rectangle((j-.46, i-.46), .92, .92, fill=False,
                                       edgecolor='#161616', linewidth=1))
     color_axis = fig.add_axes([.26, .105, .70, .035])
-    bar = fig.colorbar(image, cax=color_axis, orientation='horizontal', ticks=[.6, 1, 1.5, 2])
+    bar = fig.colorbar(image, cax=color_axis, orientation='horizontal', ticks=[lower, 1, upper])
     bar.solids.set_rasterized(False)
     bar.ax.tick_params(labelsize=7, pad=1)
     bar.set_label('Modeled GEMM compute speedup vs 1:2:4', fontsize=7, labelpad=2)
@@ -67,9 +70,9 @@ def render(figure, hardware, gains, scenario_ids):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--config', type=Path, default=ROOT/'data/inputs/v41_case_study.json')
-    parser.add_argument('--output', type=Path, default=ROOT/'data/evidence/v41_case_study_20261117')
-    parser.add_argument('--figure', type=Path, default=ROOT/'figures/temp/v41_case_study.pdf')
+    parser.add_argument('--config', type=Path, default=ROOT/'data/inputs/v41_case_study_equal_budget.json')
+    parser.add_argument('--output', type=Path, default=ROOT/'data/evidence/v41_case_study_equal_budget_20261117')
+    parser.add_argument('--figure', type=Path, default=ROOT/'figures/temp/v41_case_study_equal_budget.pdf')
     args = parser.parse_args()
     config = json.loads(args.config.read_text())
     if (config['scope'] != 'ced_cold_prefill' or config['utilization'] != 1

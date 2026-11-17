@@ -9,11 +9,10 @@ This batch uses alpha=0.327, beta=1.2, 36 baseline cores, 256 DPs/core, and the 
 From `paper/`:
 
 ```sh
-make case-study
-make pdf-temp
+python3 scripts/v41_case_study.py --config data/inputs/v41_case_study.json --output data/evidence/v41_case_study_20261117 --figure figures/temp/v41_case_study.pdf
 ```
 
-The first target reads `data/inputs/v41_case_study.json`, calls `scripts/v41_case_study.py`, and updates this batch plus `figures/temp/v41_case_study.pdf`. It does not run the older portfolio entry point or alter formal figures. Scenario precision mappings can be changed independently of the operator formulas. The scope, full utilization, and equal-weight scoring policy are checked explicitly.
+This historical beta=1.2 batch is retained for comparison. The current `make case-study` target uses the separate beta=1 batch. The command above reads `data/inputs/v41_case_study.json`, calls `scripts/v41_case_study.py`, and updates this batch plus `figures/temp/v41_case_study.pdf`. It does not run the older portfolio entry point or alter formal figures. Scenario precision mappings can be changed independently of the operator formulas. The scope, full utilization, and equal-weight scoring policy are checked explicitly.
 
 ## Results and provenance
 
