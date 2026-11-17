@@ -1,0 +1,12 @@
+{
+  "source": "data/process_normalization/comparison.json",
+  "sha256": "e103c3e364c73e7eb11fac20e12d022f1a32fbe70417b101d50524b80f3ecb84",
+  "tenfour_source": "https://arxiv.org/html/2512.00053v3#S4.T2",
+  "scaling_method": "https://arxiv.org/html/2102.10195v1#S3",
+  "multipliers_7_to_14": {
+    "area": 7.273,
+    "delay": 1.132
+  },
+  "table": "Original 7 nm full-format Ten-Four; prose separately compares MXFP8-only configurations",
+  "checks": "Only 0:2:4 area efficiencies changed; powers and other entries preserved"
+}

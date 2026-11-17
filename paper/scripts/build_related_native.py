@@ -10,7 +10,7 @@ SOURCE_RECORD = ROOT/'data/evidence/related_native_20261116'
 OUT = SOURCE_RECORD
 TABLE = ROOT/'tables/temp/related_ppa_native.tex'
 SOURCE = ROOT/'data/process_normalization/table_efficiencies.csv'
-AREA_UPDATE = ROOT/'data/evidence/related_native_area_update_20261117/author_area.json'
+AREA_UPDATE = ROOT/'data/evidence/related_native_dc_area_20261117/author_area.json'
 POWER_UPDATE = ROOT/'data/evidence/related_native_power_update_20261117/author_power.json'
 
 
@@ -20,7 +20,7 @@ def main():
     parser.add_argument('--official',action='store_true',help='Write the promoted official table and a separate evidence batch')
     args=parser.parse_args()
     if args.official:
-        OUT=ROOT/'data/evidence/related_native_tenfour_20261117'
+        OUT=AREA_UPDATE.parent
         TABLE=ROOT/'tables/related_ppa_native.tex'
     with SOURCE.open() as f:
         rows = [dict(work=r['work'], node_nm=r['node_nm'], metric=r['metric'],
