@@ -201,7 +201,7 @@ DP-Puzzle 通过 Lane、Group 与 DP 三层结构组织多精度点积计算（�
 \label{sec:unpack_recode}
 \label{sec:full_brick}
 
-跨精度复用首先需要统一输入的算术表示。图~\ref{fig:data_unpack} 给出解码布局：T/H 分离指数与有效数；Q 将不同元素编码保值映射为内部 E5M3 表示；MXFP4/NVFP4 映射为 UQ3.1，HiF4 融合一级微指数后映射为 UQ2.2。后两类均采用独立符号与 4 位定点幅值，将元素指数吸收到幅值中。Lane 内的两组共享乘法资源按精度重组部分积：高精度通过移位相加形成较宽乘积，低精度使用独立子乘法器并行计算，从而支持 T1H2Q4E8 的并行度。
+跨精度复用首先需要统一输入的算术表示。图~\ref{fig:data_unpack} 给出解码布局：T/H 分离指数与有效数；Q 将不同元素编码保值映射为内部 E5M3 表示；MXFP4/NVFP4 映射为 UQ3.1，HiF4 融合一级微指数后映射为 UQ2.2。后两类均采用独立符号与 4 位定点幅值，将元素指数吸收到幅值中。INT8 同样分离符号与幅值，使各格式共用无符号乘法资源。
 
 \begin{figure}[t]
 \centering
@@ -210,22 +210,51 @@ DP-Puzzle 通过 Lane、Group 与 DP 三层结构组织多精度点积计算（�
 \label{fig:data_unpack}
 \end{figure}
 
-局部规约根据数值表示选择对齐路径。T/H/Q 的乘积依据 Group 内共同的最大乘积指数，通过四路共享移位器在 28 位幅值窗口中对齐。E 的乘积具有固定的二进制权重，先两两求和，再旁路宽移位器进入公共规约树；HiF4 的二级微指数在 Lane 求和后以小范围移位融合。这样，多精度通路能够共享规约资源，E 模式则避免逐元素浮点指数对齐，为后续构建窄位宽专用 Group 提供基础。
+每个 Lane 配置两组乘法器，每组由 $8\times8$、$8\times4$、$4\times8$ 和 $4\times4$ 四个单元组成。对于 TF32/FP16 的 11 位有效数，将低四位与其余高位分开，记 $a=2^4a_h+a_l$、$b=2^4b_h+b_l$，由四个部分积重构
+\begin{equation}
+ab=2^8a_hb_h+2^4(a_hb_l+a_lb_h)+a_lb_l.
+\label{eq:mantissa_reuse}
+\end{equation}
+TF32 启用一组，FP16 启用两组，分别形成一条和两条宽乘法通路；BF16 每组仅使用 $8\times8$ 单元。Q 模式在每组中使用两个独立的 $4\times4$ 乘积，E 模式则将四个单元全部用于独立的四位乘法，较宽输入端口高位补零。INT8 每组使用一个 $8\times8$ 单元，并由两路交叉乘积重构另一个 $8\times8$ 乘积。两组资源因此覆盖 T1H2Q4E8 及四路 INT8，而无需为每种格式配置独立乘法器组。
+
+% Precision reference: MMA-Sim v3, Table III (Blackwell UTCQMMA) and Algorithm 7.
+指数对齐复用四路无符号右移器。T/H/Q 先由两条 Lane 的有效乘积指数求得 Group 内共同基准，再以基准与各乘积指数之差控制右移；T、H、Q 分别占用一、二、四路移位器。MMA-Sim 对 Blackwell FP8 指令的逆向分析采用保留 25 位小数、对齐时向零截断的内部求和模型~\cite{xie2025mmasim}。本文以此为精度参考，将局部保留小数位设为 26 位，并为有效数乘积预留两位整数，形成 UQ2.26 的 28 位幅值窗口。符号在移位期间独立传递，逻辑右移直接丢弃低位，随后恢复补码，实现正负数一致的向零截断。
+
+E 与 INT8 旁路上述宽移位器。E 的八个乘积先恢复符号并两两相加，规约为四个有符号部分和，与 Q 的四路并行度一致；INT8 的四个乘积完成符号恢复后直接接入。同一棵四输入平衡累加树由此处理 T/H/Q、E 的两两部分和以及 INT8，输出统一为 31 位有符号数。各格式按自然增长位宽进行符号扩展，并通过低位补零匹配输出坐标；例如 T/H 的自然结果分别低补两位和一位，小数位数随之增加，数值保持不变。
+
+HiF4 的二级微指数由 Lane 内八个元素共享，可在局部求和后一次融入。将局部和扩位后，按两侧微指数之和 $e_{s2}^{(A)}+e_{s2}^{(B)}$ 左移 0--2 位，即完成该尺度的精确应用，无需逐元素移位或跨 Lane 比较微指数。MXFP4/NVFP4 则将两位小数的局部和低补两零，统一为四位小数。三类 E 结果均以 14 位有符号 Q9.4 表示，再低补 17 零接入公共 31 位 Lane 输出。
 
 \subsection{Group：尺度融合与统一部分和}
 
-Group 的划分兼顾局部规约与缩放粒度。一个 Lane 的八路 E 元素对应 HiF4 的二级微指数共享范围，两个 Lane 的十六路 E 元素对应 NVFP4 的缩放块；更大的量化块通过跨 Group 广播缩放因子实现~\cite{ocpmx2023,hifloat4,nvidia2024nvfp4}。由于两个 Lane 共享块缩放因子，Group 先合并局部和，再按式~\eqref{eq:blockdot} 融入两侧缩放因子。NVFP4/HiF4 共用一套组级有效数乘法器，MX 的幂次缩放则仅计入指数。将尺度运算移至规约之后，使缩放因子乘法按 Group 配置，避免在每个元素乘积上重复执行。
+Group 合并两条 Lane 的部分和，并完成块缩放与统一接口转换。两个 31 位有符号数相加形成 32 位组和，再分离符号与幅值，保留组内正负项的抵消。两个 Lane 的十六路 E 元素对应 NVFP4 的缩放块；MX 和 HiF4 的更大量化块通过跨 Group 广播缩放因子实现~\cite{ocpmx2023,hifloat4,nvidia2024nvfp4}。同组元素共享尺度，因此可按式~\eqref{eq:blockdot} 先规约再缩放，将尺度运算集中在组部分和上。
 
-不同格式的部分和最终统一为符号 $s$、幅值 $\mathrm{SoP}$ 和指数坐标 $\mathrm{Anchor}$。若幅值位宽为 $M$，其数值为
+只有 NVFP4 和 HiF4 需要额外的缩放有效数乘法。两侧缩放因子的有效数均解码为不含符号位的四位 UQ1.3，先经 $4\times4$ 乘法得到八位 UQ2.6 系数；组和则在移除结构性低零后取 14 位 UQ10.4 幅值。两者通过一套 $14\times8$ 无符号乘法器生成 22 位 UQ12.10 结果，再低补九零形成公共 U31 幅值。MX 的 E8M0 缩放因子仅包含指数，旁路有效数乘法；其 E 类组幅值直接低补 17 零。上述补零只调整表示坐标，符号始终独立传递。
+
+% Layout cross-check: dp-top-v1.8.md, dp_group.v and dp_functions.vh;
+% the v1.8 HiF4 path uses the NVFP4 fractional layout after Lane-local e2 fusion.
+各浮点格式在 U31 接口中保留不同的小数点位置：T/H/Q 分别为 28/27/26 位小数，MXFP4 为 21 位，NVFP4/HiF4 为 19 位。令 $F_p$ 表示格式 $p$ 在该接口中的小数位数，$E_{\mathrm{loc}}$ 为已去除元素指数偏置的局部对齐基准，$E_{\mathrm{scale}}$ 为两侧缩放因子的无偏指数和，则幅值最高物理位的坐标为
 \begin{equation}
-v=(-1)^s\mathrm{SoP}\,2^{\mathrm{Anchor}-(M-1)}.
+\mathrm{Anchor}_{\mathrm{raw}}
+=E_{\mathrm{loc}}+E_{\mathrm{scale}}+30-F_p.
 \label{eq:anchor_recompute}
 \end{equation}
-其中，Anchor 表示幅值最高物理位对应的指数，由局部对齐基准、缩放指数与格式常量共同确定，可与尾数规约并行计算。Group 保留原始幅值，并通过前导零检测得到用于全局比较的最高有效位指数。统一接口将格式相关的解码、局部规约和尺度处理封装在 Group 内，使不同类型的 Group 能够接入同一 DP 后端。
+E 的元素指数与 HiF4 微指数已计入幅值，故 $E_{\mathrm{loc}}=0$；无块缩放的格式取 $E_{\mathrm{scale}}=0$。Anchor 可由指数和格式常量提前计算，与尾数规约并行；组部分和满足 $v=(-1)^s\mathrm{SoP}\,2^{\mathrm{Anchor}_{\mathrm{raw}}-30}$。
+
+组内相消会改变最高非零位的位置，因此在尺度融合后的有限非零幅值上进行前导零检测（LZD）。若前导零数为 $z$，则用于组间比较的真实指数为 $\mathrm{Anchor}_{\mathrm{eff}}=\mathrm{Anchor}_{\mathrm{raw}}-z$。Group 此时只计算指数，不左移幅值，统一输出独立符号、U31 幅值、原始 Anchor 与比较指数。这个接口既保留各格式的数值坐标，又使后端能够共享同一套组间对齐逻辑。
 
 \subsection{DP：共享对齐与融合累加}
 
-DP 在各 Group 完成规约与尺度融合后引入加数 $C$。这一组织使 E 类乘积先在窄定点通路内求和，块缩放仅作用于对应组的点积，再由全局通路统一处理组部分和与 FP32 加数。DP 确定公共对齐指数，并依据各源的原始 Anchor 计算净移位量，将组部分和的规格化与全局对齐合并为一次移位。对齐后的有符号部分和与唯一的 $C$ 共同进入进位保存压缩树，最后经一次进位传播加法、规格化和舍入生成 FP32 结果。
+DP 在各 Group 完成规约与尺度融合后引入加数 $C$。这一组织使 E 类乘积先在窄定点通路内求和，块缩放仅作用于对应组的点积，再由全局通路统一处理组部分和与 FP32 加数。DP 在 Group 的比较指数与 $C$ 的解码指数间取最大值 $E_{\mathrm{max}}$，作为公共对齐基准。
+
+对每个 Group，先左移 $z$ 位规格化、再右移 $E_{\mathrm{max}}-\mathrm{Anchor}_{\mathrm{eff}}$ 位对齐，等价于净移位
+\begin{equation}
+\begin{aligned}
+\Delta&=z-(E_{\mathrm{max}}-\mathrm{Anchor}_{\mathrm{eff}})\\
+      &=\mathrm{Anchor}_{\mathrm{raw}}-E_{\mathrm{max}}.
+\end{aligned}
+\label{eq:net_alignment_shift}
+\end{equation}
+因此，原始幅值低补零至全局窗口后，只需经过一次双向移位：$\Delta$ 为正时左移，为负时右移，省去组内先规格化再组间对齐的两次移位。各源在对齐后恢复符号，与唯一的 $C$ 共同进入进位保存压缩树，最后经一次进位传播加法、规格化和舍入生成 FP32 结果。
 
 全局对齐采用 39 位幅值窗口，中间右移向零截断，末级采用最近偶数舍入；Group 部分和不先舍入为 FP32。INT8/INT32 模式旁路浮点对齐和输出规格化，复用累加通路。各通路按请求精度控制寄存器更新，所有配置均保持八拍延迟与每拍接收一笔独立请求的吞吐。
 
