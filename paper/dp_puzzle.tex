@@ -60,6 +60,9 @@ Our contributions are as follows:
 \item \textbf{Workload-driven ratio selection:} Six current and prospective precision scenarios for DeepSeek-V4.1-Flash, evaluated over 1K--1M contexts, connect workload migration to estimated GEMM compute latency. Adding a matched compute-power budget shifts the best aggregate ratio from \mbox{$1:8:16$} to \mbox{$1:2:8$}, yielding a modeled $1.147\times$ speedup over \mbox{$1:2:4$} across equally weighted scenarios. Moderate expansion thus balances remaining high-precision demand with future low-precision workloads.
 \end{enumerate}
 
+The rest of this paper is organized as follows. Section~\ref{sec:background} presents the background and motivation. Sections~\ref{sec:architecture} and~\ref{sec:expansion} describe the shared multi-precision microarchitecture and its low-precision specialization and throughput-ratio expansion, respectively. Section~\ref{sec:evaluation} presents the evaluation methodology and hardware cost results. Section~\ref{sec:workload} analyzes workload-driven throughput-ratio selection. Section~\ref{sec:conclusion} concludes the paper.
+
+
 % END REVIEW PAIR: 01_introduction.tex
 
 % BEGIN REVIEW PAIR: 02_background.tex
