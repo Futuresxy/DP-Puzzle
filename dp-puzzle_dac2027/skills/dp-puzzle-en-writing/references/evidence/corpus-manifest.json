@@ -1,0 +1,98 @@
+[
+  {
+    "id": "P01",
+    "file": "reference/FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+    "sha256": "8becc0635e08f16e944a53edc5c9cf1471df54902ed7ea1cde476193895e2aa3",
+    "pages": 14,
+    "tool": "pdftotext version 24.02.0",
+    "method": "pdftotext -layout + -bbox-layout; default extraction for lexical dehyphenation",
+    "blocks": 154,
+    "status": "text_extracted",
+    "scanned_only": false,
+    "layout_sha256": "4e3d36b4e35bc580935972efbc0a6b391c080c05bb7f509ca8ebec425a5ca1e6"
+  },
+  {
+    "id": "P02",
+    "file": "reference/LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+    "sha256": "2d03d06a8e58150aba4e35c99f64e238eb657d8950a08e8eb0cc574d25e8c776",
+    "pages": 17,
+    "tool": "pdftotext version 24.02.0",
+    "method": "pdftotext -layout + -bbox-layout; default extraction for lexical dehyphenation",
+    "blocks": 348,
+    "status": "text_extracted",
+    "scanned_only": false,
+    "layout_sha256": "7a3627121febac957c3073cca6a15513191f6f63d6768ab8ed548af6051d4ee9"
+  },
+  {
+    "id": "P03",
+    "file": "reference/Low-Cost Multiple-Precision.pdf",
+    "sha256": "ed530925c30bd183bf43bdf3aa350d7d5865b35e9b6326754ea71767cba8dbd8",
+    "pages": 6,
+    "tool": "pdftotext version 24.02.0",
+    "method": "pdftotext -layout + -bbox-layout; default extraction for lexical dehyphenation",
+    "blocks": 292,
+    "status": "text_extracted",
+    "scanned_only": false,
+    "layout_sha256": "35bf7d6c1d769aeb8c29de37d91765343a912139cae66ac4dca5392de1e1eb03"
+  },
+  {
+    "id": "P04",
+    "file": "reference/MPICC_paper.pdf",
+    "sha256": "5fa28218f78e35c16f713767629f8a51a23f7cb95dc214def35e0d5ca8b9556b",
+    "pages": 6,
+    "tool": "pdftotext version 24.02.0",
+    "method": "pdftotext -layout + -bbox-layout; default extraction for lexical dehyphenation",
+    "blocks": 486,
+    "status": "text_extracted",
+    "scanned_only": false,
+    "layout_sha256": "5d90cf67ed06ea1ae37636cec5313c70e05231aec87df290598a5d664bd71ebb"
+  },
+  {
+    "id": "P05",
+    "file": "reference/TransDot.pdf",
+    "sha256": "579a0961a1abd38743aa1579979a5e1d4c78bf99e5c5617591b97cedd59c4e21",
+    "pages": 5,
+    "tool": "pdftotext version 24.02.0",
+    "method": "pdftotext -layout + -bbox-layout; default extraction for lexical dehyphenation",
+    "blocks": 282,
+    "status": "text_extracted",
+    "scanned_only": false,
+    "layout_sha256": "a2e602a790b963c3d77ec9efa7b961c983388041f6afac7af39f9cb92b06abb9"
+  },
+  {
+    "id": "P06",
+    "file": "reference/fused-fp8.pdf",
+    "sha256": "1b0e8d551e8f444421c29ef7e3efa57c25fd6b33cb0b66f1b3c96aa84fa8168a",
+    "pages": 8,
+    "tool": "pdftotext version 24.02.0",
+    "method": "pdftotext -layout + -bbox-layout; default extraction for lexical dehyphenation",
+    "blocks": 235,
+    "status": "text_extracted",
+    "scanned_only": false,
+    "layout_sha256": "c80f8f8e7b30fc960820bc1033e42b2535fad40bc5504b5012daa1742347b2e2"
+  },
+  {
+    "id": "P07",
+    "file": "reference/iccad2026-paper544.pdf",
+    "sha256": "bfda49f92fc8490f668e1752498df4b7f1c865e1130e88edb4e8a5e2996dc200",
+    "pages": 9,
+    "tool": "pdftotext version 24.02.0",
+    "method": "pdftotext -layout + -bbox-layout; default extraction for lexical dehyphenation",
+    "blocks": 1730,
+    "status": "text_extracted",
+    "scanned_only": false,
+    "layout_sha256": "92c7d000cafb6de76dd5ae16ecd8c994112a61c2b6ca039a4eaff11449aa2632"
+  },
+  {
+    "id": "P08",
+    "file": "reference/mxdotp.pdf",
+    "sha256": "0b3822c192cf06b00604f657462baad9a161acead4004d0064b4ab7b7d396273",
+    "pages": 4,
+    "tool": "pdftotext version 24.02.0",
+    "method": "pdftotext -layout + -bbox-layout; default extraction for lexical dehyphenation",
+    "blocks": 163,
+    "status": "text_extracted",
+    "scanned_only": false,
+    "layout_sha256": "f04ff412d5aae9042b8351ebf2d5804fc1a92395fba0ccc8adf5a97376e5f4fd"
+  }
+]

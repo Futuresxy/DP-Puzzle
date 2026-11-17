@@ -1,0 +1,21 @@
+{
+  "tex": {
+    "dp-puzzle.tex": "0c8272da666dba4ec0494e62fafdd38493c707b552dec8dde1a5d60abcfd1de9",
+    "tables/five_stage_migrations.tex": "3d1f52c78c4b646010f002cd39fe67eecc6dcccc38e7063183b4a8a8f01f7e38",
+    "tables/group_compositions.tex": "cf62b0bddd91bab870bae2ca9c93737892b42bf56888d50ef2a0e3c36c9d3a25",
+    "tables/related_features.tex": "a0e6acfb52e77d0facef3bf35131c4ca81dcaff2d83ddd2a69c9b822f2bb12e0",
+    "tables/related_ppa_native.tex": "6e2fc44ca119c4ab42e86dbb233e970b6ff7300f4bad4dcd9660e2e37de78524",
+    "tables/vendor_ratios.tex": "86f40dc706fbce851cfcaf428a78c70e1c2f2133db899b8f4ff66b0cb05b7d29",
+    "template/bare_conf.tex": "cc4fa258aa90115ad6afbd8ca5555f448880b29a971398bf1a20ee5f240b45f7"
+  },
+  "pdf": {
+    "reference/FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf": "8becc0635e08f16e944a53edc5c9cf1471df54902ed7ea1cde476193895e2aa3",
+    "reference/LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf": "2d03d06a8e58150aba4e35c99f64e238eb657d8950a08e8eb0cc574d25e8c776",
+    "reference/Low-Cost Multiple-Precision.pdf": "ed530925c30bd183bf43bdf3aa350d7d5865b35e9b6326754ea71767cba8dbd8",
+    "reference/MPICC_paper.pdf": "5fa28218f78e35c16f713767629f8a51a23f7cb95dc214def35e0d5ca8b9556b",
+    "reference/TransDot.pdf": "579a0961a1abd38743aa1579979a5e1d4c78bf99e5c5617591b97cedd59c4e21",
+    "reference/fused-fp8.pdf": "1b0e8d551e8f444421c29ef7e3efa57c25fd6b33cb0b66f1b3c96aa84fa8168a",
+    "reference/iccad2026-paper544.pdf": "bfda49f92fc8490f668e1752498df4b7f1c865e1130e88edb4e8a5e2996dc200",
+    "reference/mxdotp.pdf": "0b3822c192cf06b00604f657462baad9a161acead4004d0064b4ab7b7d396273"
+  }
+}

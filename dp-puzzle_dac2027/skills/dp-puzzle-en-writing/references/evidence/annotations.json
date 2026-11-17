@@ -1,0 +1,2742 @@
+{
+  "rules": [
+    {
+      "id": "R01",
+      "title": "先明确论文做了什么",
+      "rule": "介绍工作时，用具体 artifact 作宾语并交代能力；只有原句信息缺失或指代不清时才补明，不以新颖性形容词替代内容。",
+      "evidence": [
+        {
+          "paper": "P01",
+          "block": 4,
+          "blocks": [
+            4
+          ],
+          "page": 1,
+          "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+          "quote": "We present FPnew, a highly configurable open-source transprecision floating-point unit (TP-FPU), capable of supporting a wide range of standard and custom FP formats."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R02",
+      "title": "让硬件部件承担动作",
+      "rule": "解释数据流时优先写部件执行的具体动作；名词化不是禁用项，只有遮蔽施动者或机制时才改。",
+      "evidence": [
+        {
+          "paper": "P01",
+          "block": 25,
+          "blocks": [
+            25
+          ],
+          "page": 3,
+          "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+          "quote": "Arbiters feed the operation group outputs toward the output of the unit."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R03",
+      "title": "设计手段连接具体目的",
+      "rule": "可以用 To + purpose 引出实现选择，但不补写原稿未支持的因果或收益。",
+      "evidence": [
+        {
+          "paper": "P08",
+          "block": 57,
+          "blocks": [
+            57
+          ],
+          "page": 3,
+          "file": "mxdotp.pdf",
+          "quote": "To sustain frequency, the MXDOTP unit is implemented with three levels of pipeline registers."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R04",
+      "title": "设计与方法可用现在时",
+      "rule": "设计行为和本文采用的方法常用现在时；保留作者的 we。评测现在时也是实见用法，不能一律改为过去时。",
+      "evidence": [
+        {
+          "paper": "P05",
+          "block": 220,
+          "blocks": [
+            220
+          ],
+          "page": 3,
+          "file": "TransDot.pdf",
+          "quote": "We evaluate TransDot through RTL modification and ASIC synthesis using Cadence Genus [23] with a commercial 12nm PDK."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R05",
+      "title": "已完成实验可用过去时",
+      "rule": "描述一次已经完成的运行、比较或测量可用过去时；依据叙述对象处理时态，不机械统一全文。",
+      "evidence": [
+        {
+          "paper": "P04",
+          "block": 391,
+          "blocks": [
+            391
+          ],
+          "page": 5,
+          "file": "MPICC_paper.pdf",
+          "quote": "We performed General Matrix Multiplication (GEMM) with random matrices of different sizes on the MPICC MAC unit to compare the impact of high-precision emulation on Mean Squared Error (MSE), as depicted in Fig. 8."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R06",
+      "title": "结论按陈述对象选时态",
+      "rule": "结论中的持续贡献可用现在时，回顾完成的工作可用过去时或现在完成时。三者在语料中共存。",
+      "evidence": [
+        {
+          "paper": "P02",
+          "block": 288,
+          "blocks": [
+            288
+          ],
+          "page": 12,
+          "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+          "quote": "This work introduces LLMCompass, a fast, accurate, and architecturally descriptive hardware evaluation framework for LLM inference workloads."
+        },
+        {
+          "paper": "P08",
+          "block": 160,
+          "blocks": [
+            160
+          ],
+          "page": 4,
+          "file": "mxdotp.pdf",
+          "quote": "We presented MXDOTP, a RISC-V ISA extension enabling efficient execution of Microscaling (MX) dot products."
+        },
+        {
+          "paper": "P01",
+          "block": 140,
+          "blocks": [
+            140
+          ],
+          "page": 13,
+          "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+          "quote": "We have presented FPnew, a configurable open-source transprecision floating-point unit capable of supporting arbitrary FP formats."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R07",
+      "title": "已知对象承接下一句",
+      "rule": "前句建立的硬件对象可成为后句主语，减少读者重新定位的成本；不因此强制重排段落。",
+      "evidence": [
+        {
+          "paper": "P01",
+          "block": 25,
+          "blocks": [
+            25
+          ],
+          "page": 3,
+          "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+          "quote": "Input operands are routed toward one of four operation group blocks, each dedicated to a class of instructions."
+        },
+        {
+          "paper": "P01",
+          "block": 25,
+          "blocks": [
+            25
+          ],
+          "page": 3,
+          "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+          "quote": "Arbiters feed the operation group outputs toward the output of the unit."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R08",
+      "title": "能力边界要一起写",
+      "rule": "实现支持与不支持的功能必须保留；不能把 while、only 或否定范围视为冗余。",
+      "evidence": [
+        {
+          "paper": "P01",
+          "block": 67,
+          "blocks": [
+            67
+          ],
+          "page": 6,
+          "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+          "quote": "While we support the flexible cast-and-pack operations, this version of the core is not equipped with expanding FMA operations."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R09",
+      "title": "比较给出基线和指标",
+      "rule": "倍数或百分比要与被比较指标和基线关联。缺少基线时提问，不猜补数值或重算。",
+      "evidence": [
+        {
+          "paper": "P05",
+          "block": 278,
+          "blocks": [
+            278
+          ],
+          "page": 4,
+          "file": "TransDot.pdf",
+          "quote": "Evaluation shows that TransDot achieves 1.46× area efficiency for FP16 DPA and 2.92× area efficiency for FP8 DPA at the cost of 37.3% extra area on average compared with the baseline."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R10",
+      "title": "收益和代价在同一比较范围内",
+      "rule": "同一候选的收益与面积代价可以并列报告；保持平均、模式和基线等限定。",
+      "evidence": [
+        {
+          "paper": "P05",
+          "block": 278,
+          "blocks": [
+            278
+          ],
+          "page": 4,
+          "file": "TransDot.pdf",
+          "quote": "Evaluation shows that TransDot achieves 1.46× area efficiency for FP16 DPA and 2.92× area efficiency for FP8 DPA at the cost of 37.3% extra area on average compared with the baseline."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R11",
+      "title": "区分测量、综合和模型",
+      "rule": "证据来源是技术限定；不能把 synthesized、simulated、estimated 改成 measured。",
+      "evidence": [
+        {
+          "paper": "P01",
+          "block": 4,
+          "blocks": [
+            4
+          ],
+          "page": 1,
+          "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+          "quote": "For this core, we measured the silicon manufactured in Globalfoundries 22FDX technology across a wide voltage range from 0.45 to 1.2 V."
+        },
+        {
+          "paper": "P06",
+          "block": 230,
+          "blocks": [
+            230
+          ],
+          "page": 8,
+          "file": "fused-fp8.pdf",
+          "quote": "Both micro-architectures were synthesized in 5nm technology, and the results revealed different use case scenarios for each of the two."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R12",
+      "title": "保留真实不确定性",
+      "rule": "may 等词在模型假设或未知厂商机制中有实义；不能以去防御性写作为由删除。",
+      "evidence": [
+        {
+          "paper": "P02",
+          "block": 175,
+          "blocks": [
+            175
+          ],
+          "page": 6,
+          "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+          "quote": "Cores in NVIDIA GPUs and Matrix Cores in AMD GPUs are simulated as systolic arrays in LLMCompass, which may not be true in reality."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R13",
+      "title": "一句突出一个主断言",
+      "rule": "有独立可报告结论时可用短句；长句只有在存在歧义、嵌套过深等缺陷时才拆，不按词数自动重写。",
+      "evidence": [
+        {
+          "paper": "P06",
+          "block": 26,
+          "blocks": [
+            26
+          ],
+          "page": 2,
+          "file": "fused-fp8.pdf",
+          "quote": "The latency for both microarchitectures is 4 cycles."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R14",
+      "title": "首现缩写建立明确映射",
+      "rule": "在需要独立阅读的语境中可先展开再给缩写；摘要和正文各展开一次是本项目检查要求，而非由这一例证明的普遍惯例。",
+      "evidence": [
+        {
+          "paper": "P05",
+          "block": 17,
+          "blocks": [
+            17
+          ],
+          "page": 1,
+          "file": "TransDot.pdf",
+          "quote": "Modern AI accelerators increasingly rely on reduced-precision arithmetic to improve performance and energy efficiency."
+        },
+        {
+          "paper": "P08",
+          "block": 7,
+          "blocks": [
+            7
+          ],
+          "page": 1,
+          "file": "mxdotp.pdf",
+          "quote": "Compact floating-point (FP) arithmetic has gained significant attention for energy-efficient computing, particularly in machine learning workloads [1]–[4]."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R15",
+      "title": "物理工况连同单位报告",
+      "rule": "数字和物理单位分开写的实见形式有 1.09 GHz、25 °C；本项目要求的空格只作为检查，不授权本轮或后续擅改数字/单位。",
+      "evidence": [
+        {
+          "paper": "P08",
+          "block": 57,
+          "blocks": [
+            57
+          ],
+          "page": 3,
+          "file": "mxdotp.pdf",
+          "quote": "The cluster achieved 1.09 GHz under typical conditions (TT/0.8 V/25 °C) without introducing any new critical paths."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R16",
+      "title": "归一化标明分母和方向",
+      "rule": "归一化性能必须说明参考对象及指标方向；不要把 inverse latency 和 latency 混为一谈。",
+      "evidence": [
+        {
+          "paper": "P02",
+          "block": 251,
+          "blocks": [
+            251
+          ],
+          "page": 10,
+          "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+          "quote": "Fig. 10: End-to-End Performance of Latency-Oriented Design Normalized to GA100. Performance metric: inverse of latency (higher is better). Settings: batch size 4 16, 4-way tensor parallelism, running 48 GPT-3 layers (half of GPT-3)."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R17",
+      "title": "贡献条目保持局部平行",
+      "rule": "已有贡献列表内可以采用一致的 We + verb 结构；语料也使用名词短语列表，不强制转成 We，也不把普通段落改成列表。",
+      "evidence": [
+        {
+          "paper": "P05",
+          "block": 148,
+          "blocks": [
+            148
+          ],
+          "page": 2,
+          "file": "TransDot.pdf",
+          "quote": "We present TransDot, a reconfigurable FPU that supports trans-precision DPA and unifies scalar, SIMD, and DPA execution within a largely shared datapath."
+        },
+        {
+          "paper": "P05",
+          "block": 150,
+          "blocks": [
+            150
+          ],
+          "page": 2,
+          "file": "TransDot.pdf",
+          "quote": "We evaluate TransDot using ASIC flow with a commercial 12nm technology, demonstrating favorable area–delay trade-offs and strong area efficiency."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "R18",
+      "title": "用语料多数拼写作局部一致性建议",
+      "rule": "datapath 与 data path 均出现；本稿已有 datapath 时保持该写法。语料习惯不能推翻原文引用或有意区分的概念。",
+      "evidence": [
+        {
+          "paper": "P05",
+          "block": 278,
+          "blocks": [
+            278
+          ],
+          "page": 4,
+          "file": "TransDot.pdf",
+          "quote": "This paper presents TransDot, a reconfigurable FPU that unifies SIMD FMA and trans-precision DPA within a shared reconfigurable datapath."
+        },
+        {
+          "paper": "P03",
+          "block": 290,
+          "blocks": [
+            290
+          ],
+          "page": 6,
+          "file": "Low-Cost Multiple-Precision.pdf",
+          "quote": "The overall data path and the key design have been discussed in detail."
+        }
+      ],
+      "category": "style",
+      "severity": "should-fix"
+    },
+    {
+      "id": "A01",
+      "title": "防御性套语",
+      "rule": "若套语仅提醒读者注意，可去掉 It should be noted that；保留 would、without 及 ISA 能力限制。",
+      "evidence": [
+        {
+          "paper": "P01",
+          "block": 93,
+          "blocks": [
+            93
+          ],
+          "page": 9,
+          "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+          "quote": "It should be noted that two scalar casts and an additional packing operation, which are not directly available in the ISA, would be required without this functionality."
+        }
+      ],
+      "category": "anti-pattern",
+      "severity": "should-fix"
+    },
+    {
+      "id": "A02",
+      "title": "冗长目的结构",
+      "rule": "in order to 在这里可缩为 to，目的和技术对象不变；不是语法错误，也不是必须修改的所有实例。",
+      "evidence": [
+        {
+          "paper": "P06",
+          "block": 211,
+          "blocks": [
+            211
+          ],
+          "page": 6,
+          "file": "fused-fp8.pdf",
+          "quote": "The FMA units have a widened port for one of the operands in order to accept an unrounded multiplication result."
+        }
+      ],
+      "category": "anti-pattern",
+      "severity": "should-fix"
+    },
+    {
+      "id": "A03",
+      "title": "冠词误用",
+      "rule": "multiple 的起始音不是元音；只修冠词，保留被动语态和作者主张。",
+      "evidence": [
+        {
+          "paper": "P03",
+          "block": 28,
+          "blocks": [
+            28
+          ],
+          "page": 2,
+          "file": "Low-Cost Multiple-Precision.pdf",
+          "quote": "An multiple-precision multiplication architecture with low hardware overhead is designed through the LPC method."
+        }
+      ],
+      "category": "anti-pattern",
+      "severity": "must-fix"
+    },
+    {
+      "id": "A04",
+      "title": "主谓一致",
+      "rule": "动名词短语 Converting between two formats 作单数主语；不因两个 formats 而用复数谓语。",
+      "evidence": [
+        {
+          "paper": "P01",
+          "block": 49,
+          "blocks": [
+            49
+          ],
+          "page": 5,
+          "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+          "quote": "Converting between two formats require special care for vectors as their length can differ."
+        }
+      ],
+      "category": "anti-pattern",
+      "severity": "must-fix"
+    },
+    {
+      "id": "A05",
+      "title": "套语与 which 从句堆叠",
+      "rule": "原句较长且把阶段、收益和前提串联；此候选移除套语、拆开主断言并修 allows to，不改 two、FP32 或复用前提。不能仅因超过 30 词就套用。",
+      "evidence": [
+        {
+          "paper": "P06",
+          "block": 32,
+          "blocks": [
+            32
+          ],
+          "page": 3,
+          "file": "fused-fp8.pdf",
+          "quote": "It is worth pointing out that the addition to the accumulator is done in the two last cycles, which adds flexibility to the result forwarding, and allows to substantially reuse a pre-existing, FMA capable FP32 adder, after modification to increase the bit width of one input."
+        }
+      ],
+      "category": "anti-pattern",
+      "severity": "should-fix"
+    },
+    {
+      "id": "A06",
+      "title": "未量化的 significantly",
+      "rule": "significantly 是幅度主张；需检查上下文证据。删除会弱化 claim，不能自动修。",
+      "evidence": [
+        {
+          "paper": "P08",
+          "block": 9,
+          "blocks": [
+            9
+          ],
+          "page": 1,
+          "file": "mxdotp.pdf",
+          "quote": "Low-bitwidth formats significantly reduce memory and bandwidth needs by representing model parameters with fewer bits."
+        }
+      ],
+      "category": "anti-pattern",
+      "severity": "optional"
+    }
+  ],
+  "anti_patterns": [
+    {
+      "id": "A01",
+      "category": "防御性套语",
+      "source": {
+        "paper": "P01",
+        "block": 93,
+        "blocks": [
+          93
+        ],
+        "page": 9,
+        "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+        "quote": "It should be noted that two scalar casts and an additional packing operation, which are not directly available in the ISA, would be required without this functionality."
+      },
+      "after": "Two scalar casts and an additional packing operation, which are not directly available in the ISA, would be required without this functionality.",
+      "reason": "若套语仅提醒读者注意，可去掉 It should be noted that；保留 would、without 及 ISA 能力限制。",
+      "severity": "should-fix",
+      "action": "candidate"
+    },
+    {
+      "id": "A02",
+      "category": "冗长目的结构",
+      "source": {
+        "paper": "P06",
+        "block": 211,
+        "blocks": [
+          211
+        ],
+        "page": 6,
+        "file": "fused-fp8.pdf",
+        "quote": "The FMA units have a widened port for one of the operands in order to accept an unrounded multiplication result."
+      },
+      "after": "The FMA units have a widened port for one of the operands to accept an unrounded multiplication result.",
+      "reason": "in order to 在这里可缩为 to，目的和技术对象不变；不是语法错误，也不是必须修改的所有实例。",
+      "severity": "should-fix",
+      "action": "candidate"
+    },
+    {
+      "id": "A03",
+      "category": "冠词误用",
+      "source": {
+        "paper": "P03",
+        "block": 28,
+        "blocks": [
+          28
+        ],
+        "page": 2,
+        "file": "Low-Cost Multiple-Precision.pdf",
+        "quote": "An multiple-precision multiplication architecture with low hardware overhead is designed through the LPC method."
+      },
+      "after": "A multiple-precision multiplication architecture with low hardware overhead is designed through the LPC method.",
+      "reason": "multiple 的起始音不是元音；只修冠词，保留被动语态和作者主张。",
+      "severity": "must-fix",
+      "action": "candidate"
+    },
+    {
+      "id": "A04",
+      "category": "主谓一致",
+      "source": {
+        "paper": "P01",
+        "block": 49,
+        "blocks": [
+          49
+        ],
+        "page": 5,
+        "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+        "quote": "Converting between two formats require special care for vectors as their length can differ."
+      },
+      "after": "Converting between two formats requires special care for vectors as their length can differ.",
+      "reason": "动名词短语 Converting between two formats 作单数主语；不因两个 formats 而用复数谓语。",
+      "severity": "must-fix",
+      "action": "candidate"
+    },
+    {
+      "id": "A05",
+      "category": "套语与 which 从句堆叠",
+      "source": {
+        "paper": "P06",
+        "block": 32,
+        "blocks": [
+          32
+        ],
+        "page": 3,
+        "file": "fused-fp8.pdf",
+        "quote": "It is worth pointing out that the addition to the accumulator is done in the two last cycles, which adds flexibility to the result forwarding, and allows to substantially reuse a pre-existing, FMA capable FP32 adder, after modification to increase the bit width of one input."
+      },
+      "after": "The addition to the accumulator is done in the two last cycles. This adds flexibility to the result forwarding and allows substantial reuse of a pre-existing, FMA capable FP32 adder, after modification to increase the bit width of one input.",
+      "reason": "原句较长且把阶段、收益和前提串联；此候选移除套语、拆开主断言并修 allows to，不改 two、FP32 或复用前提。不能仅因超过 30 词就套用。",
+      "severity": "should-fix",
+      "action": "candidate"
+    },
+    {
+      "id": "A06",
+      "category": "未量化的 significantly",
+      "source": {
+        "paper": "P08",
+        "block": 9,
+        "blocks": [
+          9
+        ],
+        "page": 1,
+        "file": "mxdotp.pdf",
+        "quote": "Low-bitwidth formats significantly reduce memory and bandwidth needs by representing model parameters with fewer bits."
+      },
+      "after": "若上下文没有幅度证据，先提交作者查询；经作者同意后候选为：Low-bitwidth formats reduce memory and bandwidth needs by representing model parameters with fewer bits.",
+      "reason": "significantly 是幅度主张；需检查上下文证据。删除会弱化 claim，不能自动修。",
+      "severity": "optional",
+      "action": "query-first"
+    }
+  ],
+  "terms": [
+    {
+      "id": "T01",
+      "category": "浮点算术",
+      "english": "exponent",
+      "chinese": "指数",
+      "collocation": "product exponent",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P06",
+        "block": 32,
+        "blocks": [
+          32
+        ],
+        "page": 3,
+        "file": "fused-fp8.pdf",
+        "quote": "This produces a SoP with a FP32 range exponent and a normalized 68-bit significand."
+      },
+      "note": ""
+    },
+    {
+      "id": "T02",
+      "category": "浮点算术",
+      "english": "mantissa",
+      "chinese": "尾数（需说明含隐藏位与否）",
+      "collocation": "mantissa decoding",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P04",
+        "block": 156,
+        "blocks": [
+          156
+        ],
+        "page": 3,
+        "file": "MPICC_paper.pdf",
+        "quote": "The 8-bit result of the mantissa decoding includes the leading bit."
+      },
+      "note": ""
+    },
+    {
+      "id": "T03",
+      "category": "浮点算术",
+      "english": "significand",
+      "chinese": "有效数",
+      "collocation": "accumulator significand",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P06",
+        "block": 189,
+        "blocks": [
+          189
+        ],
+        "page": 5,
+        "file": "fused-fp8.pdf",
+        "quote": "The accumulator significand is aligned in parallel with the summation of the SoP."
+      },
+      "note": ""
+    },
+    {
+      "id": "T04",
+      "category": "浮点算术",
+      "english": "hidden bit",
+      "chinese": "隐藏位",
+      "collocation": "forming the significand",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P06",
+        "block": 16,
+        "blocks": [
+          16
+        ],
+        "page": 1,
+        "file": "fused-fp8.pdf",
+        "quote": "Note that an implict 1, the hidden bit, is concatenated to the fraction as an integer bit, forming the significand."
+      },
+      "note": ""
+    },
+    {
+      "id": "T05",
+      "category": "浮点算术",
+      "english": "subnormal",
+      "chinese": "次正规数",
+      "collocation": "subnormal inputs and results",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P06",
+        "block": 42,
+        "blocks": [
+          42
+        ],
+        "page": 3,
+        "file": "fused-fp8.pdf",
+        "quote": "However, subnormal inputs and results are supported."
+      },
+      "note": ""
+    },
+    {
+      "id": "T06",
+      "category": "浮点算术",
+      "english": "rounding mode",
+      "chinese": "舍入模式",
+      "collocation": "roundTiesToEven (RNE)",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P08",
+        "block": 24,
+        "blocks": [
+          24
+        ],
+        "page": 2,
+        "file": "mxdotp.pdf",
+        "quote": "We implement roundTiesToEven (RNE), the most commonly used rounding mode in AI workloads, ensuring compliance with the specification, which leaves other modes optional."
+      },
+      "note": ""
+    },
+    {
+      "id": "T07",
+      "category": "浮点算术",
+      "english": "normalization",
+      "chinese": "规格化",
+      "collocation": "normalization and rounding",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P03",
+        "block": 124,
+        "blocks": [
+          124
+        ],
+        "page": 4,
+        "file": "Low-Cost Multiple-Precision.pdf",
+        "quote": "The rounding process is executed immediately after normalization and is the last step of FP multiplications."
+      },
+      "note": ""
+    },
+    {
+      "id": "T08",
+      "category": "浮点算术",
+      "english": "alignment",
+      "chinese": "对齐",
+      "collocation": "alignment of the accumulator significand",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P06",
+        "block": 189,
+        "blocks": [
+          189
+        ],
+        "page": 5,
+        "file": "fused-fp8.pdf",
+        "quote": "Notably, the alignment of the accumulator significand is performed with a single bi-directional shifter."
+      },
+      "note": ""
+    },
+    {
+      "id": "T09",
+      "category": "浮点算术",
+      "english": "sticky bit",
+      "chinese": "粘滞位",
+      "collocation": "guard bit, round bit, and sticky bit",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P03",
+        "block": 124,
+        "blocks": [
+          124
+        ],
+        "page": 4,
+        "file": "Low-Cost Multiple-Precision.pdf",
+        "quote": "The round carry bit is generated according to the guard bit, round bit, and sticky bit, which can be seen in Algorithm 1."
+      },
+      "note": ""
+    },
+    {
+      "id": "T10",
+      "category": "浮点算术",
+      "english": "exponent bias",
+      "chinese": "指数偏置",
+      "collocation": "exponent bias",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P06",
+        "block": 16,
+        "blocks": [
+          16
+        ],
+        "page": 1,
+        "file": "fused-fp8.pdf",
+        "quote": "The exponent bias is 7 for E4M3 and 15 for E5M2."
+      },
+      "note": ""
+    },
+    {
+      "id": "T11",
+      "category": "浮点算术",
+      "english": "fraction",
+      "chinese": "小数部分/编码字段，按上下文裁决",
+      "collocation": "fraction / significand",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P06",
+        "block": 16,
+        "blocks": [
+          16
+        ],
+        "page": 1,
+        "file": "fused-fp8.pdf",
+        "quote": "Note that an implict 1, the hidden bit, is concatenated to the fraction as an integer bit, forming the significand."
+      },
+      "note": ""
+    },
+    {
+      "id": "T12",
+      "category": "数据格式",
+      "english": "TF32",
+      "chinese": "TensorFloat-32",
+      "collocation": "Tensor float 32 (TF32)",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P06",
+        "block": 18,
+        "blocks": [
+          18
+        ],
+        "page": 1,
+        "file": "fused-fp8.pdf",
+        "quote": "Some of these representations are Tensor float 32 (TF32), with 8-bit exponent and 10-bit fraction, IEEE half-precision (FP16), with 5-bit exponent and 10-bit fraction, and bfloat16 (BF16), with 8-bit exponent and 7-bit fraction [1], [2]."
+      },
+      "note": "编码定义另见外部标准核对；这里仅证明用法。"
+    },
+    {
+      "id": "T13",
+      "category": "数据格式",
+      "english": "FP16",
+      "chinese": "16 位浮点格式",
+      "collocation": "IEEE half-precision (FP16)",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P06",
+        "block": 18,
+        "blocks": [
+          18
+        ],
+        "page": 1,
+        "file": "fused-fp8.pdf",
+        "quote": "Some of these representations are Tensor float 32 (TF32), with 8-bit exponent and 10-bit fraction, IEEE half-precision (FP16), with 5-bit exponent and 10-bit fraction, and bfloat16 (BF16), with 8-bit exponent and 7-bit fraction [1], [2]."
+      },
+      "note": "编码定义另见外部标准核对；这里仅证明用法。"
+    },
+    {
+      "id": "T14",
+      "category": "数据格式",
+      "english": "BF16",
+      "chinese": "bfloat16 格式",
+      "collocation": "bfloat16 (BF16)",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P06",
+        "block": 18,
+        "blocks": [
+          18
+        ],
+        "page": 1,
+        "file": "fused-fp8.pdf",
+        "quote": "Some of these representations are Tensor float 32 (TF32), with 8-bit exponent and 10-bit fraction, IEEE half-precision (FP16), with 5-bit exponent and 10-bit fraction, and bfloat16 (BF16), with 8-bit exponent and 7-bit fraction [1], [2]."
+      },
+      "note": "编码定义另见外部标准核对；这里仅证明用法。"
+    },
+    {
+      "id": "T15",
+      "category": "数据格式",
+      "english": "FP8 E4M3 / E5M2",
+      "chinese": "两种 FP8 编码",
+      "collocation": "MXFP8 (E5M2, E4M3) data formats",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P08",
+        "block": 10,
+        "blocks": [
+          10
+        ],
+        "page": 1,
+        "file": "mxdotp.pdf",
+        "quote": "We introduce MXDOTP, a RISC-V ISA extension that fuses scaling and dot product into a single four-operand instruction."
+      },
+      "note": "编码定义另见外部标准核对；这里仅证明用法。"
+    },
+    {
+      "id": "T16",
+      "category": "数据格式",
+      "english": "MXFP8",
+      "chinese": "微缩放 FP8",
+      "collocation": "MXFP8 general dot product",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P08",
+        "block": 19,
+        "blocks": [
+          19
+        ],
+        "page": 2,
+        "file": "mxdotp.pdf",
+        "quote": "In this work, we focus on the MXFP8 general dot product to evaluate the efficiency of MX formats in low-bitwidth arithmetic operations."
+      },
+      "note": "编码定义另见外部标准核对；这里仅证明用法。"
+    },
+    {
+      "id": "T17",
+      "category": "数据格式",
+      "english": "MXFP4",
+      "chinese": "微缩放 FP4",
+      "collocation": "per-block quantization",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P07",
+        "block": 118,
+        "blocks": [
+          118,
+          116
+        ],
+        "page": 1,
+        "file": "iccad2026-paper544.pdf",
+        "quote": "Along the granularity axis, strategies have progressed from coarse per-tensor/per-channel schemes (supported by vector units) to fine-grained per-block quantization (e.g., MXFP4 [29] or NVFP4 [1]), which requires tensor cores to natively support fine-grained scaling factors."
+      },
+      "note": "编码定义另见外部标准核对；这里仅证明用法。"
+    },
+    {
+      "id": "T18",
+      "category": "数据格式",
+      "english": "per-tensor scaling",
+      "chinese": "逐张量缩放",
+      "collocation": "traditional per-tensor scaling",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P08",
+        "block": 15,
+        "blocks": [
+          15
+        ],
+        "page": 2,
+        "file": "mxdotp.pdf",
+        "quote": "Unlike traditional per-tensor scaling or BFP, which share a single exponent across large blocks, MX offers finer-grained scaling by allowing individual elements or smaller blocks to retain independent scales."
+      },
+      "note": "编码定义另见外部标准核对；这里仅证明用法。"
+    },
+    {
+      "id": "T19",
+      "category": "数据格式",
+      "english": "per-channel scaling",
+      "chinese": "逐通道缩放",
+      "collocation": "per-tensor/per-channel schemes",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P07",
+        "block": 118,
+        "blocks": [
+          118,
+          116
+        ],
+        "page": 1,
+        "file": "iccad2026-paper544.pdf",
+        "quote": "Along the granularity axis, strategies have progressed from coarse per-tensor/per-channel schemes (supported by vector units) to fine-grained per-block quantization (e.g., MXFP4 [29] or NVFP4 [1]), which requires tensor cores to natively support fine-grained scaling factors."
+      },
+      "note": "编码定义另见外部标准核对；这里仅证明用法。"
+    },
+    {
+      "id": "T20",
+      "category": "数据格式",
+      "english": "NVFP4",
+      "chinese": "NVIDIA FP4 格式",
+      "collocation": "NVFP4",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P07",
+        "block": 118,
+        "blocks": [
+          118,
+          116
+        ],
+        "page": 1,
+        "file": "iccad2026-paper544.pdf",
+        "quote": "Along the granularity axis, strategies have progressed from coarse per-tensor/per-channel schemes (supported by vector units) to fine-grained per-block quantization (e.g., MXFP4 [29] or NVFP4 [1]), which requires tensor cores to natively support fine-grained scaling factors."
+      },
+      "note": "编码定义另见外部标准核对；这里仅证明用法。"
+    },
+    {
+      "id": "T21",
+      "category": "数据格式",
+      "english": "MXFP6",
+      "chinese": "微缩放 FP6",
+      "collocation": "MXFP6 format",
+      "status": "external",
+      "evidence": null,
+      "note": "8 篇正文未检得该完整拼写；OCP MX v1.0 Table 1 规定名称。不得将 FP6 自动视为 MXFP6。"
+    },
+    {
+      "id": "T22",
+      "category": "数据格式",
+      "english": "E8M0",
+      "chinese": "8 位指数、0 位尾数字段的缩放编码",
+      "collocation": "E8M0 scale data type",
+      "status": "external",
+      "evidence": null,
+      "note": "以 OCP MX v1.0 §5.4.1 核对；无本地语料原句。"
+    },
+    {
+      "id": "T23",
+      "category": "数据格式",
+      "english": "per-group scaling",
+      "chinese": "逐组缩放",
+      "collocation": "per-group scaling factor",
+      "status": "gap",
+      "evidence": null,
+      "note": "仅有 group/block 相关表述；未检得此固定搭配。不能把项目 Group 与量化 group 等同。"
+    },
+    {
+      "id": "T24",
+      "category": "数据格式",
+      "english": "HiF4",
+      "chinese": "HiFloat4 格式",
+      "collocation": "HiFloat4 (HiF4)",
+      "status": "external",
+      "evidence": null,
+      "note": "8 篇未检得；补充 HiFloat4 原文 arXiv:2602.11287v2，不能伪称来自 reference/。"
+    },
+    {
+      "id": "T25",
+      "category": "数据格式",
+      "english": "Q-format (QI.F / UQI.F)",
+      "chinese": "有符号/无符号定点记法",
+      "collocation": "signed QI.F / unsigned UQI.F",
+      "status": "manuscript-only",
+      "evidence": null,
+      "note": "本稿明确 I 不含符号位，位宽为 1+I+F / I+F；这只是作者定义，语料及 TI 原始定义尚未核验，不改符号或位宽。"
+    },
+    {
+      "id": "T26",
+      "category": "微架构",
+      "english": "lane",
+      "chinese": "计算通道",
+      "collocation": "additional narrow lanes",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P05",
+        "block": 151,
+        "blocks": [
+          151
+        ],
+        "page": 2,
+        "file": "TransDot.pdf",
+        "quote": "FPnew enables SIMD execution by instantiating additional narrow lanes for lower-precision formats, while a shared wide datapath supports multi-format mixed-precision FMA."
+      },
+      "note": ""
+    },
+    {
+      "id": "T27",
+      "category": "微架构",
+      "english": "group",
+      "chinese": "组（需按层次定义）",
+      "collocation": "operation group blocks",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P01",
+        "block": 25,
+        "blocks": [
+          25
+        ],
+        "page": 3,
+        "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+        "quote": "Input operands are routed toward one of four operation group blocks, each dedicated to a class of instructions."
+      },
+      "note": ""
+    },
+    {
+      "id": "T28",
+      "category": "微架构",
+      "english": "dot-product unit",
+      "chinese": "点积单元",
+      "collocation": "fused dot-product units",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P06",
+        "block": 29,
+        "blocks": [
+          29
+        ],
+        "page": 2,
+        "file": "fused-fp8.pdf",
+        "quote": "The two proposed fused dot-product units compute the fused FP8 4-way dot product with scaling and FP32 accumulation in four cycles."
+      },
+      "note": ""
+    },
+    {
+      "id": "T29",
+      "category": "微架构",
+      "english": "systolic array",
+      "chinese": "脉动阵列",
+      "collocation": "systolic arrays",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P02",
+        "block": 175,
+        "blocks": [
+          175
+        ],
+        "page": 6,
+        "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+        "quote": "Lack of software knowledge."
+      },
+      "note": ""
+    },
+    {
+      "id": "T30",
+      "category": "微架构",
+      "english": "broadcast dataflow",
+      "chinese": "广播数据流",
+      "collocation": "broadcast-style array construction",
+      "status": "related",
+      "evidence": {
+        "paper": "P07",
+        "block": 509,
+        "blocks": [
+          509
+        ],
+        "page": 3,
+        "file": "iccad2026-paper544.pdf",
+        "quote": "Since GPU tensor cores are exposed through regular MMA-style instructions, this work focuses on compute-unit organization and broadcast-style array construction rather than systolic/dataflow scheduling."
+      },
+      "note": ""
+    },
+    {
+      "id": "T31",
+      "category": "微架构",
+      "english": "reduction tree",
+      "chinese": "规约树",
+      "collocation": "a reduction tree is implemented",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P02",
+        "block": 153,
+        "blocks": [
+          153
+        ],
+        "page": 5,
+        "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+        "quote": "For the reduction within each core, a reduction tree is implemented."
+      },
+      "note": ""
+    },
+    {
+      "id": "T32",
+      "category": "微架构",
+      "english": "carry-save",
+      "chinese": "进位保留",
+      "collocation": "carry-save form",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P06",
+        "block": 117,
+        "blocks": [
+          117
+        ],
+        "page": 4,
+        "file": "fused-fp8.pdf",
+        "quote": "Multiplier uses the usm signal to convert intermediate products, which are in carry-save form, to signed numbers and then uses a carry-propagate adder (CPA) to generate a signed product."
+      },
+      "note": ""
+    },
+    {
+      "id": "T33",
+      "category": "微架构",
+      "english": "carry-propagate adder",
+      "chinese": "进位传播加法器",
+      "collocation": "carry-propagate adder (CPA)",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P06",
+        "block": 117,
+        "blocks": [
+          117
+        ],
+        "page": 4,
+        "file": "fused-fp8.pdf",
+        "quote": "Multiplier uses the usm signal to convert intermediate products, which are in carry-save form, to signed numbers and then uses a carry-propagate adder (CPA) to generate a signed product."
+      },
+      "note": ""
+    },
+    {
+      "id": "T34",
+      "category": "微架构",
+      "english": "alignment shifter",
+      "chinese": "对齐移位器",
+      "collocation": "alignment shifter aligns",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P05",
+        "block": 151,
+        "blocks": [
+          151
+        ],
+        "page": 2,
+        "file": "TransDot.pdf",
+        "quote": "An alignment shifter aligns the mantissa of C with the product, after which the aligned operands are accumulated using an adder sized to a no-precision-loss range ((3p + 4), where p denotes the precision in bits, i.e., mantissa bits + 1)."
+      },
+      "note": ""
+    },
+    {
+      "id": "T35",
+      "category": "微架构",
+      "english": "pipeline stage",
+      "chinese": "流水级",
+      "collocation": "without using pipeline stages",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P04",
+        "block": 371,
+        "blocks": [
+          371
+        ],
+        "page": 5,
+        "file": "MPICC_paper.pdf",
+        "quote": "Achieving a relaxed clock frequency of 200 MHz without using pipeline stages, the total area of the MPICC MAC unit is 1619.16 µm2."
+      },
+      "note": ""
+    },
+    {
+      "id": "T36",
+      "category": "微架构",
+      "english": "initiation interval",
+      "chinese": "启动间隔",
+      "collocation": "initiation interval (II)",
+      "status": "gap",
+      "evidence": null,
+      "note": "8 篇未检得该完整词组；不可用 latency 或每周期吞吐的表述替代定义。"
+    },
+    {
+      "id": "T37",
+      "category": "指标",
+      "english": "peak throughput",
+      "chinese": "峰值吞吐",
+      "collocation": "achieves a peak throughput",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P07",
+        "block": 1583,
+        "blocks": [
+          1583
+        ],
+        "page": 8,
+        "file": "iccad2026-paper544.pdf",
+        "quote": "At the same frequency, the tensor core achieves a peak throughput of 2.89 TFLOPS."
+      },
+      "note": ""
+    },
+    {
+      "id": "T38",
+      "category": "指标",
+      "english": "area overhead",
+      "chinese": "面积开销",
+      "collocation": "area overhead of supporting multiple modes",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P05",
+        "block": 187,
+        "blocks": [
+          187
+        ],
+        "page": 3,
+        "file": "TransDot.pdf",
+        "quote": "The area overhead of supporting multiple modes can be estimated by the additional multiplexers required."
+      },
+      "note": ""
+    },
+    {
+      "id": "T39",
+      "category": "指标",
+      "english": "utilization",
+      "chinese": "利用率",
+      "collocation": "hardware utilization rate",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P02",
+        "block": 255,
+        "blocks": [
+          255
+        ],
+        "page": 10,
+        "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+        "quote": "Larger batch sizes can also improve the hardware utilization rate."
+      },
+      "note": ""
+    },
+    {
+      "id": "T40",
+      "category": "指标",
+      "english": "latency",
+      "chinese": "延迟",
+      "collocation": "latency for both microarchitectures",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P06",
+        "block": 26,
+        "blocks": [
+          26
+        ],
+        "page": 2,
+        "file": "fused-fp8.pdf",
+        "quote": "The latency for both microarchitectures is 4 cycles."
+      },
+      "note": ""
+    },
+    {
+      "id": "T41",
+      "category": "指标",
+      "english": "power",
+      "chinese": "功耗",
+      "collocation": "power consumption",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P08",
+        "block": 58,
+        "blocks": [
+          58
+        ],
+        "page": 3,
+        "file": "mxdotp.pdf",
+        "quote": "We average power consumption over ten samples extracted from DeiT-Tiny [11], quantized to MXFP8 using Microsoft’s MX PyTorch Emulation Library 2 ."
+      },
+      "note": ""
+    },
+    {
+      "id": "T42",
+      "category": "指标",
+      "english": "energy",
+      "chinese": "能量",
+      "collocation": "consumes 26.7 pJ",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P01",
+        "block": 89,
+        "blocks": [
+          89
+        ],
+        "page": 8,
+        "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+        "quote": "For example, the FP64 FMA fmadd.d consumes 26.7 pJ, while performing the same operation on FP32 requires 65% less energy."
+      },
+      "note": ""
+    },
+    {
+      "id": "T43",
+      "category": "指标",
+      "english": "area efficiency",
+      "chinese": "面积效率",
+      "collocation": "area efficiency",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P05",
+        "block": 278,
+        "blocks": [
+          278
+        ],
+        "page": 4,
+        "file": "TransDot.pdf",
+        "quote": "Evaluation shows that TransDot achieves 1.46× area efficiency for FP16 DPA and 2.92× area efficiency for FP8 DPA at the cost of 37.3% extra area on average compared with the baseline."
+      },
+      "note": ""
+    },
+    {
+      "id": "T44",
+      "category": "指标",
+      "english": "throughput ratio",
+      "chinese": "吞吐配比",
+      "collocation": "peak throughput ratio",
+      "status": "gap",
+      "evidence": null,
+      "note": "本稿主题术语；语料有 throughput 比较，未检得完整词组。"
+    },
+    {
+      "id": "T45",
+      "category": "指标",
+      "english": "TOPS/W",
+      "chinese": "每瓦每秒万亿操作",
+      "collocation": "energy efficiency in TOPS/W",
+      "status": "gap",
+      "evidence": null,
+      "note": "语料多用 GFLOPS/W / Tflop/sW，不据此推导 OP 计数。"
+    },
+    {
+      "id": "T46",
+      "category": "指标",
+      "english": "TOPS/mm²",
+      "chinese": "单位面积每秒万亿操作",
+      "collocation": "area efficiency in TOPS/mm²",
+      "status": "gap",
+      "evidence": null,
+      "note": "未检得完整正文用例；不能直接替换文中的 FLOPS 面积单位。"
+    },
+    {
+      "id": "T47",
+      "category": "指标",
+      "english": "pJ/op",
+      "chinese": "每操作皮焦",
+      "collocation": "energy per operation",
+      "status": "gap",
+      "evidence": null,
+      "note": "有 pJ 和 per-operation energy 的近邻证据，未检得该确切斜线单位。"
+    },
+    {
+      "id": "T48",
+      "category": "量化与负载",
+      "english": "weight-only quantization",
+      "chinese": "仅权重量化",
+      "collocation": "weight-only W4A16 methods",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P07",
+        "block": 118,
+        "blocks": [
+          118
+        ],
+        "page": 1,
+        "file": "iccad2026-paper544.pdf",
+        "quote": "Along the precision axis, different quantization algorithms impose heterogeneous requirements on numerical formats: weight-only W4A16 methods such as GPTQ [7], AWQ [19] convert INT4 weights to FP16/BF16 via vector units during LLM inference and thus require FP16/BF16 tensor core; SmoothQuant [32] uses W8A8 and relies on INT8 precision; the DeepSeek V3 training pipeline [6] demands FP8 E4M3 with high-precision accumulation; and SVDQuant [17] joint weight–activation 4-bit quantization calls for emerging formats such as NVFP4 [1]."
+      },
+      "note": ""
+    },
+    {
+      "id": "T49",
+      "category": "量化与负载",
+      "english": "weight-activation quantization",
+      "chinese": "权重与激活量化",
+      "collocation": "joint weight–activation 4-bit quantization",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P07",
+        "block": 118,
+        "blocks": [
+          118
+        ],
+        "page": 1,
+        "file": "iccad2026-paper544.pdf",
+        "quote": "Along the precision axis, different quantization algorithms impose heterogeneous requirements on numerical formats: weight-only W4A16 methods such as GPTQ [7], AWQ [19] convert INT4 weights to FP16/BF16 via vector units during LLM inference and thus require FP16/BF16 tensor core; SmoothQuant [32] uses W8A8 and relies on INT8 precision; the DeepSeek V3 training pipeline [6] demands FP8 E4M3 with high-precision accumulation; and SVDQuant [17] joint weight–activation 4-bit quantization calls for emerging formats such as NVFP4 [1]."
+      },
+      "note": "原文使用 en dash；不等于所有 weight-activation 策略都采用同一编码。"
+    },
+    {
+      "id": "T50",
+      "category": "量化与负载",
+      "english": "prefill",
+      "chinese": "预填充阶段",
+      "collocation": "prefill and decoding",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P02",
+        "block": 24,
+        "blocks": [
+          24
+        ],
+        "page": 2,
+        "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+        "quote": "We find that prefill and decoding pose different hardware requirements."
+      },
+      "note": ""
+    },
+    {
+      "id": "T51",
+      "category": "量化与负载",
+      "english": "decoding",
+      "chinese": "自回归解码阶段",
+      "collocation": "prefill and decoding",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P02",
+        "block": 24,
+        "blocks": [
+          24
+        ],
+        "page": 2,
+        "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+        "quote": "We find that prefill and decoding pose different hardware requirements."
+      },
+      "note": "与微架构 input decoding / mantissa decoding 分开判别。"
+    },
+    {
+      "id": "T52",
+      "category": "量化与负载",
+      "english": "GEMM",
+      "chinese": "通用矩阵乘法",
+      "collocation": "General Matrix Multiplication (GEMM)",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P04",
+        "block": 391,
+        "blocks": [
+          391
+        ],
+        "page": 5,
+        "file": "MPICC_paper.pdf",
+        "quote": "We performed General Matrix Multiplication (GEMM) with random matrices of different sizes on the MPICC MAC unit to compare the impact of high-precision emulation on Mean Squared Error (MSE), as depicted in Fig. 8."
+      },
+      "note": ""
+    },
+    {
+      "id": "T53",
+      "category": "量化与负载",
+      "english": "calibration",
+      "chinese": "量化校准",
+      "collocation": "quantization calibration",
+      "status": "gap",
+      "evidence": null,
+      "note": "未检得量化语境；不能混同硬件模型校准。"
+    },
+    {
+      "id": "T54",
+      "category": "量化与负载",
+      "english": "outlier",
+      "chinese": "离群值",
+      "collocation": "activation outlier",
+      "status": "gap",
+      "evidence": null,
+      "note": "8 篇未检得；NVIDIA 补充页面讨论 outliers，但此行不伪造本地原句。"
+    },
+    {
+      "id": "T55",
+      "category": "量化与负载",
+      "english": "precision migration",
+      "chinese": "精度迁移",
+      "collocation": "precision-migration scenario",
+      "status": "gap",
+      "evidence": null,
+      "note": "本稿自定义情景术语；需保留其假设性质。"
+    },
+    {
+      "id": "T56",
+      "category": "量化与负载",
+      "english": "MoE",
+      "chinese": "混合专家模型",
+      "collocation": "mixture-of-experts (MoE)",
+      "status": "gap",
+      "evidence": null,
+      "note": "本稿出现，8 篇正文未检得。"
+    },
+    {
+      "id": "T57",
+      "category": "量化与负载",
+      "english": "attention projection",
+      "chinese": "注意力投影",
+      "collocation": "attention projections",
+      "status": "gap",
+      "evidence": null,
+      "note": "本稿出现；不可用 attention 或 self-attention 命中代替此术语证据。"
+    },
+    {
+      "id": "T58",
+      "category": "量化与负载",
+      "english": "dequantization",
+      "chinese": "反量化",
+      "collocation": "dequantization overhead",
+      "status": "gap",
+      "evidence": null,
+      "note": "8 篇所选正文未检得；不要与 general format conversion 自动等同。"
+    },
+    {
+      "id": "T59",
+      "category": "量化与负载",
+      "english": "model size",
+      "chinese": "模型规模（需明确参数量或存储）",
+      "collocation": "model size",
+      "status": "corpus",
+      "evidence": {
+        "paper": "P02",
+        "block": 20,
+        "blocks": [
+          20
+        ],
+        "page": 1,
+        "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+        "quote": "The capability of LLMs is related to their model size [29], [31], and larger models [8], [11] show impressive abilities [77] compared to smaller counterparts [16], [57], with future models expected to exceed trillions of parameters [17]."
+      },
+      "note": ""
+    },
+    {
+      "id": "T60",
+      "category": "量化与负载",
+      "english": "parameter count",
+      "chinese": "参数个数",
+      "collocation": "model parameters",
+      "status": "related",
+      "evidence": null,
+      "note": "本地语料有 parameters 数量叙述，但未检得 parameter count 完整搭配；不可与模型存储字节数互换。"
+    }
+  ],
+  "external_sources": [
+    {
+      "id": "S01",
+      "title": "OCP Microscaling Formats (MX) Specification v1.0 (Sep 2023)",
+      "url": "https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf",
+      "location": "Table 1, §5.2; §5.4.1 (PDF p.10, p.14)",
+      "quote": "E8M0 is an unsigned representation of a conventional biased Float32 exponent.",
+      "finding": "MXFP8/6/4 为格式名；不能用 FP8/6/4 代替完整 block format。E8M0 是 scale type。"
+    },
+    {
+      "id": "S02",
+      "title": "NVIDIA Transformer Engine 2.14.0, Using FP8 and FP4, NVFP4 Format",
+      "url": "https://docs.nvidia.com/deeplearning/transformer-engine-releases/release-2.14/user-guide/examples/fp8_primer.html",
+      "location": "NVFP4 Format",
+      "quote": "Therefore, NVFP4 uses an additional single per-tensor FP32 scaling factor to avoid overflows.",
+      "finding": "NVFP4 与 MXFP4 不是别名；NVIDIA 文档区分局部块缩放和额外张量缩放。"
+    },
+    {
+      "id": "S03",
+      "title": "HiFloat4 Format for Language Model Inference, arXiv:2602.11287v2",
+      "url": "https://arxiv.org/html/2602.11287v2",
+      "location": "Abstract",
+      "quote": "This paper introduces HiFloat4 (HiF4), a block floating-point data format tailored for deep learning.",
+      "finding": "可核验 HiFloat4 / HiF4 名称；不以补充来源冒充本地八篇统计。"
+    },
+    {
+      "id": "S04",
+      "title": "IEEE Std 754-2019 official landing page",
+      "url": "https://ieeexplore.ieee.org/document/8766229",
+      "location": "official access attempt",
+      "quote": null,
+      "finding": "2026-11-18 官方页面返回 JavaScript/robot 检查，未获得标准正文。significand 与 trailing significand field 的标准条文裁决仍待核验，不拿二手网页代替。"
+    }
+  ],
+  "paragraph_openings": [
+    {
+      "paper": "P01",
+      "section": "abstract",
+      "label": "claim-first",
+      "evidence": {
+        "paper": "P01",
+        "block": 4,
+        "blocks": [
+          4
+        ],
+        "page": 1,
+        "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+        "quote": "The slowdown of Moore’s law and the power wall necessitates a shift toward finely tunable precision (a.k.a. transprecision) computing to reduce energy footprint."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P01",
+      "section": "introduction",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P01",
+        "block": 9,
+        "blocks": [
+          9
+        ],
+        "page": 1,
+        "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+        "quote": "Simultaneously, rapidly evolving workloads, such as machine learning focuses on the computing industry and always demand higher compute performance at constant or decreasing power budgets, ranging from the data center, and high performance computing (HPC) scale down to the Internet of Things (IoT) domain."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P01",
+      "section": "contributions",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P01",
+        "block": 14,
+        "blocks": [
+          14
+        ],
+        "page": 2,
+        "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+        "quote": "The design of a highly configurable architecture for a transprecision floating-point unit written in SystemVerilog."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P01",
+      "section": "method",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P01",
+        "block": 18,
+        "blocks": [
+          18
+        ],
+        "page": 2,
+        "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+        "quote": "FPnew is a flexible, open-source hardware IP block that adheres to IEEE 754 standard principles, written in SystemVerilog."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P01",
+      "section": "evaluation",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P01",
+        "block": 69,
+        "blocks": [
+          69
+        ],
+        "page": 6,
+        "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+        "quote": "To benchmark applications on the TP-enabled RI5CY core, we perform a full place and route implementation of a platform containing the core."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P01",
+      "section": "conclusion",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P01",
+        "block": 140,
+        "blocks": [
+          140
+        ],
+        "page": 13,
+        "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+        "quote": "We have presented FPnew, a configurable open-source transprecision floating-point unit capable of supporting arbitrary FP formats."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P02",
+      "section": "abstract",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P02",
+        "block": 4,
+        "blocks": [
+          4
+        ],
+        "page": 1,
+        "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+        "quote": "The past year has witnessed the increasing popularity of Large Language Models (LLMs)."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P02",
+      "section": "introduction",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P02",
+        "block": 20,
+        "blocks": [
+          20
+        ],
+        "page": 1,
+        "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+        "quote": "Large Language Models (LLMs), the technology behind OpenAI ChatGPT [49], Github Copilot [22], and Google Bard [24], are gaining widespread attention from the whole society."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P02",
+      "section": "contributions",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P02",
+        "block": 24,
+        "blocks": [
+          24
+        ],
+        "page": 2,
+        "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+        "quote": "We introduce LLMCompass, a hardware evaluation framework for LLM inference workloads (Sec. III)."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P02",
+      "section": "method",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P02",
+        "block": 43,
+        "blocks": [
+          43
+        ],
+        "page": 2,
+        "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+        "quote": "Large Language Models are variations of Transformer models [73] with a considerable amount of parameters that have been pre-trained on large corpora of data [40]."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P02",
+      "section": "evaluation",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P02",
+        "block": 156,
+        "blocks": [
+          156
+        ],
+        "page": 5,
+        "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+        "quote": "In this section, we validate our framework against three real hardware platforms: (1) a datacenter GPU node with 4 NVIDIA A100 SXM4 GPUs (80 GB) fully connected by NVLinks; (2) a Google Cloud TPU node with 8 TPUv3 cores connected in a 2D torus topology; (3) an AMD MI210 GPU 3 ."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P02",
+      "section": "conclusion",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P02",
+        "block": 288,
+        "blocks": [
+          288
+        ],
+        "page": 12,
+        "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+        "quote": "This work introduces LLMCompass, a fast, accurate, and architecturally descriptive hardware evaluation framework for LLM inference workloads."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P03",
+      "section": "abstract",
+      "label": "claim-first",
+      "evidence": {
+        "paper": "P03",
+        "block": 15,
+        "blocks": [
+          15
+        ],
+        "page": 1,
+        "file": "Low-Cost Multiple-Precision.pdf",
+        "quote": "Low-precision formats have been proposed and applied to deep learning algorithms to speed up training and inference."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P03",
+      "section": "introduction",
+      "label": "claim-first",
+      "evidence": {
+        "paper": "P03",
+        "block": 18,
+        "blocks": [
+          18
+        ],
+        "page": 1,
+        "file": "Low-Cost Multiple-Precision.pdf",
+        "quote": "Deep learning has achieved great success in many fields[1–3] and is one of the hottest research domains at present."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P03",
+      "section": "contributions",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P03",
+        "block": 28,
+        "blocks": [
+          28
+        ],
+        "page": 2,
+        "file": "Low-Cost Multiple-Precision.pdf",
+        "quote": "An multiple-precision multiplication architecture with low hardware overhead is designed through the LPC method."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P03",
+      "section": "method",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P03",
+        "block": 33,
+        "blocks": [
+          33
+        ],
+        "page": 2,
+        "file": "Low-Cost Multiple-Precision.pdf",
+        "quote": "FP numbers defined in the IEEE-754 standard consist of three parts: sign bit(S), biased exponent(E), and trailing significant field of the mantissa(M)[14]."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P03",
+      "section": "evaluation",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P03",
+        "block": 236,
+        "blocks": [
+          236
+        ],
+        "page": 5,
+        "file": "Low-Cost Multiple-Precision.pdf",
+        "quote": "The proposed MU is implemented with Verilog HDL and is in the typical corner of 28-nm CMOS technology for evaluation."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P03",
+      "section": "conclusion",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P03",
+        "block": 290,
+        "blocks": [
+          290
+        ],
+        "page": 6,
+        "file": "Low-Cost Multiple-Precision.pdf",
+        "quote": "In this paper, we present a novel multiplication unit."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P04",
+      "section": "abstract",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P04",
+        "block": 9,
+        "blocks": [
+          9
+        ],
+        "page": 1,
+        "file": "MPICC_paper.pdf",
+        "quote": "Recent studies have proved the feasibility of ultra-low-precision (≤ 8-bit) training."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P04",
+      "section": "introduction",
+      "label": "claim-first",
+      "evidence": {
+        "paper": "P04",
+        "block": 14,
+        "blocks": [
+          14
+        ],
+        "page": 1,
+        "file": "MPICC_paper.pdf",
+        "quote": "DNNs have achieved remarkable performance across various domains."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P04",
+      "section": "contributions",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P04",
+        "block": 23,
+        "blocks": [
+          23
+        ],
+        "page": 1,
+        "file": "MPICC_paper.pdf",
+        "quote": "A Multiple-Precision Inter-Combined Computing (MPICC) architecture, which decodes basic types into a unified format[3] and uses a multiple dot product unit to perform inter-combined computations of LOG4 (E4M0), FP4 (E3M0, E2M1), FP6 (E3M2, E2M3), FP8 (E5M2, E4M3), and INT4."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P04",
+      "section": "method",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P04",
+        "block": 41,
+        "blocks": [
+          41
+        ],
+        "page": 2,
+        "file": "MPICC_paper.pdf",
+        "quote": "The proposed MPICC MAC unit performs 1/2/4 dot products per operation based on the mantissa length of the input data and accumulates the results in FP12/INT8 as shown in Equation 1."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P04",
+      "section": "evaluation",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P04",
+        "block": 371,
+        "blocks": [
+          371
+        ],
+        "page": 5,
+        "file": "MPICC_paper.pdf",
+        "quote": "We explored the design space of the MPICC MAC unit using Synopsys Design Compiler 2021.09 and PrimeTime PX 2021.06 under typical corner (TT, 0.9 V, 25°C) with TSMC 28nm technology."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P04",
+      "section": "conclusion",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P04",
+        "block": 483,
+        "blocks": [
+          483
+        ],
+        "page": 6,
+        "file": "MPICC_paper.pdf",
+        "quote": "To maximize the hardware performance improvements brought by the ultra-low-precision training algorithm."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P05",
+      "section": "abstract",
+      "label": "claim-first",
+      "evidence": {
+        "paper": "P05",
+        "block": 4,
+        "blocks": [
+          4
+        ],
+        "page": 1,
+        "file": "TransDot.pdf",
+        "quote": "Commercial FPGAs, such as AMD Versal devices, increasingly incorporate AI engines that exploit low-precision packed-SIMD fused multiply–accumulate (FMA) to achieve proportional throughput gains."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P05",
+      "section": "introduction",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P05",
+        "block": 17,
+        "blocks": [
+          17
+        ],
+        "page": 1,
+        "file": "TransDot.pdf",
+        "quote": "Modern AI accelerators increasingly rely on reduced-precision arithmetic to improve performance and energy efficiency."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P05",
+      "section": "contributions",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P05",
+        "block": 148,
+        "blocks": [
+          148
+        ],
+        "page": 2,
+        "file": "TransDot.pdf",
+        "quote": "We present TransDot, a reconfigurable FPU that supports trans-precision DPA and unifies scalar, SIMD, and DPA execution within a largely shared datapath."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P05",
+      "section": "method",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P05",
+        "block": 151,
+        "blocks": [
+          151
+        ],
+        "page": 2,
+        "file": "TransDot.pdf",
+        "quote": "Fig. 2(a) illustrates the open-source FPnew multi-format FMA slice, which supports FP32, FP16, and FP8 execution in both scalar and SIMD modes."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P05",
+      "section": "evaluation",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P05",
+        "block": 220,
+        "blocks": [
+          220
+        ],
+        "page": 3,
+        "file": "TransDot.pdf",
+        "quote": "We evaluate TransDot through RTL modification and ASIC synthesis using Cadence Genus [23] with a commercial 12nm PDK."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P05",
+      "section": "conclusion",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P05",
+        "block": 278,
+        "blocks": [
+          278
+        ],
+        "page": 4,
+        "file": "TransDot.pdf",
+        "quote": "This paper presents TransDot, a reconfigurable FPU that unifies SIMD FMA and trans-precision DPA within a shared reconfigurable datapath."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P06",
+      "section": "abstract",
+      "label": "claim-first",
+      "evidence": {
+        "paper": "P06",
+        "block": 13,
+        "blocks": [
+          13
+        ],
+        "page": 1,
+        "file": "fused-fp8.pdf",
+        "quote": "For a variety of ML applications, generalized matrix multiply (GEMM) with DOT product is the most computationally intensive operation."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P06",
+      "section": "introduction",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P06",
+        "block": 18,
+        "blocks": [
+          18
+        ],
+        "page": 1,
+        "file": "fused-fp8.pdf",
+        "quote": "Systems for machine learning and deep learning training are moving from floating-point single-precision 32-bit (FP32) arithmetic to other representations with reduced precision."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P06",
+      "section": "contributions",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P06",
+        "block": 26,
+        "blocks": [
+          26
+        ],
+        "page": 2,
+        "file": "fused-fp8.pdf",
+        "quote": "In this paper we present two different microachitectures for the computation of fused FP8 4-way dot product (DOT4) with scaling and accumulation to FP32 wthout any intermediate rounding."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P06",
+      "section": "method",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P06",
+        "block": 29,
+        "blocks": [
+          29
+        ],
+        "page": 2,
+        "file": "fused-fp8.pdf",
+        "quote": "The two proposed fused dot-product units compute the fused FP8 4-way dot product with scaling and FP32 accumulation in four cycles."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P06",
+      "section": "evaluation",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P06",
+        "block": 211,
+        "blocks": [
+          211
+        ],
+        "page": 6,
+        "file": "fused-fp8.pdf",
+        "quote": "The aforementioned units have been implemented in a 5nm technology node targeting a frequency of 3.6 GHz."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P06",
+      "section": "conclusion",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P06",
+        "block": 226,
+        "blocks": [
+          226
+        ],
+        "page": 7,
+        "file": "fused-fp8.pdf",
+        "quote": "Two different and novel micro-architectures for the calculation of the 4-way dot product with scaling and FP32 accumulation have been presented in this paper."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P07",
+      "section": "abstract",
+      "label": "claim-first",
+      "evidence": {
+        "paper": "P07",
+        "block": 22,
+        "blocks": [
+          22
+        ],
+        "page": 1,
+        "file": "iccad2026-paper544.pdf",
+        "quote": "Tensor cores drive most AI compute in GPGPUs, yet supporting multiple precisions under tight bandwidth, power, and area budgets remains a major microarchitecture challenge."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P07",
+      "section": "introduction",
+      "label": "claim-first",
+      "evidence": {
+        "paper": "P07",
+        "block": 118,
+        "blocks": [
+          118
+        ],
+        "page": 1,
+        "file": "iccad2026-paper544.pdf",
+        "quote": "With the rapid advancement of deep learning and large language models, AI-oriented general-purpose GPUs (GPGPUs) have become the core hardware platforms supporting AI computation."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P07",
+      "section": "contributions",
+      "label": "claim-first",
+      "evidence": {
+        "paper": "P07",
+        "block": 116,
+        "blocks": [
+          116
+        ],
+        "page": 1,
+        "file": "iccad2026-paper544.pdf",
+        "quote": "Compute-architecture selection: Through synthesis-backed evaluation under throughput-matched FP16/BF16/TF32 constraints, we show that dot-product units reduce area by 47%–55% and power by 25%–36% relative to multiplier– adder pipelines."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P07",
+      "section": "method",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P07",
+        "block": 453,
+        "blocks": [
+          453
+        ],
+        "page": 3,
+        "file": "iccad2026-paper544.pdf",
+        "quote": "As shown in Fig. 2, TensorForge is a synthesis-backed, constraint-driven DSE framework rather than a one-off generator for a few hand-crafted tensor cores."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P07",
+      "section": "evaluation",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P07",
+        "block": 753,
+        "blocks": [
+          753
+        ],
+        "page": 5,
+        "file": "iccad2026-paper544.pdf",
+        "quote": "TensorForge is implemented in Chisel and generates designs from user-specified configurations."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P07",
+      "section": "conclusion",
+      "label": "claim-first",
+      "evidence": {
+        "paper": "P07",
+        "block": 1593,
+        "blocks": [
+          1593
+        ],
+        "page": 8,
+        "file": "iccad2026-paper544.pdf",
+        "quote": "The TensorForge framework provides a synthesis-backed methodology for tensor core design space exploration and has been validated through integration into the open-source Ventus GPGPU [16]."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P08",
+      "section": "abstract",
+      "label": "claim-first",
+      "evidence": {
+        "paper": "P08",
+        "block": 5,
+        "blocks": [
+          5
+        ],
+        "page": 1,
+        "file": "mxdotp.pdf",
+        "quote": "Fast and energy-efficient low-bitwidth floating-point (FP) arithmetic is essential for Artificial Intelligence (AI) systems."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P08",
+      "section": "introduction",
+      "label": "claim-first",
+      "evidence": {
+        "paper": "P08",
+        "block": 7,
+        "blocks": [
+          7
+        ],
+        "page": 1,
+        "file": "mxdotp.pdf",
+        "quote": "Compact floating-point (FP) arithmetic has gained significant attention for energy-efficient computing, particularly in machine learning workloads [1]–[4]."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P08",
+      "section": "contributions",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P08",
+        "block": 10,
+        "blocks": [
+          10
+        ],
+        "page": 1,
+        "file": "mxdotp.pdf",
+        "quote": "We design a dot product-accumulate unit to support MXFP8 (E5M2, E4M3) data formats with 8-bit scales and an FP32 accumulator to minimize overflows and precision losses."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P08",
+      "section": "method",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P08",
+        "block": 15,
+        "blocks": [
+          15
+        ],
+        "page": 2,
+        "file": "mxdotp.pdf",
+        "quote": "MX formats, proposed by OCP as a standard, are low-bitwidth data formats optimized for AI, co-developed by major industry players such as AMD, Arm, Intel, Meta, Microsoft, NVIDIA, and Qualcomm."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P08",
+      "section": "evaluation",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P08",
+        "block": 57,
+        "blocks": [
+          57
+        ],
+        "page": 3,
+        "file": "mxdotp.pdf",
+        "quote": "We synthesize, place, and route the MXDOTP-extended Snitch cluster in G LOBAL F OUNDRIES ’ 12 nm FinFET technology with a target frequency of 0.95 GHz under worst-case conditions (SS/0.72 V/125 °C) using Synopsys Fusion Compiler."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    },
+    {
+      "paper": "P08",
+      "section": "conclusion",
+      "label": "topic-first",
+      "evidence": {
+        "paper": "P08",
+        "block": 160,
+        "blocks": [
+          160
+        ],
+        "page": 4,
+        "file": "mxdotp.pdf",
+        "quote": "We presented MXDOTP, a RISC-V ISA extension enabling efficient execution of Microscaling (MX) dot products."
+      },
+      "basis": "claim-first: 开篇断言问题/优势/判断；topic-first: 先界定对象、活动或范围。每节定向选 1 处，不代表全篇频率。"
+    }
+  ],
+  "contributions": [
+    {
+      "paper": "P01",
+      "heads": [
+        "The design",
+        "Extensions",
+        "Integration",
+        "Integration"
+      ],
+      "parallelism": "noun-phrase parallel",
+      "evidence": [
+        {
+          "paper": "P01",
+          "block": 14,
+          "blocks": [
+            14
+          ],
+          "page": 2,
+          "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+          "quote": "The design of a highly configurable architecture for a transprecision floating-point unit written in SystemVerilog."
+        },
+        {
+          "paper": "P01",
+          "block": 14,
+          "blocks": [
+            14
+          ],
+          "page": 2,
+          "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+          "quote": "Extensions to the RISC-V ISA to support transprecision FP operations on FP64, FP32, FP16, FP16alt, and FP8 [10]."
+        },
+        {
+          "paper": "P01",
+          "block": 14,
+          "blocks": [
+            14
+          ],
+          "page": 2,
+          "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+          "quote": "Integration of the TP-FPU into RI5CY [11], a 32-bit embedded RISC-V processor core."
+        },
+        {
+          "paper": "P01",
+          "block": 14,
+          "blocks": [
+            14
+          ],
+          "page": 2,
+          "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+          "quote": "Integration of the TP-FPU into Ariane [12], a 64-bit application-class RISC-V processor core, and subsequent silicon implementation in G LOBALFOUNDRIES 22FDX [9]."
+        }
+      ]
+    },
+    {
+      "paper": "P02",
+      "heads": [
+        "introduce",
+        "leverage",
+        "propose"
+      ],
+      "parallelism": "We + present verb parallel",
+      "evidence": [
+        {
+          "paper": "P02",
+          "block": 24,
+          "blocks": [
+            24
+          ],
+          "page": 2,
+          "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+          "quote": "We introduce LLMCompass, a hardware evaluation framework for LLM inference workloads (Sec."
+        },
+        {
+          "paper": "P02",
+          "block": 24,
+          "blocks": [
+            24
+          ],
+          "page": 2,
+          "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+          "quote": "We leverage LLMCompass to draw architectural implications and explore how hardware design choices affect LLM inference (Sec."
+        },
+        {
+          "paper": "P02",
+          "block": 24,
+          "blocks": [
+            24
+          ],
+          "page": 2,
+          "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+          "quote": "We propose two cost-effective hardware designs different from conventional wisdom (Sec."
+        }
+      ]
+    },
+    {
+      "paper": "P03",
+      "heads": [
+        "is designed",
+        "present"
+      ],
+      "parallelism": "passive/active mixed",
+      "evidence": [
+        {
+          "paper": "P03",
+          "block": 28,
+          "blocks": [
+            28
+          ],
+          "page": 2,
+          "file": "Low-Cost Multiple-Precision.pdf",
+          "quote": "An multiple-precision multiplication architecture with low hardware overhead is designed through the LPC method."
+        },
+        {
+          "paper": "P03",
+          "block": 28,
+          "blocks": [
+            28
+          ],
+          "page": 2,
+          "file": "Low-Cost Multiple-Precision.pdf",
+          "quote": "We present a mixed multiplier design, which can perform two 4x8 multiplication or one 8x8 multiplication by the same computing paths."
+        }
+      ]
+    },
+    {
+      "paper": "P04",
+      "heads": [
+        "architecture (noun)",
+        "is introduced",
+        "was designed"
+      ],
+      "parallelism": "noun/passive, tense mixed",
+      "evidence": [
+        {
+          "paper": "P04",
+          "block": 23,
+          "blocks": [
+            23
+          ],
+          "page": 1,
+          "file": "MPICC_paper.pdf",
+          "quote": "A Multiple-Precision Inter-Combined Computing (MPICC) architecture, which decodes basic types into a unified format[3] and uses a multiple dot product unit to perform inter-combined computations of LOG4 (E4M0), FP4 (E3M0, E2M1), FP6 (E3M2, E2M3), FP8 (E5M2, E4M3), and INT4."
+        },
+        {
+          "paper": "P04",
+          "block": 27,
+          "blocks": [
+            27
+          ],
+          "page": 2,
+          "file": "MPICC_paper.pdf",
+          "quote": "A Variable-SR structure is introduced during the accumulation, which reduces the accumulator bit width from 10-bit to 6-bit while maintaining accuracy."
+        },
+        {
+          "paper": "P04",
+          "block": 27,
+          "blocks": [
+            27
+          ],
+          "page": 2,
+          "file": "MPICC_paper.pdf",
+          "quote": "A low-cost high-precision emulating controller was designed, which decomposes one FP12 computation into multiple FP8 computations."
+        }
+      ]
+    },
+    {
+      "paper": "P05",
+      "heads": [
+        "present",
+        "extend",
+        "evaluate"
+      ],
+      "parallelism": "We + present verb parallel",
+      "evidence": [
+        {
+          "paper": "P05",
+          "block": 148,
+          "blocks": [
+            148
+          ],
+          "page": 2,
+          "file": "TransDot.pdf",
+          "quote": "We present TransDot, a reconfigurable FPU that supports trans-precision DPA and unifies scalar, SIMD, and DPA execution within a largely shared datapath."
+        },
+        {
+          "paper": "P05",
+          "block": 148,
+          "blocks": [
+            148
+          ],
+          "page": 2,
+          "file": "TransDot.pdf",
+          "quote": "We extend the supported format set to include emerging"
+        },
+        {
+          "paper": "P05",
+          "block": 150,
+          "blocks": [
+            150
+          ],
+          "page": 2,
+          "file": "TransDot.pdf",
+          "quote": "We evaluate TransDot using ASIC flow with a commercial 12nm technology, demonstrating favorable area–delay trade-offs and strong area efficiency."
+        }
+      ]
+    },
+    {
+      "paper": "P06",
+      "heads": [],
+      "parallelism": "no explicit list; narrative contribution statement",
+      "evidence": [
+        {
+          "paper": "P06",
+          "block": 26,
+          "blocks": [
+            26
+          ],
+          "page": 2,
+          "file": "fused-fp8.pdf",
+          "quote": "In this paper we present two different microachitectures for the computation of fused FP8 4-way dot product (DOT4) with scaling and accumulation to FP32 wthout any intermediate rounding."
+        }
+      ]
+    },
+    {
+      "paper": "P07",
+      "heads": [
+        "show",
+        "characterize",
+        "analyze"
+      ],
+      "parallelism": "topic labels + We present verbs",
+      "evidence": [
+        {
+          "paper": "P07",
+          "block": 116,
+          "blocks": [
+            116
+          ],
+          "page": 1,
+          "file": "iccad2026-paper544.pdf",
+          "quote": "• Compute-architecture selection: Through synthesis-backed evaluation under throughput-matched FP16/BF16/TF32 constraints, we show that dot-product units reduce area by 47%–55% and power by 25%–36% relative to multiplier– adder pipelines."
+        },
+        {
+          "paper": "P07",
+          "block": 326,
+          "blocks": [
+            326
+          ],
+          "page": 2,
+          "file": "iccad2026-paper544.pdf",
+          "quote": "• Numerical-precision trade-offs: We characterize the feasible numeric region of the design space in terms of intermediate precision, accumulator precision, and stochastic rounding."
+        },
+        {
+          "paper": "P07",
+          "block": 326,
+          "blocks": [
+            326
+          ],
+          "page": 2,
+          "file": "iccad2026-paper544.pdf",
+          "quote": "• Precision multiplexing strategies: We systematically analyze resource-sharing strategies and identify a clear unified–hybrid switching boundary in the area–power plane: fully unified all-in-one designs minimize area, whereas FP/INT-partitioned hybrid designs achieve better Pareto fronts once cross-family precision heterogeneity becomes sufficiently large."
+        }
+      ]
+    },
+    {
+      "paper": "P08",
+      "heads": [
+        "design",
+        "introduce",
+        "integrate"
+      ],
+      "parallelism": "We + present verb parallel",
+      "evidence": [
+        {
+          "paper": "P08",
+          "block": 10,
+          "blocks": [
+            10
+          ],
+          "page": 1,
+          "file": "mxdotp.pdf",
+          "quote": "We design a dot product-accumulate unit to support MXFP8 (E5M2, E4M3) data formats with 8-bit scales and an FP32 accumulator to minimize overflows and precision losses."
+        },
+        {
+          "paper": "P08",
+          "block": 10,
+          "blocks": [
+            10
+          ],
+          "page": 1,
+          "file": "mxdotp.pdf",
+          "quote": "We introduce MXDOTP, a RISC-V ISA extension that fuses scaling and dot product into a single four-operand instruction."
+        },
+        {
+          "paper": "P08",
+          "block": 10,
+          "blocks": [
+            10
+          ],
+          "page": 1,
+          "file": "mxdotp.pdf",
+          "quote": "We integrate MXDOTP into an 8-core Snitch cluster, reaching up to 80 % utilization."
+        }
+      ]
+    }
+  ]
+}

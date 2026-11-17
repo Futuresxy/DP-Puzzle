@@ -1,0 +1,16 @@
+{
+  "mode": "report-only",
+  "baseline_build_passed": true,
+  "baseline_exit_code": 0,
+  "pdf_pages": 7,
+  "references_start_page": 7,
+  "underfull_hbox": 11,
+  "underfull_vbox": 1,
+  "candidate_counts": {
+    "must-fix": 5,
+    "should-fix": 5,
+    "optional": 3
+  },
+  "queries": 7,
+  "tex_unchanged": true
+}

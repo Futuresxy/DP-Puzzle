@@ -1,0 +1,3985 @@
+[
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 4,
+    "original": "trans-precision",
+    "replacement": "transprecision"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 4,
+    "original": "half-precision",
+    "replacement": "half-precision"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 4,
+    "original": "vec-tors",
+    "replacement": "vectors"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 4,
+    "original": "mea-sured",
+    "replacement": "measured"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 5,
+    "original": "multifor-mat",
+    "replacement": "multiformat"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 8,
+    "original": "Inte-grated",
+    "replacement": "Integrated"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 9,
+    "original": "Inter-net",
+    "replacement": "Internet"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 9,
+    "original": "floating-point",
+    "replacement": "floating-point"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 9,
+    "original": "com-putations",
+    "replacement": "computations"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 9,
+    "original": "usu-ally",
+    "replacement": "usually"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 9,
+    "original": "univer-sal",
+    "replacement": "universal"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 9,
+    "original": "numeri-cal",
+    "replacement": "numerical"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 9,
+    "original": "under-flow",
+    "replacement": "underflow"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 9,
+    "original": "transpreci-sion",
+    "replacement": "transprecision"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 9,
+    "original": "ver-itable",
+    "replacement": "veritable"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 9,
+    "original": "Ner-vana",
+    "replacement": "Nervana"
+  },
+  {
+    "paper": "P01",
+    "page": 1,
+    "block": 9,
+    "original": "trans-precision",
+    "replacement": "transprecision"
+  },
+  {
+    "paper": "P01",
+    "page": 2,
+    "block": 13,
+    "original": "multi-ple",
+    "replacement": "multiple"
+  },
+  {
+    "paper": "P01",
+    "page": 2,
+    "block": 14,
+    "original": "SystemVer-ilog",
+    "replacement": "SystemVerilog"
+  },
+  {
+    "paper": "P01",
+    "page": 2,
+    "block": 17,
+    "original": "transpre-cision",
+    "replacement": "transprecision"
+  },
+  {
+    "paper": "P01",
+    "page": 2,
+    "block": 18,
+    "original": "SystemVer-ilog",
+    "replacement": "SystemVerilog"
+  },
+  {
+    "paper": "P01",
+    "page": 2,
+    "block": 19,
+    "original": "lever-aging",
+    "replacement": "leveraging"
+  },
+  {
+    "paper": "P01",
+    "page": 2,
+    "block": 19,
+    "original": "conver-sions",
+    "replacement": "conversions"
+  },
+  {
+    "paper": "P01",
+    "page": 3,
+    "block": 23,
+    "original": "mul-tiplication",
+    "replacement": "multiplication"
+  },
+  {
+    "paper": "P01",
+    "page": 3,
+    "block": 23,
+    "original": "com-puting",
+    "replacement": "computing"
+  },
+  {
+    "paper": "P01",
+    "page": 3,
+    "block": 23,
+    "original": "appli-cation",
+    "replacement": "application"
+  },
+  {
+    "paper": "P01",
+    "page": 3,
+    "block": 23,
+    "original": "interoper-ability",
+    "replacement": "interoperability"
+  },
+  {
+    "paper": "P01",
+    "page": 3,
+    "block": 23,
+    "original": "construc-tion",
+    "replacement": "construction"
+  },
+  {
+    "paper": "P01",
+    "page": 3,
+    "block": 24,
+    "original": "descrip-tion",
+    "replacement": "description"
+  },
+  {
+    "paper": "P01",
+    "page": 3,
+    "block": 24,
+    "original": "imple-mentation",
+    "replacement": "implementation"
+  },
+  {
+    "paper": "P01",
+    "page": 3,
+    "block": 26,
+    "original": "Indi-vidual",
+    "replacement": "Individual"
+  },
+  {
+    "paper": "P01",
+    "page": 4,
+    "block": 38,
+    "original": "com-pliant",
+    "replacement": "compliant"
+  },
+  {
+    "paper": "P01",
+    "page": 4,
+    "block": 38,
+    "original": "for-mats",
+    "replacement": "formats"
+  },
+  {
+    "paper": "P01",
+    "page": 4,
+    "block": 38,
+    "original": "inter-nal",
+    "replacement": "internal"
+  },
+  {
+    "paper": "P01",
+    "page": 4,
+    "block": 40,
+    "original": "Sys-temVerilog",
+    "replacement": "SystemVerilog"
+  },
+  {
+    "paper": "P01",
+    "page": 4,
+    "block": 40,
+    "original": "power-of",
+    "replacement": "power-of"
+  },
+  {
+    "paper": "P01",
+    "page": 5,
+    "block": 45,
+    "original": "cre-ated",
+    "replacement": "created"
+  },
+  {
+    "paper": "P01",
+    "page": 5,
+    "block": 46,
+    "original": "proces-sor",
+    "replacement": "processor"
+  },
+  {
+    "paper": "P01",
+    "page": 5,
+    "block": 47,
+    "original": "exten-sions",
+    "replacement": "extensions"
+  },
+  {
+    "paper": "P01",
+    "page": 5,
+    "block": 47,
+    "original": "vector-scalar",
+    "replacement": "vector-scalar"
+  },
+  {
+    "paper": "P01",
+    "page": 5,
+    "block": 48,
+    "original": "implemen-tation",
+    "replacement": "implementation"
+  },
+  {
+    "paper": "P01",
+    "page": 5,
+    "block": 49,
+    "original": "Con-versely",
+    "replacement": "Conversely"
+  },
+  {
+    "paper": "P01",
+    "page": 5,
+    "block": 49,
+    "original": "com-plete",
+    "replacement": "complete"
+  },
+  {
+    "paper": "P01",
+    "page": 5,
+    "block": 49,
+    "original": "exten-sions",
+    "replacement": "extensions"
+  },
+  {
+    "paper": "P01",
+    "page": 5,
+    "block": 49,
+    "original": "for-mats",
+    "replacement": "formats"
+  },
+  {
+    "paper": "P01",
+    "page": 5,
+    "block": 49,
+    "original": "Auxil-iary",
+    "replacement": "Auxiliary"
+  },
+  {
+    "paper": "P01",
+    "page": 5,
+    "block": 49,
+    "original": "sup-port",
+    "replacement": "support"
+  },
+  {
+    "paper": "P01",
+    "page": 5,
+    "block": 49,
+    "original": "opera-tions",
+    "replacement": "operations"
+  },
+  {
+    "paper": "P01",
+    "page": 6,
+    "block": 63,
+    "original": "includ-ing",
+    "replacement": "including"
+  },
+  {
+    "paper": "P01",
+    "page": 6,
+    "block": 63,
+    "original": "cus-tom",
+    "replacement": "custom"
+  },
+  {
+    "paper": "P01",
+    "page": 6,
+    "block": 63,
+    "original": "instruc-tion",
+    "replacement": "instruction"
+  },
+  {
+    "paper": "P01",
+    "page": 6,
+    "block": 63,
+    "original": "multifor-mat",
+    "replacement": "multiformat"
+  },
+  {
+    "paper": "P01",
+    "page": 6,
+    "block": 67,
+    "original": "timing-critical",
+    "replacement": "timing-critical"
+  },
+  {
+    "paper": "P01",
+    "page": 6,
+    "block": 67,
+    "original": "for-mats",
+    "replacement": "formats"
+  },
+  {
+    "paper": "P01",
+    "page": 6,
+    "block": 67,
+    "original": "over-heads",
+    "replacement": "overheads"
+  },
+  {
+    "paper": "P01",
+    "page": 6,
+    "block": 67,
+    "original": "val-ues",
+    "replacement": "values"
+  },
+  {
+    "paper": "P01",
+    "page": 6,
+    "block": 69,
+    "original": "imple-ment",
+    "replacement": "implement"
+  },
+  {
+    "paper": "P01",
+    "page": 7,
+    "block": 76,
+    "original": "respec-tively",
+    "replacement": "respectively"
+  },
+  {
+    "paper": "P01",
+    "page": 7,
+    "block": 76,
+    "original": "addi-tional",
+    "replacement": "additional"
+  },
+  {
+    "paper": "P01",
+    "page": 7,
+    "block": 80,
+    "original": "Kosmod-rom",
+    "replacement": "Kosmodrom"
+  },
+  {
+    "paper": "P01",
+    "page": 7,
+    "block": 80,
+    "original": "frequen-cies",
+    "replacement": "frequencies"
+  },
+  {
+    "paper": "P01",
+    "page": 8,
+    "block": 85,
+    "original": "max-imize",
+    "replacement": "maximize"
+  },
+  {
+    "paper": "P01",
+    "page": 8,
+    "block": 85,
+    "original": "mod-erate",
+    "replacement": "moderate"
+  },
+  {
+    "paper": "P01",
+    "page": 8,
+    "block": 85,
+    "original": "break-down",
+    "replacement": "breakdown"
+  },
+  {
+    "paper": "P01",
+    "page": 8,
+    "block": 85,
+    "original": "con-sumption",
+    "replacement": "consumption"
+  },
+  {
+    "paper": "P01",
+    "page": 8,
+    "block": 85,
+    "original": "place-and",
+    "replacement": "place-and"
+  },
+  {
+    "paper": "P01",
+    "page": 8,
+    "block": 89,
+    "original": "pro-nounced",
+    "replacement": "pronounced"
+  },
+  {
+    "paper": "P01",
+    "page": 8,
+    "block": 89,
+    "original": "multipli-cation",
+    "replacement": "multiplication"
+  },
+  {
+    "paper": "P01",
+    "page": 8,
+    "block": 89,
+    "original": "energy-proportional",
+    "replacement": "energy-proportional"
+  },
+  {
+    "paper": "P01",
+    "page": 8,
+    "block": 89,
+    "original": "Start-ing",
+    "replacement": "Starting"
+  },
+  {
+    "paper": "P01",
+    "page": 8,
+    "block": 89,
+    "original": "multipli-cation",
+    "replacement": "multiplication"
+  },
+  {
+    "paper": "P01",
+    "page": 8,
+    "block": 89,
+    "original": "utiliza-tion",
+    "replacement": "utilization"
+  },
+  {
+    "paper": "P01",
+    "page": 8,
+    "block": 89,
+    "original": "increas-ing",
+    "replacement": "increasing"
+  },
+  {
+    "paper": "P01",
+    "page": 9,
+    "block": 93,
+    "original": "conver-sion",
+    "replacement": "conversion"
+  },
+  {
+    "paper": "P01",
+    "page": 9,
+    "block": 93,
+    "original": "conver-sions",
+    "replacement": "conversions"
+  },
+  {
+    "paper": "P01",
+    "page": 9,
+    "block": 93,
+    "original": "FP-integer",
+    "replacement": "FP-integer"
+  },
+  {
+    "paper": "P01",
+    "page": 9,
+    "block": 97,
+    "original": "FPU-level",
+    "replacement": "FPU-level"
+  },
+  {
+    "paper": "P01",
+    "page": 9,
+    "block": 97,
+    "original": "trans-precision",
+    "replacement": "transprecision"
+  },
+  {
+    "paper": "P01",
+    "page": 9,
+    "block": 99,
+    "original": "transpre-cision",
+    "replacement": "transprecision"
+  },
+  {
+    "paper": "P01",
+    "page": 9,
+    "block": 99,
+    "original": "process-ing",
+    "replacement": "processing"
+  },
+  {
+    "paper": "P01",
+    "page": 10,
+    "block": 104,
+    "original": "represen-tation",
+    "replacement": "representation"
+  },
+  {
+    "paper": "P01",
+    "page": 10,
+    "block": 106,
+    "original": "perfor-mance",
+    "replacement": "performance"
+  },
+  {
+    "paper": "P01",
+    "page": 10,
+    "block": 106,
+    "original": "com-piler",
+    "replacement": "compiler"
+  },
+  {
+    "paper": "P01",
+    "page": 10,
+    "block": 108,
+    "original": "sup-ported",
+    "replacement": "supported"
+  },
+  {
+    "paper": "P01",
+    "page": 10,
+    "block": 108,
+    "original": "shrink-ing",
+    "replacement": "shrinking"
+  },
+  {
+    "paper": "P01",
+    "page": 11,
+    "block": 114,
+    "original": "implementa-tions",
+    "replacement": "implementations"
+  },
+  {
+    "paper": "P01",
+    "page": 11,
+    "block": 115,
+    "original": "imple-mentation",
+    "replacement": "implementation"
+  },
+  {
+    "paper": "P01",
+    "page": 11,
+    "block": 116,
+    "original": "tar-geted",
+    "replacement": "targeted"
+  },
+  {
+    "paper": "P01",
+    "page": 11,
+    "block": 116,
+    "original": "hard-ware",
+    "replacement": "hardware"
+  },
+  {
+    "paper": "P01",
+    "page": 12,
+    "block": 124,
+    "original": "imple-mentation",
+    "replacement": "implementation"
+  },
+  {
+    "paper": "P01",
+    "page": 12,
+    "block": 129,
+    "original": "infer-ence",
+    "replacement": "inference"
+  },
+  {
+    "paper": "P01",
+    "page": 12,
+    "block": 129,
+    "original": "sig-nificant",
+    "replacement": "significant"
+  },
+  {
+    "paper": "P01",
+    "page": 12,
+    "block": 129,
+    "original": "train-ing",
+    "replacement": "training"
+  },
+  {
+    "paper": "P01",
+    "page": 13,
+    "block": 140,
+    "original": "trans-precision",
+    "replacement": "transprecision"
+  },
+  {
+    "paper": "P01",
+    "page": 13,
+    "block": 140,
+    "original": "com-puting",
+    "replacement": "computing"
+  },
+  {
+    "paper": "P01",
+    "page": 13,
+    "block": 144,
+    "original": "com-puting",
+    "replacement": "computing"
+  },
+  {
+    "paper": "P01",
+    "page": 13,
+    "block": 144,
+    "original": "trans-precision",
+    "replacement": "transprecision"
+  },
+  {
+    "paper": "P01",
+    "page": 13,
+    "block": 144,
+    "original": "trans-precision",
+    "replacement": "transprecision"
+  },
+  {
+    "paper": "P01",
+    "page": 13,
+    "block": 144,
+    "original": "com-puting",
+    "replacement": "computing"
+  },
+  {
+    "paper": "P01",
+    "page": 13,
+    "block": 144,
+    "original": "perfor-mance",
+    "replacement": "performance"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 147,
+    "original": "V-conform",
+    "replacement": "V-conform"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 147,
+    "original": "Fron-tiers",
+    "replacement": "Frontiers"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 147,
+    "original": "Revisit-ing",
+    "replacement": "Revisiting"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 147,
+    "original": "dual-mode",
+    "replacement": "dual-mode"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 147,
+    "original": "floating-point",
+    "replacement": "floating-point"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 147,
+    "original": "floating-point",
+    "replacement": "floating-point"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 147,
+    "original": "Avail-able",
+    "replacement": "Available"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 147,
+    "original": "Com-ponents",
+    "replacement": "Components"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 150,
+    "original": "Fed-eral",
+    "replacement": "Federal"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 150,
+    "original": "com-puting",
+    "replacement": "computing"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 151,
+    "original": "Sys-tems",
+    "replacement": "Systems"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 152,
+    "original": "Fed-eral",
+    "replacement": "Federal"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 152,
+    "original": "Univer-sita",
+    "replacement": "Universita"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 152,
+    "original": "comput-ing",
+    "replacement": "computing"
+  },
+  {
+    "paper": "P01",
+    "page": 14,
+    "block": 152,
+    "original": "high-performance",
+    "replacement": "high-performance"
+  },
+  {
+    "paper": "P02",
+    "page": 1,
+    "block": 4,
+    "original": "popu-larity",
+    "replacement": "popularity"
+  },
+  {
+    "paper": "P02",
+    "page": 1,
+    "block": 4,
+    "original": "automat-ically",
+    "replacement": "automatically"
+  },
+  {
+    "paper": "P02",
+    "page": 1,
+    "block": 4,
+    "original": "er-ror",
+    "replacement": "error"
+  },
+  {
+    "paper": "P02",
+    "page": 1,
+    "block": 19,
+    "original": "Performance-optimal",
+    "replacement": "Performance-optimal"
+  },
+  {
+    "paper": "P02",
+    "page": 1,
+    "block": 19,
+    "original": "sim-ulators",
+    "replacement": "simulators"
+  },
+  {
+    "paper": "P02",
+    "page": 1,
+    "block": 19,
+    "original": "auto-regressive",
+    "replacement": "auto-regressive"
+  },
+  {
+    "paper": "P02",
+    "page": 1,
+    "block": 20,
+    "original": "ac-commodate",
+    "replacement": "accommodate"
+  },
+  {
+    "paper": "P02",
+    "page": 1,
+    "block": 20,
+    "original": "cost-effective",
+    "replacement": "cost-effective"
+  },
+  {
+    "paper": "P02",
+    "page": 2,
+    "block": 24,
+    "original": "democra-tize",
+    "replacement": "democratize"
+  },
+  {
+    "paper": "P02",
+    "page": 2,
+    "block": 24,
+    "original": "cost-prohibitive",
+    "replacement": "cost-prohibitive"
+  },
+  {
+    "paper": "P02",
+    "page": 2,
+    "block": 24,
+    "original": "democra-tizing",
+    "replacement": "democratizing"
+  },
+  {
+    "paper": "P02",
+    "page": 2,
+    "block": 24,
+    "original": "by-tile",
+    "replacement": "by-tile"
+  },
+  {
+    "paper": "P02",
+    "page": 2,
+    "block": 24,
+    "original": "com-pared",
+    "replacement": "compared"
+  },
+  {
+    "paper": "P02",
+    "page": 2,
+    "block": 39,
+    "original": "Paral-lelism",
+    "replacement": "Parallelism"
+  },
+  {
+    "paper": "P02",
+    "page": 2,
+    "block": 43,
+    "original": "mod-els",
+    "replacement": "models"
+  },
+  {
+    "paper": "P02",
+    "page": 2,
+    "block": 43,
+    "original": "mem-ory",
+    "replacement": "memory"
+  },
+  {
+    "paper": "P02",
+    "page": 3,
+    "block": 94,
+    "original": "chat-bots",
+    "replacement": "chatbots"
+  },
+  {
+    "paper": "P02",
+    "page": 3,
+    "block": 103,
+    "original": "computa-tional",
+    "replacement": "computational"
+  },
+  {
+    "paper": "P02",
+    "page": 3,
+    "block": 103,
+    "original": "Sec-tion",
+    "replacement": "Section"
+  },
+  {
+    "paper": "P02",
+    "page": 3,
+    "block": 103,
+    "original": "Sec-tion",
+    "replacement": "Section"
+  },
+  {
+    "paper": "P02",
+    "page": 3,
+    "block": 105,
+    "original": "paral-lelism",
+    "replacement": "parallelism"
+  },
+  {
+    "paper": "P02",
+    "page": 3,
+    "block": 105,
+    "original": "com-munication",
+    "replacement": "communication"
+  },
+  {
+    "paper": "P02",
+    "page": 3,
+    "block": 107,
+    "original": "con-nected",
+    "replacement": "connected"
+  },
+  {
+    "paper": "P02",
+    "page": 4,
+    "block": 147,
+    "original": "scratch-pad",
+    "replacement": "scratchpad"
+  },
+  {
+    "paper": "P02",
+    "page": 4,
+    "block": 148,
+    "original": "sub-problem",
+    "replacement": "sub-problem"
+  },
+  {
+    "paper": "P02",
+    "page": 4,
+    "block": 148,
+    "original": "by-tile",
+    "replacement": "by-tile"
+  },
+  {
+    "paper": "P02",
+    "page": 4,
+    "block": 149,
+    "original": "multi-device",
+    "replacement": "multi-device"
+  },
+  {
+    "paper": "P02",
+    "page": 5,
+    "block": 152,
+    "original": "auto-matically",
+    "replacement": "automatically"
+  },
+  {
+    "paper": "P02",
+    "page": 5,
+    "block": 156,
+    "original": "Com-munication",
+    "replacement": "Communication"
+  },
+  {
+    "paper": "P02",
+    "page": 5,
+    "block": 156,
+    "original": "nccl-tests",
+    "replacement": "nccl-tests"
+  },
+  {
+    "paper": "P02",
+    "page": 5,
+    "block": 156,
+    "original": "er-ror",
+    "replacement": "error"
+  },
+  {
+    "paper": "P02",
+    "page": 5,
+    "block": 157,
+    "original": "prim-itives",
+    "replacement": "primitives"
+  },
+  {
+    "paper": "P02",
+    "page": 5,
+    "block": 157,
+    "original": "Sec-tionIII",
+    "replacement": "SectionIII"
+  },
+  {
+    "paper": "P02",
+    "page": 6,
+    "block": 174,
+    "original": "in-corporating",
+    "replacement": "incorporating"
+  },
+  {
+    "paper": "P02",
+    "page": 6,
+    "block": 174,
+    "original": "interpretabil-ity",
+    "replacement": "interpretability"
+  },
+  {
+    "paper": "P02",
+    "page": 6,
+    "block": 175,
+    "original": "op-erators",
+    "replacement": "operators"
+  },
+  {
+    "paper": "P02",
+    "page": 6,
+    "block": 175,
+    "original": "in-put",
+    "replacement": "input"
+  },
+  {
+    "paper": "P02",
+    "page": 7,
+    "block": 179,
+    "original": "fre-quency",
+    "replacement": "frequency"
+  },
+  {
+    "paper": "P02",
+    "page": 7,
+    "block": 187,
+    "original": "mod-eling",
+    "replacement": "modeling"
+  },
+  {
+    "paper": "P02",
+    "page": 7,
+    "block": 187,
+    "original": "accounted-for",
+    "replacement": "accounted-for"
+  },
+  {
+    "paper": "P02",
+    "page": 7,
+    "block": 191,
+    "original": "er-ror",
+    "replacement": "error"
+  },
+  {
+    "paper": "P02",
+    "page": 7,
+    "block": 193,
+    "original": "LLMCom-pass",
+    "replacement": "LLMCompass"
+  },
+  {
+    "paper": "P02",
+    "page": 7,
+    "block": 193,
+    "original": "per-formance",
+    "replacement": "performance"
+  },
+  {
+    "paper": "P02",
+    "page": 7,
+    "block": 195,
+    "original": "specifi-cations",
+    "replacement": "specifications"
+  },
+  {
+    "paper": "P02",
+    "page": 8,
+    "block": 221,
+    "original": "sweep-ing",
+    "replacement": "sweeping"
+  },
+  {
+    "paper": "P02",
+    "page": 8,
+    "block": 222,
+    "original": "band-width",
+    "replacement": "bandwidth"
+  },
+  {
+    "paper": "P02",
+    "page": 9,
+    "block": 247,
+    "original": "receiv-ing",
+    "replacement": "receiving"
+  },
+  {
+    "paper": "P02",
+    "page": 10,
+    "block": 251,
+    "original": "paral-lelism",
+    "replacement": "parallelism"
+  },
+  {
+    "paper": "P02",
+    "page": 10,
+    "block": 253,
+    "original": "De-sign",
+    "replacement": "Design"
+  },
+  {
+    "paper": "P02",
+    "page": 10,
+    "block": 254,
+    "original": "Normal-ized",
+    "replacement": "Normalized"
+  },
+  {
+    "paper": "P02",
+    "page": 10,
+    "block": 256,
+    "original": "latency-oriented",
+    "replacement": "latency-oriented"
+  },
+  {
+    "paper": "P02",
+    "page": 10,
+    "block": 256,
+    "original": "compute-bound",
+    "replacement": "compute-bound"
+  },
+  {
+    "paper": "P02",
+    "page": 11,
+    "block": 262,
+    "original": "LLMCom-pass",
+    "replacement": "LLMCompass"
+  },
+  {
+    "paper": "P02",
+    "page": 11,
+    "block": 262,
+    "original": "architec-tures",
+    "replacement": "architectures"
+  },
+  {
+    "paper": "P02",
+    "page": 11,
+    "block": 262,
+    "original": "pro-cessors",
+    "replacement": "processors"
+  },
+  {
+    "paper": "P02",
+    "page": 11,
+    "block": 262,
+    "original": "schedul-ing",
+    "replacement": "scheduling"
+  },
+  {
+    "paper": "P02",
+    "page": 11,
+    "block": 262,
+    "original": "batch-ing",
+    "replacement": "batching"
+  },
+  {
+    "paper": "P02",
+    "page": 11,
+    "block": 262,
+    "original": "Splitwise-style",
+    "replacement": "Splitwise-style"
+  },
+  {
+    "paper": "P02",
+    "page": 11,
+    "block": 263,
+    "original": "normal-ized",
+    "replacement": "normalized"
+  },
+  {
+    "paper": "P02",
+    "page": 11,
+    "block": 264,
+    "original": "How-ever",
+    "replacement": "However"
+  },
+  {
+    "paper": "P02",
+    "page": 11,
+    "block": 269,
+    "original": "analyti-cal",
+    "replacement": "analytical"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 275,
+    "original": "de-sign",
+    "replacement": "design"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 275,
+    "original": "cycle-level",
+    "replacement": "cycle-level"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 275,
+    "original": "sim-ulating",
+    "replacement": "simulating"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 275,
+    "original": "De-signers",
+    "replacement": "Designers"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 286,
+    "original": "effec-tive",
+    "replacement": "effective"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 286,
+    "original": "opti-mization",
+    "replacement": "optimization"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 288,
+    "original": "descrip-tion",
+    "replacement": "description"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 288,
+    "original": "hard-ware",
+    "replacement": "hardware"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 288,
+    "original": "incorpo-rated",
+    "replacement": "incorporated"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 288,
+    "original": "LLMCom-pass",
+    "replacement": "LLMCompass"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 288,
+    "original": "latency-oriented",
+    "replacement": "latency-oriented"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 288,
+    "original": "learn-ing",
+    "replacement": "learning"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 290,
+    "original": "station-ary",
+    "replacement": "stationary"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 290,
+    "original": "ex-plorations",
+    "replacement": "explorations"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 292,
+    "original": "Fel-lowship",
+    "replacement": "Fellowship"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 292,
+    "original": "recommen-dations",
+    "replacement": "recommendations"
+  },
+  {
+    "paper": "P02",
+    "page": 12,
+    "block": 294,
+    "original": "Trans-former",
+    "replacement": "Transformer"
+  },
+  {
+    "paper": "P02",
+    "page": 13,
+    "block": 297,
+    "original": "im-plied",
+    "replacement": "implied"
+  },
+  {
+    "paper": "P02",
+    "page": 13,
+    "block": 298,
+    "original": "ar-chitectural",
+    "replacement": "architectural"
+  },
+  {
+    "paper": "P02",
+    "page": 13,
+    "block": 298,
+    "original": "self-attention",
+    "replacement": "self-attention"
+  },
+  {
+    "paper": "P02",
+    "page": 13,
+    "block": 300,
+    "original": "ar-chitecture",
+    "replacement": "architecture"
+  },
+  {
+    "paper": "P02",
+    "page": 13,
+    "block": 300,
+    "original": "Avail-able",
+    "replacement": "Available"
+  },
+  {
+    "paper": "P02",
+    "page": 13,
+    "block": 300,
+    "original": "instinct-business",
+    "replacement": "instinct-business"
+  },
+  {
+    "paper": "P02",
+    "page": 13,
+    "block": 300,
+    "original": "Deepspeed-inference",
+    "replacement": "Deepspeed-inference"
+  },
+  {
+    "paper": "P02",
+    "page": 13,
+    "block": 300,
+    "original": "unprece-dented",
+    "replacement": "unprecedented"
+  },
+  {
+    "paper": "P02",
+    "page": 13,
+    "block": 300,
+    "original": "Mod-eling",
+    "replacement": "Modeling"
+  },
+  {
+    "paper": "P02",
+    "page": 13,
+    "block": 300,
+    "original": "Dmazerun-ner",
+    "replacement": "Dmazerunner"
+  },
+  {
+    "paper": "P02",
+    "page": 14,
+    "block": 303,
+    "original": "optimiza-tion",
+    "replacement": "optimization"
+  },
+  {
+    "paper": "P02",
+    "page": 14,
+    "block": 303,
+    "original": "worlds-most",
+    "replacement": "worlds-most"
+  },
+  {
+    "paper": "P02",
+    "page": 14,
+    "block": 303,
+    "original": "third-generation",
+    "replacement": "third-generation"
+  },
+  {
+    "paper": "P02",
+    "page": 14,
+    "block": 303,
+    "original": "ar-chitecture",
+    "replacement": "architecture"
+  },
+  {
+    "paper": "P02",
+    "page": 14,
+    "block": 303,
+    "original": "Avail-able",
+    "replacement": "Available"
+  },
+  {
+    "paper": "P02",
+    "page": 14,
+    "block": 303,
+    "original": "inter-national",
+    "replacement": "international"
+  },
+  {
+    "paper": "P02",
+    "page": 14,
+    "block": 303,
+    "original": "Comput-ing",
+    "replacement": "Computing"
+  },
+  {
+    "paper": "P02",
+    "page": 14,
+    "block": 303,
+    "original": "leaked-specifications",
+    "replacement": "leaked-specifications"
+  },
+  {
+    "paper": "P02",
+    "page": 14,
+    "block": 304,
+    "original": "En-abling",
+    "replacement": "Enabling"
+  },
+  {
+    "paper": "P02",
+    "page": 14,
+    "block": 304,
+    "original": "What-mough",
+    "replacement": "Whatmough"
+  },
+  {
+    "paper": "P02",
+    "page": 14,
+    "block": 304,
+    "original": "acceler-ator",
+    "replacement": "accelerator"
+  },
+  {
+    "paper": "P02",
+    "page": 14,
+    "block": 304,
+    "original": "Sympo-sium",
+    "replacement": "Symposium"
+  },
+  {
+    "paper": "P02",
+    "page": 14,
+    "block": 304,
+    "original": "Kr-ishna",
+    "replacement": "Krishna"
+  },
+  {
+    "paper": "P02",
+    "page": 14,
+    "block": 304,
+    "original": "Catan-zaro",
+    "replacement": "Catanzaro"
+  },
+  {
+    "paper": "P02",
+    "page": 15,
+    "block": 307,
+    "original": "computing-based",
+    "replacement": "computing-based"
+  },
+  {
+    "paper": "P02",
+    "page": 15,
+    "block": 307,
+    "original": "Kr-ishna",
+    "replacement": "Krishna"
+  },
+  {
+    "paper": "P02",
+    "page": 15,
+    "block": 307,
+    "original": "Cor-nette",
+    "replacement": "Cornette"
+  },
+  {
+    "paper": "P02",
+    "page": 15,
+    "block": 307,
+    "original": "Pruk-sachatkun",
+    "replacement": "Pruksachatkun"
+  },
+  {
+    "paper": "P02",
+    "page": 15,
+    "block": 308,
+    "original": "Bhat-tacharya",
+    "replacement": "Bhattacharya"
+  },
+  {
+    "paper": "P02",
+    "page": 15,
+    "block": 308,
+    "original": "Ger-chick",
+    "replacement": "Gerchick"
+  },
+  {
+    "paper": "P02",
+    "page": 15,
+    "block": 308,
+    "original": "Kro-mann",
+    "replacement": "Kromann"
+  },
+  {
+    "paper": "P02",
+    "page": 15,
+    "block": 308,
+    "original": "Imple-mentation",
+    "replacement": "Implementation"
+  },
+  {
+    "paper": "P02",
+    "page": 15,
+    "block": 308,
+    "original": "risc-v",
+    "replacement": "risc-v"
+  },
+  {
+    "paper": "P02",
+    "page": 16,
+    "block": 315,
+    "original": "pro-posed",
+    "replacement": "proposed"
+  },
+  {
+    "paper": "P02",
+    "page": 16,
+    "block": 318,
+    "original": "experi-mental",
+    "replacement": "experimental"
+  },
+  {
+    "paper": "P02",
+    "page": 16,
+    "block": 318,
+    "original": "approx-imately",
+    "replacement": "approximately"
+  },
+  {
+    "paper": "P02",
+    "page": 16,
+    "block": 331,
+    "original": "sug-gested",
+    "replacement": "suggested"
+  },
+  {
+    "paper": "P02",
+    "page": 17,
+    "block": 340,
+    "original": "ex-tended",
+    "replacement": "extended"
+  },
+  {
+    "paper": "P02",
+    "page": 17,
+    "block": 340,
+    "original": "com-putational",
+    "replacement": "computational"
+  },
+  {
+    "paper": "P02",
+    "page": 17,
+    "block": 340,
+    "original": "communi-cation",
+    "replacement": "communication"
+  },
+  {
+    "paper": "P02",
+    "page": 17,
+    "block": 343,
+    "original": "hard-ware",
+    "replacement": "hardware"
+  },
+  {
+    "paper": "P02",
+    "page": 17,
+    "block": 343,
+    "original": "de-sign",
+    "replacement": "design"
+  },
+  {
+    "paper": "P02",
+    "page": 17,
+    "block": 345,
+    "original": "LLMCom-pass",
+    "replacement": "LLMCompass"
+  },
+  {
+    "paper": "P02",
+    "page": 17,
+    "block": 345,
+    "original": "auto-regressive",
+    "replacement": "auto-regressive"
+  },
+  {
+    "paper": "P02",
+    "page": 17,
+    "block": 345,
+    "original": "mod-els",
+    "replacement": "models"
+  },
+  {
+    "paper": "P03",
+    "page": 1,
+    "block": 14,
+    "original": "Qian-ming",
+    "replacement": "Qianming"
+  },
+  {
+    "paper": "P03",
+    "page": 1,
+    "block": 15,
+    "original": "pa-per",
+    "replacement": "paper"
+  },
+  {
+    "paper": "P03",
+    "page": 1,
+    "block": 15,
+    "original": "preci-sion",
+    "replacement": "precision"
+  },
+  {
+    "paper": "P03",
+    "page": 1,
+    "block": 18,
+    "original": "computa-tion",
+    "replacement": "computation"
+  },
+  {
+    "paper": "P03",
+    "page": 1,
+    "block": 18,
+    "original": "learn-ing",
+    "replacement": "learning"
+  },
+  {
+    "paper": "P03",
+    "page": 1,
+    "block": 18,
+    "original": "de-sign",
+    "replacement": "design"
+  },
+  {
+    "paper": "P03",
+    "page": 1,
+    "block": 18,
+    "original": "multiple-precision",
+    "replacement": "multiple-precision"
+  },
+  {
+    "paper": "P03",
+    "page": 1,
+    "block": 18,
+    "original": "pro-posed",
+    "replacement": "proposed"
+  },
+  {
+    "paper": "P03",
+    "page": 1,
+    "block": 18,
+    "original": "How-ever",
+    "replacement": "However"
+  },
+  {
+    "paper": "P03",
+    "page": 1,
+    "block": 18,
+    "original": "multi-plier",
+    "replacement": "multiplier"
+  },
+  {
+    "paper": "P03",
+    "page": 1,
+    "block": 20,
+    "original": "ele-ments",
+    "replacement": "elements"
+  },
+  {
+    "paper": "P03",
+    "page": 1,
+    "block": 22,
+    "original": "learn-ing",
+    "replacement": "learning"
+  },
+  {
+    "paper": "P03",
+    "page": 2,
+    "block": 28,
+    "original": "ac-curacy",
+    "replacement": "accuracy"
+  },
+  {
+    "paper": "P03",
+    "page": 2,
+    "block": 28,
+    "original": "multipli-cation",
+    "replacement": "multiplication"
+  },
+  {
+    "paper": "P03",
+    "page": 2,
+    "block": 28,
+    "original": "in-cluding",
+    "replacement": "including"
+  },
+  {
+    "paper": "P03",
+    "page": 2,
+    "block": 33,
+    "original": "num-bers",
+    "replacement": "numbers"
+  },
+  {
+    "paper": "P03",
+    "page": 2,
+    "block": 33,
+    "original": "repre-sented",
+    "replacement": "represented"
+  },
+  {
+    "paper": "P03",
+    "page": 2,
+    "block": 39,
+    "original": "non-negative",
+    "replacement": "non-negative"
+  },
+  {
+    "paper": "P03",
+    "page": 2,
+    "block": 53,
+    "original": "selec-tion",
+    "replacement": "selection"
+  },
+  {
+    "paper": "P03",
+    "page": 2,
+    "block": 53,
+    "original": "man-tissa",
+    "replacement": "mantissa"
+  },
+  {
+    "paper": "P03",
+    "page": 2,
+    "block": 57,
+    "original": "normal-ization",
+    "replacement": "normalization"
+  },
+  {
+    "paper": "P03",
+    "page": 3,
+    "block": 115,
+    "original": "man-tissa",
+    "replacement": "mantissa"
+  },
+  {
+    "paper": "P03",
+    "page": 4,
+    "block": 124,
+    "original": "ex-ecuted",
+    "replacement": "executed"
+  },
+  {
+    "paper": "P03",
+    "page": 4,
+    "block": 162,
+    "original": "calcu-late",
+    "replacement": "calculate"
+  },
+  {
+    "paper": "P03",
+    "page": 4,
+    "block": 162,
+    "original": "prod-ucts",
+    "replacement": "products"
+  },
+  {
+    "paper": "P03",
+    "page": 4,
+    "block": 169,
+    "original": "ex-tended",
+    "replacement": "extended"
+  },
+  {
+    "paper": "P03",
+    "page": 5,
+    "block": 239,
+    "original": "re-quirements",
+    "replacement": "requirements"
+  },
+  {
+    "paper": "P03",
+    "page": 5,
+    "block": 240,
+    "original": "en-coders",
+    "replacement": "encoders"
+  },
+  {
+    "paper": "P03",
+    "page": 6,
+    "block": 265,
+    "original": "mixed-precision",
+    "replacement": "mixed-precision"
+  },
+  {
+    "paper": "P03",
+    "page": 6,
+    "block": 265,
+    "original": "low-precision",
+    "replacement": "low-precision"
+  },
+  {
+    "paper": "P03",
+    "page": 6,
+    "block": 265,
+    "original": "Transac-tions",
+    "replacement": "Transactions"
+  },
+  {
+    "paper": "P03",
+    "page": 6,
+    "block": 265,
+    "original": "floating-point",
+    "replacement": "floating-point"
+  },
+  {
+    "paper": "P03",
+    "page": 6,
+    "block": 268,
+    "original": "pro-posed",
+    "replacement": "proposed"
+  },
+  {
+    "paper": "P03",
+    "page": 6,
+    "block": 285,
+    "original": "learn-ing",
+    "replacement": "learning"
+  },
+  {
+    "paper": "P03",
+    "page": 6,
+    "block": 290,
+    "original": "low-precision",
+    "replacement": "low-precision"
+  },
+  {
+    "paper": "P04",
+    "page": 1,
+    "block": 9,
+    "original": "multi-plication",
+    "replacement": "multiplication"
+  },
+  {
+    "paper": "P04",
+    "page": 1,
+    "block": 9,
+    "original": "inter-combined",
+    "replacement": "inter-combined"
+  },
+  {
+    "paper": "P04",
+    "page": 1,
+    "block": 9,
+    "original": "re-duces",
+    "replacement": "reduces"
+  },
+  {
+    "paper": "P04",
+    "page": 1,
+    "block": 9,
+    "original": "time-division",
+    "replacement": "time-division"
+  },
+  {
+    "paper": "P04",
+    "page": 1,
+    "block": 9,
+    "original": "fur-ther",
+    "replacement": "further"
+  },
+  {
+    "paper": "P04",
+    "page": 1,
+    "block": 14,
+    "original": "do-mains",
+    "replacement": "domains"
+  },
+  {
+    "paper": "P04",
+    "page": 1,
+    "block": 14,
+    "original": "process-ing",
+    "replacement": "processing"
+  },
+  {
+    "paper": "P04",
+    "page": 1,
+    "block": 14,
+    "original": "intro-ducing",
+    "replacement": "introducing"
+  },
+  {
+    "paper": "P04",
+    "page": 1,
+    "block": 14,
+    "original": "train-ing",
+    "replacement": "training"
+  },
+  {
+    "paper": "P04",
+    "page": 1,
+    "block": 19,
+    "original": "Zeng-wei",
+    "replacement": "Zengwei"
+  },
+  {
+    "paper": "P04",
+    "page": 1,
+    "block": 23,
+    "original": "per-forms",
+    "replacement": "performs"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 27,
+    "original": "accumula-tion",
+    "replacement": "accumulation"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 33,
+    "original": "feasi-ble",
+    "replacement": "feasible"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 33,
+    "original": "require-ments",
+    "replacement": "requirements"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 33,
+    "original": "char-acteristics",
+    "replacement": "characteristics"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 34,
+    "original": "imple-mentation",
+    "replacement": "implementation"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 38,
+    "original": "com-puting",
+    "replacement": "computing"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 38,
+    "original": "Sto-chastic",
+    "replacement": "Stochastic"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 38,
+    "original": "log-arithmic",
+    "replacement": "logarithmic"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 38,
+    "original": "sup-port",
+    "replacement": "support"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 38,
+    "original": "im-proves",
+    "replacement": "improves"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 41,
+    "original": "accu-mulates",
+    "replacement": "accumulates"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 41,
+    "original": "repre-sents",
+    "replacement": "represents"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 42,
+    "original": "in-put",
+    "replacement": "input"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 56,
+    "original": "high-precision",
+    "replacement": "high-precision"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 56,
+    "original": "low-precision",
+    "replacement": "low-precision"
+  },
+  {
+    "paper": "P04",
+    "page": 2,
+    "block": 57,
+    "original": "multiple-precision",
+    "replacement": "multiple-precision"
+  },
+  {
+    "paper": "P04",
+    "page": 3,
+    "block": 84,
+    "original": "expo-nents",
+    "replacement": "exponents"
+  },
+  {
+    "paper": "P04",
+    "page": 3,
+    "block": 84,
+    "original": "expo-nent",
+    "replacement": "exponent"
+  },
+  {
+    "paper": "P04",
+    "page": 3,
+    "block": 85,
+    "original": "modifica-tions",
+    "replacement": "modifications"
+  },
+  {
+    "paper": "P04",
+    "page": 4,
+    "block": 332,
+    "original": "com-putations",
+    "replacement": "computations"
+  },
+  {
+    "paper": "P04",
+    "page": 4,
+    "block": 332,
+    "original": "sub-normal",
+    "replacement": "subnormal"
+  },
+  {
+    "paper": "P04",
+    "page": 4,
+    "block": 335,
+    "original": "consider-able",
+    "replacement": "considerable"
+  },
+  {
+    "paper": "P04",
+    "page": 4,
+    "block": 335,
+    "original": "correc-tion",
+    "replacement": "correction"
+  },
+  {
+    "paper": "P04",
+    "page": 5,
+    "block": 371,
+    "original": "Synop-sys",
+    "replacement": "Synopsys"
+  },
+  {
+    "paper": "P04",
+    "page": 5,
+    "block": 371,
+    "original": "typi-cal",
+    "replacement": "typical"
+  },
+  {
+    "paper": "P04",
+    "page": 5,
+    "block": 371,
+    "original": "emulat-ing",
+    "replacement": "emulating"
+  },
+  {
+    "paper": "P04",
+    "page": 5,
+    "block": 386,
+    "original": "sim-ulator",
+    "replacement": "simulator"
+  },
+  {
+    "paper": "P04",
+    "page": 5,
+    "block": 386,
+    "original": "accu-racy",
+    "replacement": "accuracy"
+  },
+  {
+    "paper": "P04",
+    "page": 5,
+    "block": 388,
+    "original": "accu-mulated",
+    "replacement": "accumulated"
+  },
+  {
+    "paper": "P04",
+    "page": 5,
+    "block": 388,
+    "original": "grad-ually",
+    "replacement": "gradually"
+  },
+  {
+    "paper": "P04",
+    "page": 5,
+    "block": 388,
+    "original": "con-sumption",
+    "replacement": "consumption"
+  },
+  {
+    "paper": "P04",
+    "page": 5,
+    "block": 388,
+    "original": "man-tissa",
+    "replacement": "mantissa"
+  },
+  {
+    "paper": "P04",
+    "page": 5,
+    "block": 391,
+    "original": "hard-ware",
+    "replacement": "hardware"
+  },
+  {
+    "paper": "P04",
+    "page": 6,
+    "block": 458,
+    "original": "consump-tion",
+    "replacement": "consumption"
+  },
+  {
+    "paper": "P04",
+    "page": 6,
+    "block": 461,
+    "original": "train-ing",
+    "replacement": "training"
+  },
+  {
+    "paper": "P04",
+    "page": 6,
+    "block": 461,
+    "original": "max-imizing",
+    "replacement": "maximizing"
+  },
+  {
+    "paper": "P04",
+    "page": 6,
+    "block": 483,
+    "original": "com-putations",
+    "replacement": "computations"
+  },
+  {
+    "paper": "P04",
+    "page": 6,
+    "block": 485,
+    "original": "Multiplica-tions",
+    "replacement": "Multiplications"
+  },
+  {
+    "paper": "P04",
+    "page": 6,
+    "block": 485,
+    "original": "Low-bit",
+    "replacement": "Low-bit"
+  },
+  {
+    "paper": "P04",
+    "page": 6,
+    "block": 485,
+    "original": "Archi-tecture",
+    "replacement": "Architecture"
+  },
+  {
+    "paper": "P04",
+    "page": 6,
+    "block": 485,
+    "original": "Confer-ence",
+    "replacement": "Conference"
+  },
+  {
+    "paper": "P05",
+    "page": 1,
+    "block": 4,
+    "original": "pro-portional",
+    "replacement": "proportional"
+  },
+  {
+    "paper": "P05",
+    "page": 1,
+    "block": 4,
+    "original": "accumulat-ing",
+    "replacement": "accumulating"
+  },
+  {
+    "paper": "P05",
+    "page": 1,
+    "block": 4,
+    "original": "highest-precision",
+    "replacement": "highest-precision"
+  },
+  {
+    "paper": "P05",
+    "page": 1,
+    "block": 4,
+    "original": "accumula-tion",
+    "replacement": "accumulation"
+  },
+  {
+    "paper": "P05",
+    "page": 1,
+    "block": 17,
+    "original": "reduced-precision",
+    "replacement": "reduced-precision"
+  },
+  {
+    "paper": "P05",
+    "page": 1,
+    "block": 17,
+    "original": "ef-ficiency",
+    "replacement": "efficiency"
+  },
+  {
+    "paper": "P05",
+    "page": 1,
+    "block": 17,
+    "original": "Trans-precision",
+    "replacement": "Transprecision"
+  },
+  {
+    "paper": "P05",
+    "page": 1,
+    "block": 17,
+    "original": "multi-plication",
+    "replacement": "multiplication"
+  },
+  {
+    "paper": "P05",
+    "page": 1,
+    "block": 122,
+    "original": "How-ever",
+    "replacement": "However"
+  },
+  {
+    "paper": "P05",
+    "page": 1,
+    "block": 122,
+    "original": "mul-tiple",
+    "replacement": "multiple"
+  },
+  {
+    "paper": "P05",
+    "page": 2,
+    "block": 147,
+    "original": "ac-cumulation",
+    "replacement": "accumulation"
+  },
+  {
+    "paper": "P05",
+    "page": 2,
+    "block": 147,
+    "original": "sup-port",
+    "replacement": "support"
+  },
+  {
+    "paper": "P05",
+    "page": 2,
+    "block": 147,
+    "original": "How-ever",
+    "replacement": "However"
+  },
+  {
+    "paper": "P05",
+    "page": 2,
+    "block": 147,
+    "original": "mixed-precision",
+    "replacement": "mixed-precision"
+  },
+  {
+    "paper": "P05",
+    "page": 2,
+    "block": 147,
+    "original": "trans-precision",
+    "replacement": "transprecision"
+  },
+  {
+    "paper": "P05",
+    "page": 2,
+    "block": 147,
+    "original": "dot-product",
+    "replacement": "dot-product"
+  },
+  {
+    "paper": "P05",
+    "page": 2,
+    "block": 151,
+    "original": "mi-croarchitecture",
+    "replacement": "microarchitecture"
+  },
+  {
+    "paper": "P05",
+    "page": 2,
+    "block": 153,
+    "original": "hier-archical",
+    "replacement": "hierarchical"
+  },
+  {
+    "paper": "P05",
+    "page": 2,
+    "block": 153,
+    "original": "multi-pliers",
+    "replacement": "multipliers"
+  },
+  {
+    "paper": "P05",
+    "page": 2,
+    "block": 153,
+    "original": "domi-nate",
+    "replacement": "dominate"
+  },
+  {
+    "paper": "P05",
+    "page": 3,
+    "block": 186,
+    "original": "indi-cate",
+    "replacement": "indicate"
+  },
+  {
+    "paper": "P05",
+    "page": 3,
+    "block": 187,
+    "original": "multi-mode",
+    "replacement": "multi-mode"
+  },
+  {
+    "paper": "P05",
+    "page": 3,
+    "block": 187,
+    "original": "esti-mated",
+    "replacement": "estimated"
+  },
+  {
+    "paper": "P05",
+    "page": 3,
+    "block": 187,
+    "original": "num-ber",
+    "replacement": "number"
+  },
+  {
+    "paper": "P05",
+    "page": 3,
+    "block": 187,
+    "original": "approx-imately",
+    "replacement": "approximately"
+  },
+  {
+    "paper": "P05",
+    "page": 3,
+    "block": 187,
+    "original": "mono-lithic",
+    "replacement": "monolithic"
+  },
+  {
+    "paper": "P05",
+    "page": 3,
+    "block": 220,
+    "original": "opti-mizations",
+    "replacement": "optimizations"
+  },
+  {
+    "paper": "P05",
+    "page": 3,
+    "block": 220,
+    "original": "differ-ences",
+    "replacement": "differences"
+  },
+  {
+    "paper": "P05",
+    "page": 4,
+    "block": 262,
+    "original": "recon-figurable",
+    "replacement": "reconfigurable"
+  },
+  {
+    "paper": "P05",
+    "page": 4,
+    "block": 262,
+    "original": "multi-lane",
+    "replacement": "multi-lane"
+  },
+  {
+    "paper": "P05",
+    "page": 4,
+    "block": 264,
+    "original": "sepa-rated",
+    "replacement": "separated"
+  },
+  {
+    "paper": "P05",
+    "page": 4,
+    "block": 264,
+    "original": "min-imum",
+    "replacement": "minimum"
+  },
+  {
+    "paper": "P05",
+    "page": 4,
+    "block": 276,
+    "original": "phys-ical",
+    "replacement": "physical"
+  },
+  {
+    "paper": "P05",
+    "page": 5,
+    "block": 281,
+    "original": "mixed-precision",
+    "replacement": "mixed-precision"
+  },
+  {
+    "paper": "P05",
+    "page": 5,
+    "block": 281,
+    "original": "floating-point",
+    "replacement": "floating-point"
+  },
+  {
+    "paper": "P05",
+    "page": 5,
+    "block": 281,
+    "original": "Transac-tions",
+    "replacement": "Transactions"
+  },
+  {
+    "paper": "P05",
+    "page": 5,
+    "block": 281,
+    "original": "Quar-terly",
+    "replacement": "Quarterly"
+  },
+  {
+    "paper": "P05",
+    "page": 5,
+    "block": 281,
+    "original": "On-line",
+    "replacement": "Online"
+  },
+  {
+    "paper": "P06",
+    "page": 1,
+    "block": 14,
+    "original": "num-ber",
+    "replacement": "number"
+  },
+  {
+    "paper": "P06",
+    "page": 1,
+    "block": 18,
+    "original": "compu-tational",
+    "replacement": "computational"
+  },
+  {
+    "paper": "P06",
+    "page": 1,
+    "block": 22,
+    "original": "op-erations",
+    "replacement": "operations"
+  },
+  {
+    "paper": "P06",
+    "page": 1,
+    "block": 22,
+    "original": "three-term",
+    "replacement": "three-term"
+  },
+  {
+    "paper": "P06",
+    "page": 2,
+    "block": 25,
+    "original": "pre-cision",
+    "replacement": "precision"
+  },
+  {
+    "paper": "P06",
+    "page": 2,
+    "block": 26,
+    "original": "train-ing",
+    "replacement": "training"
+  },
+  {
+    "paper": "P06",
+    "page": 3,
+    "block": 32,
+    "original": "sign-conditionally",
+    "replacement": "sign-conditionally"
+  },
+  {
+    "paper": "P06",
+    "page": 3,
+    "block": 32,
+    "original": "and-magnitude",
+    "replacement": "and-magnitude"
+  },
+  {
+    "paper": "P06",
+    "page": 3,
+    "block": 39,
+    "original": "conse-quently",
+    "replacement": "consequently"
+  },
+  {
+    "paper": "P06",
+    "page": 4,
+    "block": 119,
+    "original": "expo-nent",
+    "replacement": "exponent"
+  },
+  {
+    "paper": "P06",
+    "page": 6,
+    "block": 196,
+    "original": "to-gether",
+    "replacement": "together"
+  },
+  {
+    "paper": "P06",
+    "page": 6,
+    "block": 196,
+    "original": "respec-tive",
+    "replacement": "respective"
+  },
+  {
+    "paper": "P06",
+    "page": 6,
+    "block": 196,
+    "original": "con-straints",
+    "replacement": "constraints"
+  },
+  {
+    "paper": "P06",
+    "page": 6,
+    "block": 196,
+    "original": "exponent-major",
+    "replacement": "exponent-major"
+  },
+  {
+    "paper": "P06",
+    "page": 6,
+    "block": 209,
+    "original": "straight-forward",
+    "replacement": "straightforward"
+  },
+  {
+    "paper": "P06",
+    "page": 6,
+    "block": 211,
+    "original": "sig-nificant",
+    "replacement": "significant"
+  },
+  {
+    "paper": "P06",
+    "page": 6,
+    "block": 211,
+    "original": "co-exist",
+    "replacement": "co-exist"
+  },
+  {
+    "paper": "P06",
+    "page": 7,
+    "block": 214,
+    "original": "com-plement",
+    "replacement": "complement"
+  },
+  {
+    "paper": "P06",
+    "page": 7,
+    "block": 224,
+    "original": "de-scribed",
+    "replacement": "described"
+  },
+  {
+    "paper": "P06",
+    "page": 7,
+    "block": 224,
+    "original": "men-tioned",
+    "replacement": "mentioned"
+  },
+  {
+    "paper": "P06",
+    "page": 7,
+    "block": 226,
+    "original": "calcula-tion",
+    "replacement": "calculation"
+  },
+  {
+    "paper": "P06",
+    "page": 7,
+    "block": 226,
+    "original": "accumula-tion",
+    "replacement": "accumulation"
+  },
+  {
+    "paper": "P06",
+    "page": 8,
+    "block": 229,
+    "original": "Proceed-ings",
+    "replacement": "Proceedings"
+  },
+  {
+    "paper": "P06",
+    "page": 8,
+    "block": 230,
+    "original": "compu-tation",
+    "replacement": "computation"
+  },
+  {
+    "paper": "P06",
+    "page": 8,
+    "block": 230,
+    "original": "technol-ogy",
+    "replacement": "technology"
+  },
+  {
+    "paper": "P06",
+    "page": 8,
+    "block": 230,
+    "original": "high-performing",
+    "replacement": "high-performing"
+  },
+  {
+    "paper": "P06",
+    "page": 8,
+    "block": 230,
+    "original": "prod-uct",
+    "replacement": "product"
+  },
+  {
+    "paper": "P06",
+    "page": 8,
+    "block": 230,
+    "original": "state-of",
+    "replacement": "state-of"
+  },
+  {
+    "paper": "P06",
+    "page": 8,
+    "block": 232,
+    "original": "Pa-tel",
+    "replacement": "Patel"
+  },
+  {
+    "paper": "P06",
+    "page": 8,
+    "block": 232,
+    "original": "Sympo-sium",
+    "replacement": "Symposium"
+  },
+  {
+    "paper": "P06",
+    "page": 8,
+    "block": 232,
+    "original": "Proceed-ings",
+    "replacement": "Proceedings"
+  },
+  {
+    "paper": "P06",
+    "page": 8,
+    "block": 232,
+    "original": "Comoputa-tion",
+    "replacement": "Comoputation"
+  },
+  {
+    "paper": "P06",
+    "page": 8,
+    "block": 232,
+    "original": "Application-specific",
+    "replacement": "Application-specific"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 22,
+    "original": "archi-tectural",
+    "replacement": "architectural"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 22,
+    "original": "compar-ison",
+    "replacement": "comparison"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 22,
+    "original": "configura-tions",
+    "replacement": "configurations"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 22,
+    "original": "Com-pared",
+    "replacement": "Compared"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 22,
+    "original": "TensorForge-generated",
+    "replacement": "TensorForge-generated"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 22,
+    "original": "en-ergy",
+    "replacement": "energy"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 22,
+    "original": "syn-thesis",
+    "replacement": "synthesis"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 116,
+    "original": "sup-ported",
+    "replacement": "supported"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 116,
+    "original": "quanti-zation",
+    "replacement": "quantization"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 116,
+    "original": "multi-precision",
+    "replacement": "multi-precision"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 116,
+    "original": "con-straints",
+    "replacement": "constraints"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 116,
+    "original": "ca-pability",
+    "replacement": "capability"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 116,
+    "original": "soft-ware",
+    "replacement": "software"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 116,
+    "original": "multi-precision",
+    "replacement": "multi-precision"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 116,
+    "original": "Find-ing",
+    "replacement": "Finding"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 116,
+    "original": "multi-precision",
+    "replacement": "multi-precision"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 116,
+    "original": "pa-rameterized",
+    "replacement": "parameterized"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 116,
+    "original": "ba-sic",
+    "replacement": "basic"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 116,
+    "original": "con-straints",
+    "replacement": "constraints"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 118,
+    "original": "hetero-geneous",
+    "replacement": "heterogeneous"
+  },
+  {
+    "paper": "P07",
+    "page": 1,
+    "block": 118,
+    "original": "for-mats",
+    "replacement": "formats"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 276,
+    "original": "floating-point",
+    "replacement": "floating-point"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 326,
+    "original": "fea-sible",
+    "replacement": "feasible"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 326,
+    "original": "inter-mediate",
+    "replacement": "intermediate"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 326,
+    "original": "mitigat-ing",
+    "replacement": "mitigating"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 326,
+    "original": "normal-ization",
+    "replacement": "normalization"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 326,
+    "original": "energy-efficiency",
+    "replacement": "energy-efficiency"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 326,
+    "original": "evalua-tion",
+    "replacement": "evaluation"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 338,
+    "original": "struc-tural",
+    "replacement": "structural"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 338,
+    "original": "experi-ments",
+    "replacement": "experiments"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 340,
+    "original": "target-ing",
+    "replacement": "targeting"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 340,
+    "original": "hard-ware",
+    "replacement": "hardware"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 340,
+    "original": "pri-marily",
+    "replacement": "primarily"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 340,
+    "original": "microarchitec-tures",
+    "replacement": "microarchitectures"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 342,
+    "original": "hard-ware",
+    "replacement": "hardware"
+  },
+  {
+    "paper": "P07",
+    "page": 2,
+    "block": 342,
+    "original": "organiza-tion",
+    "replacement": "organization"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 402,
+    "original": "anchor-based",
+    "replacement": "anchor-based"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 404,
+    "original": "bit-width",
+    "replacement": "bit-width"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 439,
+    "original": "multi-precision",
+    "replacement": "multi-precision"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 439,
+    "original": "for-mats",
+    "replacement": "formats"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 439,
+    "original": "trade-offs",
+    "replacement": "trade-offs"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 453,
+    "original": "constraint-driven",
+    "replacement": "constraint-driven"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 453,
+    "original": "decou-pled",
+    "replacement": "decoupled"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 453,
+    "original": "normal-ization",
+    "replacement": "normalization"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 453,
+    "original": "primi-tives",
+    "replacement": "primitives"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 453,
+    "original": "datap-aths",
+    "replacement": "datapaths"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 453,
+    "original": "ar-rays",
+    "replacement": "arrays"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 453,
+    "original": "evalu-ates",
+    "replacement": "evaluates"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 453,
+    "original": "Ten-sorForge",
+    "replacement": "TensorForge"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 453,
+    "original": "ar-ray",
+    "replacement": "array"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 453,
+    "original": "nor-malization",
+    "replacement": "normalization"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 509,
+    "original": "orga-nizations",
+    "replacement": "organizations"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 509,
+    "original": "ten-sor",
+    "replacement": "tensor"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 509,
+    "original": "stan-dalone",
+    "replacement": "standalone"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 509,
+    "original": "bet-ter",
+    "replacement": "better"
+  },
+  {
+    "paper": "P07",
+    "page": 3,
+    "block": 509,
+    "original": "microarchi-tectures",
+    "replacement": "microarchitectures"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 564,
+    "original": "cor-responds",
+    "replacement": "corresponds"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 564,
+    "original": "inner-product",
+    "replacement": "inner-product"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 564,
+    "original": "INT-partitioned",
+    "replacement": "INT-partitioned"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 625,
+    "original": "implementa-tion",
+    "replacement": "implementation"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 671,
+    "original": "exe-cution",
+    "replacement": "execution"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 671,
+    "original": "ex-amples",
+    "replacement": "examples"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 671,
+    "original": "corre-sponding",
+    "replacement": "corresponding"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 686,
+    "original": "integer-multiply",
+    "replacement": "integer-multiply"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 686,
+    "original": "mul-tipliers",
+    "replacement": "multipliers"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 686,
+    "original": "preci-sion",
+    "replacement": "precision"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 686,
+    "original": "differ-ences",
+    "replacement": "differences"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 686,
+    "original": "accumu-lation",
+    "replacement": "accumulation"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 686,
+    "original": "dat-apath",
+    "replacement": "datapath"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 686,
+    "original": "accumula-tion",
+    "replacement": "accumulation"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 686,
+    "original": "min-imizes",
+    "replacement": "minimizes"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 687,
+    "original": "fea-tures",
+    "replacement": "features"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 722,
+    "original": "syn-thesized",
+    "replacement": "synthesized"
+  },
+  {
+    "paper": "P07",
+    "page": 4,
+    "block": 722,
+    "original": "Ten-sorForge",
+    "replacement": "TensorForge"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 753,
+    "original": "evalu-ation",
+    "replacement": "evaluation"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 799,
+    "original": "throughput-matched",
+    "replacement": "throughput-matched"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 799,
+    "original": "tar-get",
+    "replacement": "target"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 849,
+    "original": "throughput-matched",
+    "replacement": "throughput-matched"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 853,
+    "original": "throughput-matched",
+    "replacement": "throughput-matched"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 853,
+    "original": "bound-ary",
+    "replacement": "boundary"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 853,
+    "original": "accu-mulation",
+    "replacement": "accumulation"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 854,
+    "original": "nor-malization",
+    "replacement": "normalization"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 868,
+    "original": "throughput-matched",
+    "replacement": "throughput-matched"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 879,
+    "original": "in-terface",
+    "replacement": "interface"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 879,
+    "original": "multipli-ers",
+    "replacement": "multipliers"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 879,
+    "original": "im-plementing",
+    "replacement": "implementing"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 879,
+    "original": "pro-vide",
+    "replacement": "provide"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 879,
+    "original": "ad-dressing",
+    "replacement": "addressing"
+  },
+  {
+    "paper": "P07",
+    "page": 5,
+    "block": 879,
+    "original": "pro-duced",
+    "replacement": "produced"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 958,
+    "original": "accu-mulation",
+    "replacement": "accumulation"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 958,
+    "original": "preci-sion",
+    "replacement": "precision"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1025,
+    "original": "round-ing",
+    "replacement": "rounding"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1025,
+    "original": "Sequen-tial",
+    "replacement": "Sequential"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1025,
+    "original": "signifi-cant",
+    "replacement": "significant"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1025,
+    "original": "low-precision",
+    "replacement": "low-precision"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1132,
+    "original": "dot-product",
+    "replacement": "dot-product"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1132,
+    "original": "in-ner",
+    "replacement": "inner"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1132,
+    "original": "in-one",
+    "replacement": "in-one"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1132,
+    "original": "criti-cal",
+    "replacement": "critical"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1132,
+    "original": "sepa-rate",
+    "replacement": "separate"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1132,
+    "original": "pro-vide",
+    "replacement": "provide"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1132,
+    "original": "over-head",
+    "replacement": "overhead"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1132,
+    "original": "switch-ing",
+    "replacement": "switching"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1132,
+    "original": "de-composes",
+    "replacement": "decomposes"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1133,
+    "original": "mul-tiple",
+    "replacement": "multiple"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1133,
+    "original": "gradu-ally",
+    "replacement": "gradually"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1133,
+    "original": "inter-mediate",
+    "replacement": "intermediate"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1133,
+    "original": "intermediate-precision",
+    "replacement": "intermediate-precision"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1133,
+    "original": "accu-mulator",
+    "replacement": "accumulator"
+  },
+  {
+    "paper": "P07",
+    "page": 6,
+    "block": 1133,
+    "original": "set-tings",
+    "replacement": "settings"
+  },
+  {
+    "paper": "P07",
+    "page": 7,
+    "block": 1252,
+    "original": "hetero-geneity",
+    "replacement": "heterogeneity"
+  },
+  {
+    "paper": "P07",
+    "page": 7,
+    "block": 1259,
+    "original": "implementa-tion",
+    "replacement": "implementation"
+  },
+  {
+    "paper": "P07",
+    "page": 7,
+    "block": 1281,
+    "original": "evalu-ation",
+    "replacement": "evaluation"
+  },
+  {
+    "paper": "P07",
+    "page": 7,
+    "block": 1281,
+    "original": "NV-style",
+    "replacement": "NV-style"
+  },
+  {
+    "paper": "P07",
+    "page": 7,
+    "block": 1281,
+    "original": "low-precision",
+    "replacement": "low-precision"
+  },
+  {
+    "paper": "P07",
+    "page": 7,
+    "block": 1282,
+    "original": "LUT-based",
+    "replacement": "LUT-based"
+  },
+  {
+    "paper": "P07",
+    "page": 7,
+    "block": 1286,
+    "original": "TensorForge-generated",
+    "replacement": "TensorForge-generated"
+  },
+  {
+    "paper": "P07",
+    "page": 7,
+    "block": 1286,
+    "original": "for-mat",
+    "replacement": "format"
+  },
+  {
+    "paper": "P07",
+    "page": 8,
+    "block": 1413,
+    "original": "activ-ity",
+    "replacement": "activity"
+  },
+  {
+    "paper": "P07",
+    "page": 8,
+    "block": 1413,
+    "original": "arith-metic",
+    "replacement": "arithmetic"
+  },
+  {
+    "paper": "P07",
+    "page": 8,
+    "block": 1565,
+    "original": "work-loads",
+    "replacement": "workloads"
+  },
+  {
+    "paper": "P07",
+    "page": 8,
+    "block": 1583,
+    "original": "con-taining",
+    "replacement": "containing"
+  },
+  {
+    "paper": "P07",
+    "page": 8,
+    "block": 1593,
+    "original": "method-ology",
+    "replacement": "methodology"
+  },
+  {
+    "paper": "P07",
+    "page": 8,
+    "block": 1593,
+    "original": "vali-dated",
+    "replacement": "validated"
+  },
+  {
+    "paper": "P07",
+    "page": 8,
+    "block": 1593,
+    "original": "iden-tifies",
+    "replacement": "identifies"
+  },
+  {
+    "paper": "P07",
+    "page": 8,
+    "block": 1593,
+    "original": "numer-ical",
+    "replacement": "numerical"
+  },
+  {
+    "paper": "P07",
+    "page": 8,
+    "block": 1593,
+    "original": "en-abling",
+    "replacement": "enabling"
+  },
+  {
+    "paper": "P07",
+    "page": 9,
+    "block": 1612,
+    "original": "Dis-secting",
+    "replacement": "Dissecting"
+  },
+  {
+    "paper": "P07",
+    "page": 9,
+    "block": 1612,
+    "original": "accel-eration",
+    "replacement": "acceleration"
+  },
+  {
+    "paper": "P07",
+    "page": 9,
+    "block": 1670,
+    "original": "Coopera-tive",
+    "replacement": "Cooperative"
+  },
+  {
+    "paper": "P07",
+    "page": 9,
+    "block": 1670,
+    "original": "Interna-tional",
+    "replacement": "International"
+  },
+  {
+    "paper": "P07",
+    "page": 9,
+    "block": 1670,
+    "original": "Per-formance",
+    "replacement": "Performance"
+  },
+  {
+    "paper": "P08",
+    "page": 1,
+    "block": 7,
+    "original": "signifi-cant",
+    "replacement": "significant"
+  },
+  {
+    "paper": "P08",
+    "page": 1,
+    "block": 7,
+    "original": "mod-els",
+    "replacement": "models"
+  },
+  {
+    "paper": "P08",
+    "page": 1,
+    "block": 7,
+    "original": "low-bitwidth",
+    "replacement": "low-bitwidth"
+  },
+  {
+    "paper": "P08",
+    "page": 1,
+    "block": 7,
+    "original": "ele-ment",
+    "replacement": "element"
+  },
+  {
+    "paper": "P08",
+    "page": 1,
+    "block": 7,
+    "original": "finer-grained",
+    "replacement": "finer-grained"
+  },
+  {
+    "paper": "P08",
+    "page": 1,
+    "block": 7,
+    "original": "demon-strated",
+    "replacement": "demonstrated"
+  },
+  {
+    "paper": "P08",
+    "page": 1,
+    "block": 9,
+    "original": "na-tive",
+    "replacement": "native"
+  },
+  {
+    "paper": "P08",
+    "page": 1,
+    "block": 9,
+    "original": "ecosys-tem",
+    "replacement": "ecosystem"
+  },
+  {
+    "paper": "P08",
+    "page": 1,
+    "block": 9,
+    "original": "effi-cient",
+    "replacement": "efficient"
+  },
+  {
+    "paper": "P08",
+    "page": 1,
+    "block": 9,
+    "original": "dependen-cies",
+    "replacement": "dependencies"
+  },
+  {
+    "paper": "P08",
+    "page": 1,
+    "block": 9,
+    "original": "ex-plicit",
+    "replacement": "explicit"
+  },
+  {
+    "paper": "P08",
+    "page": 1,
+    "block": 10,
+    "original": "instruc-tion",
+    "replacement": "instruction"
+  },
+  {
+    "paper": "P08",
+    "page": 1,
+    "block": 10,
+    "original": "reach-ing",
+    "replacement": "reaching"
+  },
+  {
+    "paper": "P08",
+    "page": 2,
+    "block": 14,
+    "original": "multipli-cation",
+    "replacement": "multiplication"
+  },
+  {
+    "paper": "P08",
+    "page": 2,
+    "block": 15,
+    "original": "low-bitwidth",
+    "replacement": "low-bitwidth"
+  },
+  {
+    "paper": "P08",
+    "page": 2,
+    "block": 15,
+    "original": "com-putational",
+    "replacement": "computational"
+  },
+  {
+    "paper": "P08",
+    "page": 2,
+    "block": 15,
+    "original": "specifica-tion",
+    "replacement": "specification"
+  },
+  {
+    "paper": "P08",
+    "page": 2,
+    "block": 17,
+    "original": "preci-sion",
+    "replacement": "precision"
+  },
+  {
+    "paper": "P08",
+    "page": 2,
+    "block": 17,
+    "original": "MX-compliant",
+    "replacement": "MX-compliant"
+  },
+  {
+    "paper": "P08",
+    "page": 2,
+    "block": 20,
+    "original": "work-loads",
+    "replacement": "workloads"
+  },
+  {
+    "paper": "P08",
+    "page": 2,
+    "block": 20,
+    "original": "sup-porting",
+    "replacement": "supporting"
+  },
+  {
+    "paper": "P08",
+    "page": 2,
+    "block": 20,
+    "original": "high-bandwidth",
+    "replacement": "high-bandwidth"
+  },
+  {
+    "paper": "P08",
+    "page": 2,
+    "block": 20,
+    "original": "exter-nal",
+    "replacement": "external"
+  },
+  {
+    "paper": "P08",
+    "page": 2,
+    "block": 21,
+    "original": "prede-fined",
+    "replacement": "predefined"
+  },
+  {
+    "paper": "P08",
+    "page": 2,
+    "block": 21,
+    "original": "au-tonomously",
+    "replacement": "autonomously"
+  },
+  {
+    "paper": "P08",
+    "page": 2,
+    "block": 24,
+    "original": "accom-modate",
+    "replacement": "accommodate"
+  },
+  {
+    "paper": "P08",
+    "page": 3,
+    "block": 54,
+    "original": "Ta-ble",
+    "replacement": "Table"
+  },
+  {
+    "paper": "P08",
+    "page": 3,
+    "block": 57,
+    "original": "tech-nology",
+    "replacement": "technology"
+  },
+  {
+    "paper": "P08",
+    "page": 3,
+    "block": 57,
+    "original": "Com-piler",
+    "replacement": "Compiler"
+  },
+  {
+    "paper": "P08",
+    "page": 3,
+    "block": 58,
+    "original": "gate-level",
+    "replacement": "gate-level"
+  },
+  {
+    "paper": "P08",
+    "page": 3,
+    "block": 59,
+    "original": "com-pare",
+    "replacement": "compare"
+  },
+  {
+    "paper": "P08",
+    "page": 3,
+    "block": 60,
+    "original": "ded-icated",
+    "replacement": "dedicated"
+  },
+  {
+    "paper": "P08",
+    "page": 3,
+    "block": 60,
+    "original": "per-formance",
+    "replacement": "performance"
+  },
+  {
+    "paper": "P08",
+    "page": 4,
+    "block": 158,
+    "original": "accu-mulation",
+    "replacement": "accumulation"
+  },
+  {
+    "paper": "P08",
+    "page": 4,
+    "block": 158,
+    "original": "accumula-tion",
+    "replacement": "accumulation"
+  },
+  {
+    "paper": "P08",
+    "page": 4,
+    "block": 158,
+    "original": "out-performs",
+    "replacement": "outperforms"
+  },
+  {
+    "paper": "P08",
+    "page": 4,
+    "block": 160,
+    "original": "multiplica-tions",
+    "replacement": "multiplications"
+  },
+  {
+    "paper": "P08",
+    "page": 4,
+    "block": 160,
+    "original": "software-based",
+    "replacement": "software-based"
+  },
+  {
+    "paper": "P08",
+    "page": 4,
+    "block": 162,
+    "original": "Infer-encing",
+    "replacement": "Inferencing"
+  },
+  {
+    "paper": "P08",
+    "page": 4,
+    "block": 162,
+    "original": "Avail-able",
+    "replacement": "Available"
+  },
+  {
+    "paper": "P08",
+    "page": 4,
+    "block": 162,
+    "original": "distil-lation",
+    "replacement": "distillation"
+  }
+]

@@ -1,0 +1,371 @@
+[
+  {
+    "pattern": "support formats",
+    "regex": "\\bsupport\\w*\\b(?:\\W+\\w+){0,6}\\W+formats?\\b",
+    "sentence_hits": 24,
+    "by_paper": {
+      "P01": 10,
+      "P03": 2,
+      "P04": 1,
+      "P05": 5,
+      "P06": 1,
+      "P07": 2,
+      "P08": 3
+    },
+    "examples": [
+      {
+        "paper": "P01",
+        "section": "abstract",
+        "block": 4,
+        "blocks": [
+          4
+        ],
+        "page": 1,
+        "sentence_index": 5,
+        "text": "We also integrate FPnew into a 64-bit RISC-V core, supporting five FP formats on scalars or 2, 4, or 8-way SIMD vectors.",
+        "words": 22
+      },
+      {
+        "paper": "P01",
+        "section": "introduction",
+        "block": 13,
+        "blocks": [
+          13
+        ],
+        "page": 2,
+        "sentence_index": 7,
+        "text": "The taped-out architecture supports a wide range of data formats including IEEE 754 double (FP64), single (FP32), and half-precision floats (FP16), as well as 16-bit bfloats (FP16alt) and a custom 8-bit format (FP8), initially introduced in [10].",
+        "words": 37
+      },
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 19,
+        "blocks": [
+          19
+        ],
+        "page": 2,
+        "sentence_index": 8,
+        "text": "Furthermore, for implementations supporting more than one FP format, conversions among all supported FP formats and integers are required.",
+        "words": 19
+      }
+    ]
+  },
+  {
+    "pattern": "reduce area",
+    "regex": "\\breduc\\w*\\b(?:\\W+\\w+){0,4}\\W+area\\b",
+    "sentence_hits": 8,
+    "by_paper": {
+      "P02": 1,
+      "P04": 2,
+      "P05": 3,
+      "P06": 1,
+      "P07": 1
+    },
+    "examples": [
+      {
+        "paper": "P02",
+        "section": "evaluation",
+        "block": 220,
+        "blocks": [
+          220
+        ],
+        "page": 8,
+        "sentence_index": 8,
+        "text": "Design E with the largest cores see prefill and decoding latency increase by 12.4% and 1.9% respectively, but can reduce die area up to 7.7%.",
+        "words": 28
+      },
+      {
+        "paper": "P04",
+        "section": "abstract",
+        "block": 9,
+        "blocks": [
+          9
+        ],
+        "page": 1,
+        "sentence_index": 1,
+        "text": "However, most of the existing operational circuits support only a few higher precisions (FP16, FP32, etc.) for multiplication, and the bit width for accumulation cannot be reduced, which results in low area and power efficiencies.",
+        "words": 35
+      },
+      {
+        "paper": "P04",
+        "section": "abstract",
+        "block": 9,
+        "blocks": [
+          9
+        ],
+        "page": 1,
+        "sentence_index": 7,
+        "text": "The SR strategy further reduces the area/power consumption by 15.6%/14.9% of the floating-point accumulator.",
+        "words": 18
+      }
+    ]
+  },
+  {
+    "pattern": "reduce power",
+    "regex": "\\breduc\\w*\\b(?:\\W+\\w+){0,4}\\W+power\\b",
+    "sentence_hits": 4,
+    "by_paper": {
+      "P01": 1,
+      "P03": 1,
+      "P04": 1,
+      "P07": 1
+    },
+    "examples": [
+      {
+        "paper": "P01",
+        "section": "evaluation",
+        "block": 106,
+        "blocks": [
+          106
+        ],
+        "page": 10,
+        "sentence_index": 5,
+        "text": "Converted to FP16, this yields a value 14.6× more accurate than using FP16 only, reducing core and system power by 37% when compared to the FP32 case.",
+        "words": 28
+      },
+      {
+        "paper": "P03",
+        "section": "method",
+        "block": 169,
+        "blocks": [
+          169
+        ],
+        "page": 4,
+        "sentence_index": 8,
+        "text": "In FP8 mode, the FIX8 data path can be gated to reduce power consumption when there is no FIX8 calculation need; Similarly, in the FIX8 mode, the data path of FP8 can also be gated.",
+        "words": 35
+      },
+      {
+        "paper": "P04",
+        "section": "abstract",
+        "block": 9,
+        "blocks": [
+          9
+        ],
+        "page": 1,
+        "sentence_index": 7,
+        "text": "The SR strategy further reduces the area/power consumption by 15.6%/14.9% of the floating-point accumulator.",
+        "words": 18
+      }
+    ]
+  },
+  {
+    "pattern": "improve energy efficiency",
+    "regex": "\\bimprov\\w*\\b(?:\\W+\\w+){0,4}\\W+energy efficiency\\b",
+    "sentence_hits": 8,
+    "by_paper": {
+      "P03": 1,
+      "P05": 1,
+      "P07": 3,
+      "P08": 3
+    },
+    "examples": [
+      {
+        "paper": "P03",
+        "section": "introduction",
+        "block": 18,
+        "blocks": [
+          18
+        ],
+        "page": 1,
+        "sentence_index": 4,
+        "text": "Venkataramani et al. designed an AI accelerator called RapiD, which supports FP16, FP8 numbers and FIX4, FIX8 numbers, and improves the energy efficiency ratio of AI load in a low precision way [7].",
+        "words": 33
+      },
+      {
+        "paper": "P05",
+        "section": "introduction",
+        "block": 17,
+        "blocks": [
+          17
+        ],
+        "page": 1,
+        "sentence_index": 0,
+        "text": "Modern AI accelerators increasingly rely on reduced-precision arithmetic to improve performance and energy efficiency.",
+        "words": 14
+      },
+      {
+        "paper": "P07",
+        "section": "evaluation",
+        "block": 853,
+        "blocks": [
+          853
+        ],
+        "page": 5,
+        "sentence_index": 3,
+        "text": "Fig. 6 makes the same boundary visible in throughput-normalized terms: larger 𝑘 improves both area efficiency and energy efficiency because normalization, accumulation, and writeback overhead are increasingly amortized by a larger inner product.",
+        "words": 32
+      }
+    ]
+  },
+  {
+    "pattern": "achieve throughput",
+    "regex": "\\bachiev\\w*\\b(?:\\W+\\w+){0,5}\\W+throughput\\b",
+    "sentence_hits": 8,
+    "by_paper": {
+      "P02": 1,
+      "P03": 1,
+      "P05": 3,
+      "P07": 1,
+      "P08": 2
+    },
+    "examples": [
+      {
+        "paper": "P02",
+        "section": "evaluation",
+        "block": 264,
+        "blocks": [
+          264
+        ],
+        "page": 11,
+        "sentence_index": 2,
+        "text": "Ideally, with half the bandwidth of a GA100, this configuration can achieve more than 6x improvement in throughput.",
+        "words": 18
+      },
+      {
+        "paper": "P03",
+        "section": "evaluation",
+        "block": 239,
+        "blocks": [
+          239
+        ],
+        "page": 5,
+        "sentence_index": 2,
+        "text": "To achieve the best throughput, the smallest delay, which is 0.4𝑛𝑠, is chosen as the design point in this paper, where the area is 9874.87𝑢𝑚 2 and the power consumption is 48.4𝑚𝑊 .",
+        "words": 35
+      },
+      {
+        "paper": "P05",
+        "section": "abstract",
+        "block": 4,
+        "blocks": [
+          4
+        ],
+        "page": 1,
+        "sentence_index": 0,
+        "text": "Commercial FPGAs, such as AMD Versal devices, increasingly incorporate AI engines that exploit low-precision packed-SIMD fused multiply–accumulate (FMA) to achieve proportional throughput gains.",
+        "words": 24
+      }
+    ]
+  },
+  {
+    "pattern": "incur overhead",
+    "regex": "\\bincur\\w*\\b(?:\\W+\\w+){0,5}\\W+overhead\\b",
+    "sentence_hits": 2,
+    "by_paper": {
+      "P01": 1,
+      "P07": 1
+    },
+    "examples": [
+      {
+        "paper": "P01",
+        "section": "conclusion",
+        "block": 140,
+        "blocks": [
+          140
+        ],
+        "page": 13,
+        "sentence_index": 3,
+        "text": "In our case study, we achieve FP32 precision without incurring any performance overhead compared to an optimal scalar FP16 baseline, reducing system energy by 34% with respect tothe FP32 implementation.",
+        "words": 30
+      },
+      {
+        "paper": "P07",
+        "section": "contributions",
+        "block": 116,
+        "blocks": [
+          116,
+          326
+        ],
+        "page": 1,
+        "sentence_index": 3,
+        "text": "Our results show that dot-product units improve the robustness of low-precision accumulation by mitigating swamping, while stochastic rounding incurs only 0.63% area overhead in the dot-product unit.",
+        "words": 28
+      }
+    ]
+  },
+  {
+    "pattern": "amortize cost/overhead",
+    "regex": "\\bamortiz\\w*\\b(?:\\W+\\w+){0,6}\\W+(?:cost|overhead)s?\\b",
+    "sentence_hits": 3,
+    "by_paper": {
+      "P05": 1,
+      "P07": 2
+    },
+    "examples": [
+      {
+        "paper": "P05",
+        "section": "method",
+        "block": 187,
+        "blocks": [
+          187
+        ],
+        "page": 3,
+        "sentence_index": 8,
+        "text": "This estimate excludes high-fanout buffering, which increases the baseline area and further amortizes the relative overhead in practice.",
+        "words": 18
+      },
+      {
+        "paper": "P07",
+        "section": "method",
+        "block": 509,
+        "blocks": [
+          509
+        ],
+        "page": 3,
+        "sentence_index": 4,
+        "text": "For example, multiplier–adder trees provide a flexible path toward higher-precision computation [24, 34], while DP units better amortize alignment and accumulation overhead for larger inner products [8].",
+        "words": 28
+      },
+      {
+        "paper": "P07",
+        "section": "evaluation",
+        "block": 854,
+        "blocks": [
+          854
+        ],
+        "page": 5,
+        "sentence_index": 2,
+        "text": "Under fixed throughput with FP16, BF16, TF32 support, DP-based organizations become Pareto-dominant beyond a moderate 𝑘, because larger inner products amortize normalization, accumulation, and control overhead.",
+        "words": 25
+      }
+    ]
+  },
+  {
+    "pattern": "hide latency",
+    "regex": "\\bhid(?:e|es|ing)\\b(?:\\W+\\w+){0,3}\\W+latenc(?:y|ies)\\b",
+    "sentence_hits": 1,
+    "by_paper": {
+      "P01": 1
+    },
+    "examples": [
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 23,
+        "blocks": [
+          23
+        ],
+        "page": 3,
+        "sentence_index": 5,
+        "text": "While a GPU, for example, will favor a minimum area implementation and is capable of hiding large latencies well through its architecture, the impact of operation latency can be far more noticeable in an embedded general-purpose processor core [14].",
+        "words": 39
+      }
+    ]
+  },
+  {
+    "pattern": "exploit sparsity",
+    "regex": "\\bexploit\\w*\\b(?:\\W+\\w+){0,3}\\W+sparsity\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "close timing",
+    "regex": "\\bclos(?:e|es|ing)\\b(?:\\W+\\w+){0,2}\\W+timing\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  }
+]

@@ -1,0 +1,1062 @@
+[
+  {
+    "pattern": "bitwidth",
+    "regex": "\\bbitwidths?\\b",
+    "sentence_hits": 10,
+    "by_paper": {
+      "P08": 10
+    },
+    "examples": [
+      {
+        "paper": "P08",
+        "section": "abstract",
+        "block": 5,
+        "blocks": [
+          5
+        ],
+        "page": 1,
+        "sentence_index": 0,
+        "text": "Fast and energy-efficient low-bitwidth floating-point (FP) arithmetic is essential for Artificial Intelligence (AI) systems.",
+        "words": 14
+      },
+      {
+        "paper": "P08",
+        "section": "abstract",
+        "block": 5,
+        "blocks": [
+          5
+        ],
+        "page": 1,
+        "sentence_index": 1,
+        "text": "Microscaling (MX) standardized formats have recently emerged as a promising alternative to baseline low-bitwidth FP formats, offering improved accuracy with a block-wise shared exponent scale combined with per-element values.",
+        "words": 29
+      },
+      {
+        "paper": "P08",
+        "section": "introduction",
+        "block": 7,
+        "blocks": [
+          7
+        ],
+        "page": 1,
+        "sentence_index": 2,
+        "text": "In low-bitwidth formats like FP8, increasing the exponent range improves dynamic range but reduces precision, while a larger mantissa improves precision at the cost of a smaller dynamic range.",
+        "words": 29
+      }
+    ]
+  },
+  {
+    "pattern": "bit width",
+    "regex": "\\bbit widths?\\b",
+    "sentence_hits": 16,
+    "by_paper": {
+      "P04": 15,
+      "P06": 1
+    },
+    "examples": [
+      {
+        "paper": "P04",
+        "section": "abstract",
+        "block": 9,
+        "blocks": [
+          9
+        ],
+        "page": 1,
+        "sentence_index": 1,
+        "text": "However, most of the existing operational circuits support only a few higher precisions (FP16, FP32, etc.) for multiplication, and the bit width for accumulation cannot be reduced, which results in low area and power efficiencies.",
+        "words": 35
+      },
+      {
+        "paper": "P04",
+        "section": "introduction",
+        "block": 14,
+        "blocks": [
+          14
+        ],
+        "page": 1,
+        "sentence_index": 2,
+        "text": "Consequently, researchers have implemented training with quantized low-bit width data, significantly reducing memory usage and the costs associated with data movement and processing.",
+        "words": 23
+      },
+      {
+        "paper": "P04",
+        "section": "introduction",
+        "block": 14,
+        "blocks": [
+          14
+        ],
+        "page": 1,
+        "sentence_index": 11,
+        "text": "Moreover, Stochastic Rounding (SR) is essential for ultra-low-precision training [1], addressing the training stagnation phenomenon [8] and reducing accumulator bit width with guaranteed accuracy [10], thereby saving resources.",
+        "words": 28
+      }
+    ]
+  },
+  {
+    "pattern": "bit-width",
+    "regex": "\\bbit-widths?\\b",
+    "sentence_hits": 3,
+    "by_paper": {
+      "P04": 1,
+      "P07": 2
+    },
+    "examples": [
+      {
+        "paper": "P04",
+        "section": "evaluation",
+        "block": 458,
+        "blocks": [
+          458
+        ],
+        "page": 6,
+        "sentence_index": 1,
+        "text": "Based on this finding, we use the Variable-SR strategy to reduce the accumulator bit-width, saving 15.6% of the accumulator area with 14.9% power consumption.",
+        "words": 26
+      },
+      {
+        "paper": "P07",
+        "section": "method",
+        "block": 879,
+        "blocks": [
+          879
+        ],
+        "page": 5,
+        "sentence_index": 9,
+        "text": "Stochastic Rounding (SR) uses probabilistic rounding to provide an unbiased estimate, preventing the stagnation that occurs when small gradient increments are repeatedly truncated and addressing precision loss in limited bit-width computation.",
+        "words": 31
+      },
+      {
+        "paper": "P07",
+        "section": "evaluation",
+        "block": 1133,
+        "blocks": [
+          1133
+        ],
+        "page": 6,
+        "sentence_index": 4,
+        "text": "The same threshold is also reflected in workload-level bit-level simulation: as shown in the right panel of Fig. 7, Qwen3-0.6B evaluated on SuperGLUE RTE shows task accuracy saturation around the same intermediate-precision region, suggesting that further bit-width increase brings only marginal end-task benefit.",
+        "words": 44
+      }
+    ]
+  },
+  {
+    "pattern": "datapath",
+    "regex": "\\bdatapaths?\\b",
+    "sentence_hits": 56,
+    "by_paper": {
+      "P01": 12,
+      "P03": 2,
+      "P04": 1,
+      "P05": 15,
+      "P06": 16,
+      "P07": 7,
+      "P08": 3
+    },
+    "examples": [
+      {
+        "paper": "P01",
+        "section": "introduction",
+        "block": 9,
+        "blocks": [
+          9
+        ],
+        "page": 1,
+        "sentence_index": 6,
+        "text": "While fixed-point computation, which usually uses integer datapaths, sometimes offers an efficient alternative to FP, it is not nearly as flexible and universal.",
+        "words": 23
+      },
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 23,
+        "blocks": [
+          23
+        ],
+        "page": 3,
+        "sentence_index": 1,
+        "text": "While it is possible to construct such a vectorized wide datapath by duplicating entire narrow FPUs into vector lanes, operations would be limited to using the same narrow width.",
+        "words": 29
+      },
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 25,
+        "blocks": [
+          25
+        ],
+        "page": 3,
+        "sentence_index": 3,
+        "text": "Each of these blocks forms an independent datapath for operations to flow through (see Fig. 2-2).",
+        "words": 16
+      }
+    ]
+  },
+  {
+    "pattern": "data path",
+    "regex": "\\bdata paths?\\b",
+    "sentence_hits": 4,
+    "by_paper": {
+      "P03": 3,
+      "P07": 1
+    },
+    "examples": [
+      {
+        "paper": "P03",
+        "section": "method",
+        "block": 53,
+        "blocks": [
+          53
+        ],
+        "page": 2,
+        "sentence_index": 0,
+        "text": "Fig. 2 shows the overall data path of the MU proposed in this paper.",
+        "words": 14
+      },
+      {
+        "paper": "P03",
+        "section": "method",
+        "block": 169,
+        "blocks": [
+          169
+        ],
+        "page": 4,
+        "sentence_index": 8,
+        "text": "In FP8 mode, the FIX8 data path can be gated to reduce power consumption when there is no FIX8 calculation need; Similarly, in the FIX8 mode, the data path of FP8 can also be gated.",
+        "words": 35
+      },
+      {
+        "paper": "P03",
+        "section": "conclusion",
+        "block": 290,
+        "blocks": [
+          290
+        ],
+        "page": 6,
+        "sentence_index": 4,
+        "text": "The overall data path and the key design have been discussed in detail.",
+        "words": 13
+      }
+    ]
+  },
+  {
+    "pattern": "dequantization",
+    "regex": "\\bdequantization\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "mantissa",
+    "regex": "\\bmantissas?\\b",
+    "sentence_hits": 48,
+    "by_paper": {
+      "P01": 5,
+      "P03": 12,
+      "P04": 21,
+      "P05": 3,
+      "P07": 6,
+      "P08": 1
+    },
+    "examples": [
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 38,
+        "blocks": [
+          38
+        ],
+        "page": 4,
+        "sentence_index": 6,
+        "text": "The iterative portion of the unit computes three mantissa bits of the result value per clock cycle and is implemented as a merged slice.",
+        "words": 24
+      },
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 40,
+        "blocks": [
+          40
+        ],
+        "page": 4,
+        "sentence_index": 1,
+        "text": "In the package, any number of custom formats can be defined containing any number of exponent and mantissa bits, not limited to power-of-two format widths as in traditional computing systems. 1 Formats are treated according to IEEE 754-2008 (see Fig. 1) and support all standard rounding modes.",
+        "words": 47
+      },
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 67,
+        "blocks": [
+          67
+        ],
+        "page": 6,
+        "sentence_index": 7,
+        "text": "Three mantissa bits are produced every clock cycle in addition to a constant three cycles for pre- and post-processing.",
+        "words": 19
+      }
+    ]
+  },
+  {
+    "pattern": "significand",
+    "regex": "\\bsignificands?\\b",
+    "sentence_hits": 15,
+    "by_paper": {
+      "P06": 14,
+      "P07": 1
+    },
+    "examples": [
+      {
+        "paper": "P06",
+        "section": "introduction",
+        "block": 16,
+        "blocks": [
+          16
+        ],
+        "page": 1,
+        "sentence_index": 1,
+        "text": "Note that an implict 1, the hidden bit, is concatenated to the fraction as an integer bit, forming the significand.",
+        "words": 20
+      },
+      {
+        "paper": "P06",
+        "section": "method",
+        "block": 32,
+        "blocks": [
+          32
+        ],
+        "page": 3,
+        "sentence_index": 4,
+        "text": "In the first cycle the four products are obtained and the 8-bit product significands are expanded to a 68-bit fixed-point (FX) number with the first significant bit determined by the product exponent.",
+        "words": 32
+      },
+      {
+        "paper": "P06",
+        "section": "method",
+        "block": 32,
+        "blocks": [
+          32
+        ],
+        "page": 3,
+        "sentence_index": 16,
+        "text": "Then, the 69-bit adder produces the 69-bit unnormalized and 2’s complement SoP significand.",
+        "words": 13
+      }
+    ]
+  },
+  {
+    "pattern": "It is worth noting that",
+    "regex": "\\bit is worth noting that\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "It is worth pointing out that",
+    "regex": "\\bit is worth pointing out that\\b",
+    "sentence_hits": 1,
+    "by_paper": {
+      "P06": 1
+    },
+    "examples": [
+      {
+        "paper": "P06",
+        "section": "method",
+        "block": 32,
+        "blocks": [
+          32
+        ],
+        "page": 3,
+        "sentence_index": 1,
+        "text": "It is worth pointing out that the addition to the accumulator is done in the two last cycles, which adds flexibility to the result forwarding, and allows to substantially reuse a pre-existing, FMA capable FP32 adder, after modification to increase the bit width of one input.",
+        "words": 46
+      }
+    ]
+  },
+  {
+    "pattern": "We believe",
+    "regex": "\\bwe believe\\b",
+    "sentence_hits": 2,
+    "by_paper": {
+      "P02": 2
+    },
+    "examples": [
+      {
+        "paper": "P02",
+        "section": "method",
+        "block": 147,
+        "blocks": [
+          147
+        ],
+        "page": 4,
+        "sentence_index": 2,
+        "text": "We believe this assumption does not lose generality as a highly optimized library will also carefully manage the memory.",
+        "words": 19
+      },
+      {
+        "paper": "P02",
+        "section": "evaluation",
+        "block": 174,
+        "blocks": [
+          174
+        ],
+        "page": 6,
+        "sentence_index": 0,
+        "text": "LLMCompass’ results are totally interpretable without incorporating any fudge factor and we believe this interpretability is more important than perfectly matched results.",
+        "words": 22
+      }
+    ]
+  },
+  {
+    "pattern": "It should be noted",
+    "regex": "\\bit should be noted\\b",
+    "sentence_hits": 1,
+    "by_paper": {
+      "P01": 1
+    },
+    "examples": [
+      {
+        "paper": "P01",
+        "section": "evaluation",
+        "block": 93,
+        "blocks": [
+          93
+        ],
+        "page": 9,
+        "sentence_index": 11,
+        "text": "It should be noted that two scalar casts and an additional packing operation, which are not directly available in the ISA, would be required without this functionality.",
+        "words": 27
+      }
+    ]
+  },
+  {
+    "pattern": "may potentially",
+    "regex": "\\bmay potentially\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "can help to",
+    "regex": "\\bcan help to\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "to some extent",
+    "regex": "\\bto some extent\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "suggest … may",
+    "regex": "\\bsuggest\\w*\\b.{0,120}\\bmay\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "Aiming at",
+    "regex": "\\baiming at\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "In order to",
+    "regex": "\\bin order to\\b",
+    "sentence_hits": 3,
+    "by_paper": {
+      "P06": 3
+    },
+    "examples": [
+      {
+        "paper": "P06",
+        "section": "method",
+        "block": 189,
+        "blocks": [
+          189
+        ],
+        "page": 5,
+        "sentence_index": 2,
+        "text": "The computed shift distance for the accumulator is bounded by shift limits in order to avoid excessive shifter circuitry complexity and wider adders.",
+        "words": 23
+      },
+      {
+        "paper": "P06",
+        "section": "evaluation",
+        "block": 211,
+        "blocks": [
+          211
+        ],
+        "page": 6,
+        "sentence_index": 5,
+        "text": "The FMA units have a widened port for one of the operands in order to accept an unrounded multiplication result.",
+        "words": 20
+      },
+      {
+        "paper": "P06",
+        "section": "conclusion",
+        "block": 230,
+        "blocks": [
+          230
+        ],
+        "page": 8,
+        "sentence_index": 5,
+        "text": "Further implementation details were provided, in order to demonstrate how support for two parallel 2-way dot products accumulating into FP16 accumulators can be readily added while subtantially repurposing logic from the 4-way dot product datapath.",
+        "words": 35
+      }
+    ]
+  },
+  {
+    "pattern": "carry out experiments",
+    "regex": "\\bcarry out experiments\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "has good performance",
+    "regex": "\\bhas good performance\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "the reason lies in",
+    "regex": "\\bthe reason lies in\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "With the rapid development of",
+    "regex": "\\bwith the rapid development of\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "plays an important role",
+    "regex": "\\bplays an important role\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "not only … but also",
+    "regex": "\\bnot only\\b.*\\bbut also\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "on the one hand … on the other hand",
+    "regex": "\\bon the one hand\\b.*\\bon the other hand\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "significantly",
+    "regex": "\\bsignificantly\\b",
+    "sentence_hits": 17,
+    "by_paper": {
+      "P02": 9,
+      "P03": 1,
+      "P04": 3,
+      "P05": 3,
+      "P08": 1
+    },
+    "examples": [
+      {
+        "paper": "P02",
+        "section": "method",
+        "block": 43,
+        "blocks": [
+          43
+        ],
+        "page": 2,
+        "sentence_index": 8,
+        "text": "Transformers also use learned Vocabulary and Position embeddings, but for large models like GPT-3, these do not contribute significantly to either the memory or compute requirement (< 2%).",
+        "words": 27
+      },
+      {
+        "paper": "P02",
+        "section": "evaluation",
+        "block": 174,
+        "blocks": [
+          174
+        ],
+        "page": 6,
+        "sentence_index": 4,
+        "text": "However, with a small input size, it’s hard to hide the overhead and micro-architecture details affect performance significantly.",
+        "words": 18
+      },
+      {
+        "paper": "P02",
+        "section": "evaluation",
+        "block": 215,
+        "blocks": [
+          215
+        ],
+        "page": 8,
+        "sentence_index": 0,
+        "text": "Implications: x Increasing compute capability significantly helps prefill but barely helps decoding. y Larger systolic arrays and vector units are more area-efficient but harder to fully utilize.",
+        "words": 27
+      }
+    ]
+  },
+  {
+    "pattern": "very",
+    "regex": "\\bvery\\b",
+    "sentence_hits": 3,
+    "by_paper": {
+      "P01": 2,
+      "P06": 1
+    },
+    "examples": [
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 23,
+        "blocks": [
+          23
+        ],
+        "page": 3,
+        "sentence_index": 4,
+        "text": "However, pipeline latency requirements for FP operations are very dependent on the system architecture and the choice of implementation technology.",
+        "words": 20
+      },
+      {
+        "paper": "P01",
+        "section": "evaluation",
+        "block": 89,
+        "blocks": [
+          89
+        ],
+        "page": 8,
+        "sentence_index": 7,
+        "text": "Intuition would suggest that SIMD instructions on all formats would require very similar amounts of energy due to the full utilization of the 64-bit datapath.",
+        "words": 25
+      },
+      {
+        "paper": "P06",
+        "section": "introduction",
+        "block": 26,
+        "blocks": [
+          26
+        ],
+        "page": 2,
+        "sentence_index": 9,
+        "text": "The fixed-point accumulation makes the scaling very difficult.",
+        "words": 8
+      }
+    ]
+  },
+  {
+    "pattern": "greatly",
+    "regex": "\\bgreatly\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "dramatically",
+    "regex": "\\bdramatically\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "the … of the … of the",
+    "regex": "\\bthe\\b(?:\\W+\\w+){1,5}\\W+of the\\b(?:\\W+\\w+){1,5}\\W+of the\\b",
+    "sentence_hits": 7,
+    "by_paper": {
+      "P01": 2,
+      "P04": 2,
+      "P05": 1,
+      "P06": 2
+    },
+    "examples": [
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 38,
+        "blocks": [
+          38
+        ],
+        "page": 4,
+        "sentence_index": 6,
+        "text": "The iterative portion of the unit computes three mantissa bits of the result value per clock cycle and is implemented as a merged slice.",
+        "words": 24
+      },
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 49,
+        "blocks": [
+          49
+        ],
+        "page": 5,
+        "sentence_index": 4,
+        "text": "For example, we add an expanding FMA operation, which performs the sum on a larger FP format than the multiplication, mapping to multiprecision operations of the merged FMA slice of the TP-FPU architecture.",
+        "words": 33
+      },
+      {
+        "paper": "P04",
+        "section": "method",
+        "block": 84,
+        "blocks": [
+          84
+        ],
+        "page": 3,
+        "sentence_index": 0,
+        "text": "Pipeline 1: Product Unpack and Cancellation First, the sign of the four products is obtained by the XOR or of the input signs, and the exponents of the input multiplicands are summed to get the exponents of the four products.",
+        "words": 40
+      }
+    ]
+  },
+  {
+    "pattern": "which chain",
+    "regex": "\\bwhich\\b.*\\bwhich\\b",
+    "sentence_hits": 1,
+    "by_paper": {
+      "P06": 1
+    },
+    "examples": [
+      {
+        "paper": "P06",
+        "section": "method",
+        "block": 32,
+        "blocks": [
+          32
+        ],
+        "page": 3,
+        "sentence_index": 10,
+        "text": "The first product is right-aligned in the 68-bit FX number, which corresponds to a product with the minimum product exponent, 2 −28 , and the last product is left-aligned which corresponds to a product with the maximum exponent, 2 31 .",
+        "words": 39
+      }
+    ]
+  },
+  {
+    "pattern": "respectively",
+    "regex": "\\brespectively\\b",
+    "sentence_hits": 25,
+    "by_paper": {
+      "P01": 8,
+      "P02": 7,
+      "P03": 2,
+      "P04": 5,
+      "P06": 1,
+      "P07": 1,
+      "P08": 1
+    },
+    "examples": [
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 67,
+        "blocks": [
+          67
+        ],
+        "page": 6,
+        "sentence_index": 10,
+        "text": "Additionally, there are two and four 16-bit and 8-bit lanes, respectively, to cover all possible conversions.",
+        "words": 16
+      },
+      {
+        "paper": "P01",
+        "section": "evaluation",
+        "block": 76,
+        "blocks": [
+          76
+        ],
+        "page": 7,
+        "sentence_index": 4,
+        "text": "Synthesis and place & route were performed using Synopsys Design Compiler and Cadence Innovus, respectively, using worst case low-voltage constraints (SSG, 0.59 V, 125 ◦ C), targeting 150 MHz on the final design, with additional 20% of clock uncertainty in synthesis.",
+        "words": 40
+      },
+      {
+        "paper": "P01",
+        "section": "evaluation",
+        "block": 76,
+        "blocks": [
+          76
+        ],
+        "page": 7,
+        "sentence_index": 7,
+        "text": "The ADDMUL block hosting the merged multiformat FMA units for all formats occupies 76% of the FPU area, while the COMP and CONV blocks use 4% and 18%, respectively.",
+        "words": 29
+      }
+    ]
+  },
+  {
+    "pattern": "12nm-like unit spacing",
+    "regex": "\\b\\d+(?:\\.\\d+)?(?:nm|GHz|MHz|mW)\\b",
+    "sentence_hits": 9,
+    "by_paper": {
+      "P02": 3,
+      "P04": 1,
+      "P05": 2,
+      "P06": 3
+    },
+    "examples": [
+      {
+        "paper": "P02",
+        "section": "method",
+        "block": 187,
+        "blocks": [
+          187
+        ],
+        "page": 7,
+        "sentence_index": 5,
+        "text": "For the local buffer shared amongst lanes in each core as well as the global buffer shared amongst cores, we model them as SRAM caches and derive their areas using CACTI [41] and scale results down to a 7nm process.",
+        "words": 40
+      },
+      {
+        "paper": "P02",
+        "section": "method",
+        "block": 187,
+        "blocks": [
+          187
+        ],
+        "page": 7,
+        "sentence_index": 15,
+        "text": "Table II shows a sample of the transistor counts and corresponding 7nm die areas of the parameters used in the area model.",
+        "words": 22
+      },
+      {
+        "paper": "P02",
+        "section": "contributions",
+        "block": 24,
+        "blocks": [
+          24,
+          40
+        ],
+        "page": 2,
+        "sentence_index": 9,
+        "text": "It takes only 15-16 minutes to simulate a 4-A100 GPU node running GPT-3 175B inference, including 26,400 rounds of the mapper’s parameter search (Figure 5i, tested on one core of Intel Xeon Gold 6242R CPU @ 3.10GHz).",
+        "words": 38
+      }
+    ]
+  },
+  {
+    "pattern": "space before percent",
+    "regex": "\\d\\s+%",
+    "sentence_hits": 8,
+    "by_paper": {
+      "P08": 8
+    },
+    "examples": [
+      {
+        "paper": "P08",
+        "section": "abstract",
+        "block": 5,
+        "blocks": [
+          5
+        ],
+        "page": 1,
+        "sentence_index": 5,
+        "text": "To feed MXDOTP at full utilization with four operands per cycle, including block scales, we exploit Snitch’s Stream Semantic Registers (SSRs), achieving up to 80 % utilization with minimal impact on the Snitch core’s architecture and no modification to the register file.",
+        "words": 41
+      },
+      {
+        "paper": "P08",
+        "section": "abstract",
+        "block": 5,
+        "blocks": [
+          5
+        ],
+        "page": 1,
+        "sentence_index": 7,
+        "text": "Compared to a software baseline, where MX dot products are computed by type casting FP8 inputs to FP32 for higher accumulation precision and applying explicit block scaling, the cluster achieves 25 speedup and 12.5 better energy efficiency at a minimal 5.1 % area increase.",
+        "words": 45
+      },
+      {
+        "paper": "P08",
+        "section": "contributions",
+        "block": 10,
+        "blocks": [
+          10
+        ],
+        "page": 1,
+        "sentence_index": 3,
+        "text": "We integrate MXDOTP into an 8-core Snitch cluster, reaching up to 80 % utilization.",
+        "words": 13
+      }
+    ]
+  },
+  {
+    "pattern": "no space before percent",
+    "regex": "\\d%",
+    "sentence_hits": 79,
+    "by_paper": {
+      "P01": 25,
+      "P02": 21,
+      "P03": 8,
+      "P04": 9,
+      "P05": 8,
+      "P06": 1,
+      "P07": 7
+    },
+    "examples": [
+      {
+        "paper": "P01",
+        "section": "abstract",
+        "block": 4,
+        "blocks": [
+          4
+        ],
+        "page": 1,
+        "sentence_index": 4,
+        "text": "Integrated into a 32-bit RISC-V core, our TP-FPU can speedup the execution of mixed-precision applications by 1.67× with respect to an FP32 baseline, while maintaining end-to-end precision and reducing system energy by 37%.",
+        "words": 34
+      },
+      {
+        "paper": "P01",
+        "section": "evaluation",
+        "block": 76,
+        "blocks": [
+          76
+        ],
+        "page": 7,
+        "sentence_index": 4,
+        "text": "Synthesis and place & route were performed using Synopsys Design Compiler and Cadence Innovus, respectively, using worst case low-voltage constraints (SSG, 0.59 V, 125 ◦ C), targeting 150 MHz on the final design, with additional 20% of clock uncertainty in synthesis.",
+        "words": 40
+      },
+      {
+        "paper": "P01",
+        "section": "evaluation",
+        "block": 76,
+        "blocks": [
+          76
+        ],
+        "page": 7,
+        "sentence_index": 7,
+        "text": "The ADDMUL block hosting the merged multiformat FMA units for all formats occupies 76% of the FPU area, while the COMP and CONV blocks use 4% and 18%, respectively.",
+        "words": 29
+      }
+    ]
+  },
+  {
+    "pattern": "American normalization",
+    "regex": "\\bnormaliz\\w*\\b",
+    "sentence_hits": 43,
+    "by_paper": {
+      "P02": 2,
+      "P03": 7,
+      "P04": 12,
+      "P05": 1,
+      "P06": 6,
+      "P07": 14,
+      "P08": 1
+    },
+    "examples": [
+      {
+        "paper": "P02",
+        "section": "method",
+        "block": 149,
+        "blocks": [
+          149
+        ],
+        "page": 4,
+        "sentence_index": 1,
+        "text": "Each layer is composed of a series of operators, including matrix multiplication (Matmul), Softmax, layer normalization (LayerNorm), and activation functions (e.g., GELU [28] as in GPTs [8], [57]).",
+        "words": 29
+      },
+      {
+        "paper": "P02",
+        "section": "contributions",
+        "block": 24,
+        "blocks": [
+          24,
+          40
+        ],
+        "page": 2,
+        "sentence_index": 2,
+        "text": "We also observe LLMs’ computational graphs are composed of dense operators: matrix multiplication, softmax, layer normalization, etc., all of which have a structural and hence predictable compute and memory access pattern.",
+        "words": 31
+      },
+      {
+        "paper": "P03",
+        "section": "method",
+        "block": 53,
+        "blocks": [
+          53
+        ],
+        "page": 2,
+        "sentence_index": 6,
+        "text": "Nm_rd_Fp8 module is responsible for the normalization and rounding process for FP8 numbers.",
+        "words": 15
+      }
+    ]
+  },
+  {
+    "pattern": "British normalisation",
+    "regex": "\\bnormalis\\w*\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  },
+  {
+    "pattern": "American optimization",
+    "regex": "\\boptimiz\\w*\\b",
+    "sentence_hits": 29,
+    "by_paper": {
+      "P01": 8,
+      "P02": 5,
+      "P04": 3,
+      "P05": 2,
+      "P06": 5,
+      "P07": 4,
+      "P08": 2
+    },
+    "examples": [
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 19,
+        "blocks": [
+          19
+        ],
+        "page": 2,
+        "sentence_index": 3,
+        "text": "While many of the systems mentioned earlier abandon standard compliance for custom formats in pursuit of optimizations in performance or circuit complexity, general-purpose processors are generally bound to adhere to the IEEE 754 standard.",
+        "words": 34
+      },
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 23,
+        "blocks": [
+          23
+        ],
+        "page": 3,
+        "sentence_index": 9,
+        "text": "Target-specific synthesis flows (e.g. for application-specific integrated circuit (ASIC) or field-programmable gate array (FPGA) technologies) differ in available optimized blocks, favoring inferable operators over direct instantiation.",
+        "words": 27
+      },
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 23,
+        "blocks": [
+          23
+        ],
+        "page": 3,
+        "sentence_index": 11,
+        "text": "As available optimizations also differ between targets, the unit is described in a way to enable automatic optimizations, including clock-gating and pipelining, wherever possible.",
+        "words": 24
+      }
+    ]
+  },
+  {
+    "pattern": "British optimisation",
+    "regex": "\\boptimis\\w*\\b",
+    "sentence_hits": 0,
+    "by_paper": {},
+    "examples": []
+  }
+]

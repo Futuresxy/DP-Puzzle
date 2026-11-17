@@ -1,0 +1,888 @@
+{
+  "scope": "Curated body prose, six rhetorical sections per paper; contributions separated from introductions. Background folded into method. Explicit block IDs and start/end anchors are replayable. Fragmentary or formula-heavy sentences are excluded; statistics are estimates of extracted prose, not complete linguistic annotation.",
+  "hyphen_overrides": {
+    "Application-specific": "Application-specific",
+    "Archi-tecture": "Architecture",
+    "Auxil-iary": "Auxiliary",
+    "Avail-able": "Available",
+    "Bhat-tacharya": "Bhattacharya",
+    "Catan-zaro": "Catanzaro",
+    "Com-munication": "Communication",
+    "Com-pared": "Compared",
+    "Com-piler": "Compiler",
+    "Com-ponents": "Components",
+    "Comoputa-tion": "Comoputation",
+    "Comput-ing": "Computing",
+    "Con-versely": "Conversely",
+    "Confer-ence": "Conference",
+    "Coopera-tive": "Cooperative",
+    "Cor-nette": "Cornette",
+    "De-sign": "Design",
+    "De-signers": "Designers",
+    "Deepspeed-inference": "Deepspeed-inference",
+    "Dis-secting": "Dissecting",
+    "Dmazerun-ner": "Dmazerunner",
+    "En-abling": "Enabling",
+    "FP-integer": "FP-integer",
+    "FPU-level": "FPU-level",
+    "Fed-eral": "Federal",
+    "Fel-lowship": "Fellowship",
+    "Find-ing": "Finding",
+    "Fron-tiers": "Frontiers",
+    "Ger-chick": "Gerchick",
+    "How-ever": "However",
+    "INT-partitioned": "INT-partitioned",
+    "Imple-mentation": "Implementation",
+    "Indi-vidual": "Individual",
+    "Infer-encing": "Inferencing",
+    "Inte-grated": "Integrated",
+    "Inter-net": "Internet",
+    "Interna-tional": "International",
+    "Kosmod-rom": "Kosmodrom",
+    "Kr-ishna": "Krishna",
+    "Kro-mann": "Kromann",
+    "LLMCom-pass": "LLMCompass",
+    "LUT-based": "LUT-based",
+    "Low-bit": "Low-bit",
+    "MX-compliant": "MX-compliant",
+    "Mod-eling": "Modeling",
+    "Multiplica-tions": "Multiplications",
+    "NV-style": "NV-style",
+    "Ner-vana": "Nervana",
+    "Normal-ized": "Normalized",
+    "On-line": "Online",
+    "Pa-tel": "Patel",
+    "Paral-lelism": "Parallelism",
+    "Per-formance": "Performance",
+    "Performance-optimal": "Performance-optimal",
+    "Proceed-ings": "Proceedings",
+    "Pruk-sachatkun": "Pruksachatkun",
+    "Qian-ming": "Qianming",
+    "Quar-terly": "Quarterly",
+    "Revisit-ing": "Revisiting",
+    "Sec-tion": "Section",
+    "Sec-tionIII": "SectionIII",
+    "Sequen-tial": "Sequential",
+    "Splitwise-style": "Splitwise-style",
+    "Start-ing": "Starting",
+    "Sto-chastic": "Stochastic",
+    "Sympo-sium": "Symposium",
+    "Synop-sys": "Synopsys",
+    "Sys-temVerilog": "SystemVerilog",
+    "Sys-tems": "Systems",
+    "SystemVer-ilog": "SystemVerilog",
+    "Ta-ble": "Table",
+    "Ten-sorForge": "TensorForge",
+    "TensorForge-generated": "TensorForge-generated",
+    "Trans-former": "Transformer",
+    "Trans-precision": "Transprecision",
+    "Transac-tions": "Transactions",
+    "Univer-sita": "Universita",
+    "V-conform": "V-conform",
+    "What-mough": "Whatmough",
+    "Zeng-wei": "Zengwei",
+    "ac-commodate": "accommodate",
+    "ac-cumulation": "accumulation",
+    "ac-curacy": "accuracy",
+    "accel-eration": "acceleration",
+    "acceler-ator": "accelerator",
+    "accom-modate": "accommodate",
+    "accounted-for": "accounted-for",
+    "accu-mulated": "accumulated",
+    "accu-mulates": "accumulates",
+    "accu-mulation": "accumulation",
+    "accu-mulator": "accumulator",
+    "accu-racy": "accuracy",
+    "accumu-lation": "accumulation",
+    "accumula-tion": "accumulation",
+    "accumulat-ing": "accumulating",
+    "activ-ity": "activity",
+    "ad-dressing": "addressing",
+    "addi-tional": "additional",
+    "analyti-cal": "analytical",
+    "anchor-based": "anchor-based",
+    "and-magnitude": "and-magnitude",
+    "appli-cation": "application",
+    "approx-imately": "approximately",
+    "ar-chitectural": "architectural",
+    "ar-chitecture": "architecture",
+    "ar-ray": "array",
+    "ar-rays": "arrays",
+    "archi-tectural": "architectural",
+    "architec-tures": "architectures",
+    "arith-metic": "arithmetic",
+    "au-tonomously": "autonomously",
+    "auto-matically": "automatically",
+    "auto-regressive": "auto-regressive",
+    "automat-ically": "automatically",
+    "ba-sic": "basic",
+    "band-width": "bandwidth",
+    "batch-ing": "batching",
+    "bet-ter": "better",
+    "bit-width": "bit-width",
+    "bound-ary": "boundary",
+    "break-down": "breakdown",
+    "by-tile": "by-tile",
+    "ca-pability": "capability",
+    "calcu-late": "calculate",
+    "calcula-tion": "calculation",
+    "char-acteristics": "characteristics",
+    "chat-bots": "chatbots",
+    "co-exist": "co-exist",
+    "com-munication": "communication",
+    "com-pare": "compare",
+    "com-pared": "compared",
+    "com-piler": "compiler",
+    "com-plement": "complement",
+    "com-plete": "complete",
+    "com-pliant": "compliant",
+    "com-putational": "computational",
+    "com-putations": "computations",
+    "com-puting": "computing",
+    "communi-cation": "communication",
+    "compar-ison": "comparison",
+    "compu-tation": "computation",
+    "compu-tational": "computational",
+    "comput-ing": "computing",
+    "computa-tion": "computation",
+    "computa-tional": "computational",
+    "compute-bound": "compute-bound",
+    "computing-based": "computing-based",
+    "con-nected": "connected",
+    "con-straints": "constraints",
+    "con-sumption": "consumption",
+    "con-taining": "containing",
+    "configura-tions": "configurations",
+    "conse-quently": "consequently",
+    "consider-able": "considerable",
+    "constraint-driven": "constraint-driven",
+    "construc-tion": "construction",
+    "consump-tion": "consumption",
+    "conver-sion": "conversion",
+    "conver-sions": "conversions",
+    "cor-responds": "corresponds",
+    "corre-sponding": "corresponding",
+    "correc-tion": "correction",
+    "cost-effective": "cost-effective",
+    "cost-prohibitive": "cost-prohibitive",
+    "cre-ated": "created",
+    "criti-cal": "critical",
+    "cus-tom": "custom",
+    "cycle-level": "cycle-level",
+    "dat-apath": "datapath",
+    "datap-aths": "datapaths",
+    "de-composes": "decomposes",
+    "de-scribed": "described",
+    "de-sign": "design",
+    "decou-pled": "decoupled",
+    "ded-icated": "dedicated",
+    "democra-tize": "democratize",
+    "democra-tizing": "democratizing",
+    "demon-strated": "demonstrated",
+    "dependen-cies": "dependencies",
+    "descrip-tion": "description",
+    "differ-ences": "differences",
+    "distil-lation": "distillation",
+    "do-mains": "domains",
+    "domi-nate": "dominate",
+    "dot-product": "dot-product",
+    "dual-mode": "dual-mode",
+    "ecosys-tem": "ecosystem",
+    "ef-ficiency": "efficiency",
+    "effec-tive": "effective",
+    "effi-cient": "efficient",
+    "ele-ment": "element",
+    "ele-ments": "elements",
+    "emulat-ing": "emulating",
+    "en-abling": "enabling",
+    "en-coders": "encoders",
+    "en-ergy": "energy",
+    "energy-efficiency": "energy-efficiency",
+    "energy-proportional": "energy-proportional",
+    "er-ror": "error",
+    "esti-mated": "estimated",
+    "evalu-ates": "evaluates",
+    "evalu-ation": "evaluation",
+    "evalua-tion": "evaluation",
+    "ex-amples": "examples",
+    "ex-ecuted": "executed",
+    "ex-plicit": "explicit",
+    "ex-plorations": "explorations",
+    "ex-tended": "extended",
+    "exe-cution": "execution",
+    "experi-mental": "experimental",
+    "experi-ments": "experiments",
+    "expo-nent": "exponent",
+    "expo-nents": "exponents",
+    "exponent-major": "exponent-major",
+    "exten-sions": "extensions",
+    "exter-nal": "external",
+    "fea-sible": "feasible",
+    "fea-tures": "features",
+    "feasi-ble": "feasible",
+    "finer-grained": "finer-grained",
+    "floating-point": "floating-point",
+    "for-mat": "format",
+    "for-mats": "formats",
+    "fre-quency": "frequency",
+    "frequen-cies": "frequencies",
+    "fur-ther": "further",
+    "gate-level": "gate-level",
+    "grad-ually": "gradually",
+    "gradu-ally": "gradually",
+    "half-precision": "half-precision",
+    "hard-ware": "hardware",
+    "hetero-geneity": "heterogeneity",
+    "hetero-geneous": "heterogeneous",
+    "hier-archical": "hierarchical",
+    "high-bandwidth": "high-bandwidth",
+    "high-performance": "high-performance",
+    "high-performing": "high-performing",
+    "high-precision": "high-precision",
+    "highest-precision": "highest-precision",
+    "iden-tifies": "identifies",
+    "im-plementing": "implementing",
+    "im-plied": "implied",
+    "im-proves": "improves",
+    "imple-ment": "implement",
+    "imple-mentation": "implementation",
+    "implemen-tation": "implementation",
+    "implementa-tion": "implementation",
+    "implementa-tions": "implementations",
+    "in-cluding": "including",
+    "in-corporating": "incorporating",
+    "in-ner": "inner",
+    "in-one": "in-one",
+    "in-put": "input",
+    "in-terface": "interface",
+    "includ-ing": "including",
+    "incorpo-rated": "incorporated",
+    "increas-ing": "increasing",
+    "indi-cate": "indicate",
+    "infer-ence": "inference",
+    "inner-product": "inner-product",
+    "instinct-business": "instinct-business",
+    "instruc-tion": "instruction",
+    "integer-multiply": "integer-multiply",
+    "inter-combined": "inter-combined",
+    "inter-mediate": "intermediate",
+    "inter-nal": "internal",
+    "inter-national": "international",
+    "intermediate-precision": "intermediate-precision",
+    "interoper-ability": "interoperability",
+    "interpretabil-ity": "interpretability",
+    "intro-ducing": "introducing",
+    "latency-oriented": "latency-oriented",
+    "leaked-specifications": "leaked-specifications",
+    "learn-ing": "learning",
+    "lever-aging": "leveraging",
+    "log-arithmic": "logarithmic",
+    "low-bitwidth": "low-bitwidth",
+    "low-precision": "low-precision",
+    "man-tissa": "mantissa",
+    "max-imize": "maximize",
+    "max-imizing": "maximizing",
+    "mea-sured": "measured",
+    "mem-ory": "memory",
+    "men-tioned": "mentioned",
+    "method-ology": "methodology",
+    "mi-croarchitecture": "microarchitecture",
+    "microarchi-tectures": "microarchitectures",
+    "microarchitec-tures": "microarchitectures",
+    "min-imizes": "minimizes",
+    "min-imum": "minimum",
+    "mitigat-ing": "mitigating",
+    "mixed-precision": "mixed-precision",
+    "mod-eling": "modeling",
+    "mod-els": "models",
+    "mod-erate": "moderate",
+    "modifica-tions": "modifications",
+    "mono-lithic": "monolithic",
+    "mul-tiple": "multiple",
+    "mul-tiplication": "multiplication",
+    "mul-tipliers": "multipliers",
+    "multi-device": "multi-device",
+    "multi-lane": "multi-lane",
+    "multi-mode": "multi-mode",
+    "multi-ple": "multiple",
+    "multi-plication": "multiplication",
+    "multi-plier": "multiplier",
+    "multi-pliers": "multipliers",
+    "multi-precision": "multi-precision",
+    "multifor-mat": "multiformat",
+    "multiple-precision": "multiple-precision",
+    "multipli-cation": "multiplication",
+    "multipli-ers": "multipliers",
+    "multiplica-tions": "multiplications",
+    "na-tive": "native",
+    "nccl-tests": "nccl-tests",
+    "non-negative": "non-negative",
+    "nor-malization": "normalization",
+    "normal-ization": "normalization",
+    "normal-ized": "normalized",
+    "num-ber": "number",
+    "num-bers": "numbers",
+    "numer-ical": "numerical",
+    "numeri-cal": "numerical",
+    "op-erations": "operations",
+    "op-erators": "operators",
+    "opera-tions": "operations",
+    "opti-mization": "optimization",
+    "opti-mizations": "optimizations",
+    "optimiza-tion": "optimization",
+    "orga-nizations": "organizations",
+    "organiza-tion": "organization",
+    "out-performs": "outperforms",
+    "over-head": "overhead",
+    "over-heads": "overheads",
+    "pa-per": "paper",
+    "pa-rameterized": "parameterized",
+    "paral-lelism": "parallelism",
+    "per-formance": "performance",
+    "per-forms": "performs",
+    "perfor-mance": "performance",
+    "phys-ical": "physical",
+    "place-and": "place-and",
+    "popu-larity": "popularity",
+    "power-of": "power-of",
+    "pre-cision": "precision",
+    "preci-sion": "precision",
+    "prede-fined": "predefined",
+    "pri-marily": "primarily",
+    "prim-itives": "primitives",
+    "primi-tives": "primitives",
+    "pro-cessors": "processors",
+    "pro-duced": "produced",
+    "pro-nounced": "pronounced",
+    "pro-portional": "proportional",
+    "pro-posed": "proposed",
+    "pro-vide": "provide",
+    "proces-sor": "processor",
+    "process-ing": "processing",
+    "prod-uct": "product",
+    "prod-ucts": "products",
+    "quanti-zation": "quantization",
+    "re-duces": "reduces",
+    "re-quirements": "requirements",
+    "reach-ing": "reaching",
+    "receiv-ing": "receiving",
+    "recommen-dations": "recommendations",
+    "recon-figurable": "reconfigurable",
+    "reduced-precision": "reduced-precision",
+    "repre-sented": "represented",
+    "repre-sents": "represents",
+    "represen-tation": "representation",
+    "require-ments": "requirements",
+    "respec-tive": "respective",
+    "respec-tively": "respectively",
+    "risc-v": "risc-v",
+    "round-ing": "rounding",
+    "schedul-ing": "scheduling",
+    "scratch-pad": "scratchpad",
+    "selec-tion": "selection",
+    "self-attention": "self-attention",
+    "sepa-rate": "separate",
+    "sepa-rated": "separated",
+    "set-tings": "settings",
+    "shrink-ing": "shrinking",
+    "sig-nificant": "significant",
+    "sign-conditionally": "sign-conditionally",
+    "signifi-cant": "significant",
+    "sim-ulating": "simulating",
+    "sim-ulator": "simulator",
+    "sim-ulators": "simulators",
+    "soft-ware": "software",
+    "software-based": "software-based",
+    "specifi-cations": "specifications",
+    "specifica-tion": "specification",
+    "stan-dalone": "standalone",
+    "state-of": "state-of",
+    "station-ary": "stationary",
+    "straight-forward": "straightforward",
+    "struc-tural": "structural",
+    "sub-normal": "subnormal",
+    "sub-problem": "sub-problem",
+    "sug-gested": "suggested",
+    "sup-port": "support",
+    "sup-ported": "supported",
+    "sup-porting": "supporting",
+    "sweep-ing": "sweeping",
+    "switch-ing": "switching",
+    "syn-thesis": "synthesis",
+    "syn-thesized": "synthesized",
+    "tar-get": "target",
+    "tar-geted": "targeted",
+    "target-ing": "targeting",
+    "tech-nology": "technology",
+    "technol-ogy": "technology",
+    "ten-sor": "tensor",
+    "third-generation": "third-generation",
+    "three-term": "three-term",
+    "throughput-matched": "throughput-matched",
+    "time-division": "time-division",
+    "timing-critical": "timing-critical",
+    "to-gether": "together",
+    "trade-offs": "trade-offs",
+    "train-ing": "training",
+    "trans-precision": "transprecision",
+    "transpre-cision": "transprecision",
+    "transpreci-sion": "transprecision",
+    "typi-cal": "typical",
+    "under-flow": "underflow",
+    "univer-sal": "universal",
+    "unprece-dented": "unprecedented",
+    "usu-ally": "usually",
+    "utiliza-tion": "utilization",
+    "val-ues": "values",
+    "vali-dated": "validated",
+    "vec-tors": "vectors",
+    "vector-scalar": "vector-scalar",
+    "ver-itable": "veritable",
+    "work-loads": "workloads",
+    "worlds-most": "worlds-most"
+  },
+  "papers": [
+    {
+      "id": "P01",
+      "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+      "sections": {
+        "abstract": [
+          4
+        ],
+        "introduction": [
+          6,
+          9,
+          13,
+          17
+        ],
+        "contributions": [
+          14
+        ],
+        "method": [
+          18,
+          19,
+          23,
+          24,
+          25,
+          26,
+          33,
+          38,
+          39,
+          40,
+          45,
+          46,
+          47,
+          49,
+          51,
+          63,
+          65,
+          67
+        ],
+        "evaluation": [
+          69,
+          76,
+          78,
+          80,
+          85,
+          89,
+          93,
+          97,
+          99,
+          104,
+          106
+        ],
+        "conclusion": [
+          140,
+          142
+        ]
+      },
+      "remove_headings": [
+        "A. PULPissimo: RI5CY With Transprecision FPU",
+        "C. Configuration, Parametrization, and Usage",
+        "III. I NTEGRATING FP NEW IN RISC-V C ORES",
+        "B. Building Blocks",
+        "A. ISA Extensions",
+        "II. A RCHITECTURE",
+        "I. I NTRODUCTION",
+        "A. Requirements"
+      ]
+    },
+    {
+      "id": "P02",
+      "file": "LLMCompass_Enabling_Efficient_Hardware_Design_for_Large_Language_Model_Inference.pdf",
+      "sections": {
+        "abstract": [
+          4
+        ],
+        "introduction": [
+          19,
+          20,
+          {
+            "blocks": [
+              24
+            ],
+            "end": "In this paper, we tackle"
+          }
+        ],
+        "method": [
+          43,
+          45,
+          94,
+          103,
+          105,
+          107,
+          109,
+          147,
+          148,
+          149,
+          152,
+          153,
+          157,
+          187
+        ],
+        "evaluation": [
+          156,
+          174,
+          175,
+          179,
+          191,
+          193,
+          195,
+          215,
+          220,
+          221,
+          244,
+          245,
+          247,
+          255,
+          256,
+          258,
+          264,
+          268
+        ],
+        "conclusion": [
+          288
+        ],
+        "contributions": [
+          {
+            "blocks": [
+              24,
+              40
+            ],
+            "start": "(1) We introduce"
+          }
+        ]
+      },
+      "remove_headings": [
+        "B. Performance Model",
+        "I. I NTRODUCTION"
+      ]
+    },
+    {
+      "id": "P03",
+      "file": "Low-Cost Multiple-Precision.pdf",
+      "sections": {
+        "abstract": [
+          15
+        ],
+        "introduction": [
+          18,
+          {
+            "blocks": [
+              28
+            ],
+            "end": "The main contributions"
+          }
+        ],
+        "method": [
+          33,
+          39,
+          53,
+          57,
+          115,
+          116,
+          124,
+          162,
+          169,
+          172,
+          240
+        ],
+        "evaluation": [
+          236,
+          239,
+          269
+        ],
+        "conclusion": [
+          290,
+          285
+        ],
+        "contributions": [
+          {
+            "blocks": [
+              28
+            ],
+            "start": "• An multiple",
+            "end": "The remainder"
+          }
+        ]
+      },
+      "remove_headings": []
+    },
+    {
+      "id": "P04",
+      "file": "MPICC_paper.pdf",
+      "sections": {
+        "abstract": [
+          9
+        ],
+        "introduction": [
+          14,
+          34
+        ],
+        "contributions": [
+          23,
+          27
+        ],
+        "method": [
+          33,
+          38,
+          41,
+          42,
+          84,
+          85,
+          156,
+          197,
+          281,
+          332,
+          335
+        ],
+        "evaluation": [
+          371,
+          386,
+          388,
+          391,
+          458,
+          461
+        ],
+        "conclusion": [
+          483
+        ]
+      },
+      "remove_headings": []
+    },
+    {
+      "id": "P05",
+      "file": "TransDot.pdf",
+      "sections": {
+        "abstract": [
+          4
+        ],
+        "introduction": [
+          17,
+          122,
+          147
+        ],
+        "contributions": [
+          {
+            "blocks": [
+              148,
+              150
+            ]
+          }
+        ],
+        "method": [
+          151,
+          153,
+          187,
+          218
+        ],
+        "evaluation": [
+          220,
+          262,
+          264,
+          276
+        ],
+        "conclusion": [
+          278
+        ]
+      },
+      "remove_headings": []
+    },
+    {
+      "id": "P06",
+      "file": "fused-fp8.pdf",
+      "sections": {
+        "abstract": [
+          13
+        ],
+        "introduction": [
+          16,
+          18,
+          22,
+          25,
+          {
+            "blocks": [
+              26
+            ],
+            "end": "In this paper we present"
+          }
+        ],
+        "method": [
+          29,
+          32,
+          33,
+          39,
+          42,
+          117,
+          119,
+          189,
+          190,
+          193,
+          196,
+          207,
+          209
+        ],
+        "evaluation": [
+          211,
+          214,
+          222,
+          224
+        ],
+        "conclusion": [
+          226,
+          230
+        ],
+        "contributions": [
+          {
+            "blocks": [
+              26
+            ],
+            "start": "In this paper we present"
+          }
+        ]
+      },
+      "remove_headings": [
+        "A. Dot product with late accumulation"
+      ]
+    },
+    {
+      "id": "P07",
+      "file": "iccad2026-paper544.pdf",
+      "sections": {
+        "abstract": [
+          22
+        ],
+        "introduction": [
+          118,
+          {
+            "blocks": [
+              116
+            ],
+            "end": "• Compute-architecture"
+          }
+        ],
+        "method": [
+          338,
+          340,
+          341,
+          342,
+          439,
+          453,
+          509,
+          625,
+          686,
+          687,
+          689,
+          722,
+          879
+        ],
+        "evaluation": [
+          753,
+          799,
+          853,
+          854,
+          857,
+          958,
+          1025,
+          1027,
+          1130,
+          1132,
+          1133,
+          1252,
+          1253,
+          1254,
+          1281,
+          1282,
+          1286,
+          1347,
+          1348,
+          1413,
+          1474,
+          1583
+        ],
+        "conclusion": [
+          1593
+        ],
+        "contributions": [
+          {
+            "blocks": [
+              116,
+              326
+            ],
+            "start": "• Compute-architecture",
+            "end": "The rest of the paper"
+          }
+        ]
+      },
+      "remove_headings": []
+    },
+    {
+      "id": "P08",
+      "file": "mxdotp.pdf",
+      "sections": {
+        "abstract": [
+          5
+        ],
+        "introduction": [
+          7,
+          9
+        ],
+        "contributions": [
+          10,
+          14
+        ],
+        "method": [
+          15,
+          17,
+          19,
+          20,
+          21,
+          24,
+          26,
+          54
+        ],
+        "evaluation": [
+          57,
+          58,
+          59,
+          60,
+          157,
+          158,
+          159
+        ],
+        "conclusion": [
+          160
+        ]
+      },
+      "remove_headings": [
+        "C. Performance and Energy Efficiency",
+        "D. Comparison to State-of-the-Art",
+        "A. Microscaling (MX) Formats",
+        "B. Software Benchmark Setup",
+        "B. Snitch Cluster",
+        "II. B ACKGROUND",
+        "V. C ONCLUSION"
+      ]
+    }
+  ]
+}

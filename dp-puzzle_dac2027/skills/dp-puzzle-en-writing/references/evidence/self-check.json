@@ -1,0 +1,92 @@
+{
+  "passed": true,
+  "errors": [],
+  "rules": 24,
+  "terms": 60,
+  "unique_local_quotations_checked": 112,
+  "random_seed": 20261118,
+  "sampled_rules": [
+    {
+      "rule": "A03",
+      "evidence": {
+        "paper": "P03",
+        "block": 28,
+        "blocks": [
+          28
+        ],
+        "page": 2,
+        "file": "Low-Cost Multiple-Precision.pdf",
+        "quote": "An multiple-precision multiplication architecture with low hardware overhead is designed through the LPC method."
+      },
+      "matched": true
+    },
+    {
+      "rule": "R07",
+      "evidence": {
+        "paper": "P01",
+        "block": 25,
+        "blocks": [
+          25
+        ],
+        "page": 3,
+        "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+        "quote": "Input operands are routed toward one of four operation group blocks, each dedicated to a class of instructions."
+      },
+      "matched": true
+    },
+    {
+      "rule": "R11",
+      "evidence": {
+        "paper": "P01",
+        "block": 4,
+        "blocks": [
+          4
+        ],
+        "page": 1,
+        "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+        "quote": "For this core, we measured the silicon manufactured in Globalfoundries 22FDX technology across a wide voltage range from 0.45 to 1.2 V."
+      },
+      "matched": true
+    },
+    {
+      "rule": "R03",
+      "evidence": {
+        "paper": "P08",
+        "block": 57,
+        "blocks": [
+          57
+        ],
+        "page": 3,
+        "file": "mxdotp.pdf",
+        "quote": "To sustain frequency, the MXDOTP unit is implemented with three levels of pipeline registers."
+      },
+      "matched": true
+    },
+    {
+      "rule": "R02",
+      "evidence": {
+        "paper": "P01",
+        "block": 25,
+        "blocks": [
+          25
+        ],
+        "page": 3,
+        "file": "FPnew_An_Open-Source_Multiformat_Floating-Point_Unit_Architecture_for_Energy-Proportional_Transprecision_Computing.pdf",
+        "quote": "Arbiters feed the operation group outputs toward the output of the unit."
+      },
+      "matched": true
+    }
+  ],
+  "tex_unchanged": true,
+  "tex_files_checked": 7,
+  "tex_sha256": {
+    "dp-puzzle.tex": "0c8272da666dba4ec0494e62fafdd38493c707b552dec8dde1a5d60abcfd1de9",
+    "tables/five_stage_migrations.tex": "3d1f52c78c4b646010f002cd39fe67eecc6dcccc38e7063183b4a8a8f01f7e38",
+    "tables/group_compositions.tex": "cf62b0bddd91bab870bae2ca9c93737892b42bf56888d50ef2a0e3c36c9d3a25",
+    "tables/related_features.tex": "a0e6acfb52e77d0facef3bf35131c4ca81dcaff2d83ddd2a69c9b822f2bb12e0",
+    "tables/related_ppa_native.tex": "6e2fc44ca119c4ab42e86dbb233e970b6ff7300f4bad4dcd9660e2e37de78524",
+    "tables/vendor_ratios.tex": "86f40dc706fbce851cfcaf428a78c70e1c2f2133db899b8f4ff66b0cb05b7d29",
+    "template/bare_conf.tex": "cc4fa258aa90115ad6afbd8ca5555f448880b29a971398bf1a20ee5f240b45f7"
+  },
+  "verification_scope": "fresh pdftotext output + curated whitespace/ligature/line-hyphen normalization; not OCR or linguistic proof"
+}

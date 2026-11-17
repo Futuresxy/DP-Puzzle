@@ -1,0 +1,330 @@
+[
+  {
+    "paper": "P01",
+    "sentences": [
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 65,
+        "blocks": [
+          65
+        ],
+        "page": 6,
+        "sentence_index": 1,
+        "text": "To speedup sequential code, it features a return address stack, a branch history table, and a branch target buffer [12].",
+        "words": 20
+      },
+      {
+        "paper": "P01",
+        "section": "evaluation",
+        "block": 76,
+        "blocks": [
+          76
+        ],
+        "page": 7,
+        "sentence_index": 8,
+        "text": "Compared to a standard RI5CY core with support for only FP32, area increases by 29% and static energy by 37%.",
+        "words": 20
+      },
+      {
+        "paper": "P01",
+        "section": "method",
+        "block": 23,
+        "blocks": [
+          23
+        ],
+        "page": 3,
+        "sentence_index": 2,
+        "text": "Flexible conversions amongst FP types are crucial for efficient on-the-fly precision adjustment in transprecision applications [14] and require support for vectored data.",
+        "words": 22
+      }
+    ]
+  },
+  {
+    "paper": "P02",
+    "sentences": [
+      {
+        "paper": "P02",
+        "section": "method",
+        "block": 187,
+        "blocks": [
+          187
+        ],
+        "page": 7,
+        "sentence_index": 4,
+        "text": "We estimate each lane’s register file’s area overhead using an empirical area model [58].",
+        "words": 14
+      },
+      {
+        "paper": "P02",
+        "section": "method",
+        "block": 187,
+        "blocks": [
+          187
+        ],
+        "page": 7,
+        "sentence_index": 9,
+        "text": "We then divide the overhead per lane, per scheduler width (32 in A100s, 16 in MI210).",
+        "words": 16
+      },
+      {
+        "paper": "P02",
+        "section": "evaluation",
+        "block": 156,
+        "blocks": [
+          156
+        ],
+        "page": 5,
+        "sentence_index": 7,
+        "text": "The kernel launch overhead including the framework overhead is measured by running the operator with an input of size 1.",
+        "words": 20
+      }
+    ]
+  },
+  {
+    "paper": "P03",
+    "sentences": [
+      {
+        "paper": "P03",
+        "section": "introduction",
+        "block": 18,
+        "blocks": [
+          18
+        ],
+        "page": 1,
+        "sentence_index": 11,
+        "text": "In the work [11], an efficient FIX/FP merged FMA unit is designed for deep learning processors.",
+        "words": 17
+      },
+      {
+        "paper": "P03",
+        "section": "evaluation",
+        "block": 269,
+        "blocks": [
+          269
+        ],
+        "page": 6,
+        "sentence_index": 1,
+        "text": "As can be seen, the proposed MU has the least hardware overhead with at least 24.2% and the largest frequency with at least 12.6% improvement.",
+        "words": 27
+      },
+      {
+        "paper": "P03",
+        "section": "introduction",
+        "block": 18,
+        "blocks": [
+          18
+        ],
+        "page": 1,
+        "sentence_index": 9,
+        "text": "Zhang Hao et al. proposed an efficient multiple-precision FP fused multiply-add(FMA) supported FP16 and FP32, with 6.5% more area overhead compared to a normal design to support mixed-precision operation[10].",
+        "words": 32
+      }
+    ]
+  },
+  {
+    "paper": "P04",
+    "sentences": [
+      {
+        "paper": "P04",
+        "section": "evaluation",
+        "block": 388,
+        "blocks": [
+          388
+        ],
+        "page": 5,
+        "sentence_index": 2,
+        "text": "FP64 was used as the baseline.",
+        "words": 6
+      },
+      {
+        "paper": "P04",
+        "section": "introduction",
+        "block": 34,
+        "blocks": [
+          34
+        ],
+        "page": 2,
+        "sentence_index": 3,
+        "text": "Section 4 provides the experiments and comparisons.",
+        "words": 7
+      },
+      {
+        "paper": "P04",
+        "section": "method",
+        "block": 33,
+        "blocks": [
+          33
+        ],
+        "page": 2,
+        "sentence_index": 5,
+        "text": "Table 1 compares the functional characteristics of this design with other Processing Elements (PEs).",
+        "words": 14
+      }
+    ]
+  },
+  {
+    "paper": "P05",
+    "sentences": [
+      {
+        "paper": "P05",
+        "section": "evaluation",
+        "block": 276,
+        "blocks": [
+          276
+        ],
+        "page": 4,
+        "sentence_index": 2,
+        "text": "The FP4- related logic only adds 3.9% extra overhead.",
+        "words": 10
+      },
+      {
+        "paper": "P05",
+        "section": "evaluation",
+        "block": 262,
+        "blocks": [
+          262
+        ],
+        "page": 4,
+        "sentence_index": 0,
+        "text": "Fig. 6a compares the synthesized area of three shifter designs (described in the caption) in Genus.",
+        "words": 16
+      },
+      {
+        "paper": "P05",
+        "section": "abstract",
+        "block": 4,
+        "blocks": [
+          4
+        ],
+        "page": 1,
+        "sentence_index": 5,
+        "text": "TransDot extends the baseline design with 2-term FP16, 4-term FP8, and 8-term FP4 dot-product accumulation into FP32 using reconfigurable subcomponents.",
+        "words": 20
+      }
+    ]
+  },
+  {
+    "paper": "P06",
+    "sentences": [
+      {
+        "paper": "P06",
+        "section": "introduction",
+        "block": 25,
+        "blocks": [
+          25
+        ],
+        "page": 2,
+        "sentence_index": 14,
+        "text": "Some modifications to achieve an efficient FPGA implementation are discussed in [8].",
+        "words": 12
+      },
+      {
+        "paper": "P06",
+        "section": "method",
+        "block": 32,
+        "blocks": [
+          32
+        ],
+        "page": 3,
+        "sentence_index": 16,
+        "text": "Then, the 69-bit adder produces the 69-bit unnormalized and 2’s complement SoP significand.",
+        "words": 13
+      },
+      {
+        "paper": "P06",
+        "section": "method",
+        "block": 32,
+        "blocks": [
+          32
+        ],
+        "page": 3,
+        "sentence_index": 23,
+        "text": "This produces a SoP with a FP32 range exponent and a normalized 68-bit significand.",
+        "words": 14
+      }
+    ]
+  },
+  {
+    "paper": "P07",
+    "sentences": [
+      {
+        "paper": "P07",
+        "section": "method",
+        "block": 879,
+        "blocks": [
+          879
+        ],
+        "page": 5,
+        "sentence_index": 8,
+        "text": "This keeps LUT-FP4 and the conventional FP4 datapath comparable under the same dot-product-unit template.",
+        "words": 14
+      },
+      {
+        "paper": "P07",
+        "section": "evaluation",
+        "block": 1583,
+        "blocks": [
+          1583
+        ],
+        "page": 8,
+        "sentence_index": 5,
+        "text": "Its energy efficiency improves by ∼ 13.16× and its area efficiency by ∼ 14.44×.",
+        "words": 14
+      },
+      {
+        "paper": "P07",
+        "section": "evaluation",
+        "block": 1413,
+        "blocks": [
+          1413
+        ],
+        "page": 8,
+        "sentence_index": 7,
+        "text": "Fig. 12(c) shows that the tensor core path has lower IPC than the baseline.",
+        "words": 15
+      }
+    ]
+  },
+  {
+    "paper": "P08",
+    "sentences": [
+      {
+        "paper": "P08",
+        "section": "evaluation",
+        "block": 158,
+        "blocks": [
+          158
+        ],
+        "page": 4,
+        "sentence_index": 5,
+        "text": "With an energy efficiency of 2 TFLOPS/W, it outperforms ExSdotp.",
+        "words": 11
+      },
+      {
+        "paper": "P08",
+        "section": "evaluation",
+        "block": 58,
+        "blocks": [
+          58
+        ],
+        "page": 3,
+        "sentence_index": 6,
+        "text": "Moreover, it adds only 1.9 % power overhead to the cluster when idle.",
+        "words": 13
+      },
+      {
+        "paper": "P08",
+        "section": "method",
+        "block": 20,
+        "blocks": [
+          20
+        ],
+        "page": 2,
+        "sentence_index": 0,
+        "text": "The Snitch cluster is a high-performance, energy-efficient RISC-V multi-core architecture optimized for FP workloads [10].",
+        "words": 15
+      }
+    ]
+  }
+]

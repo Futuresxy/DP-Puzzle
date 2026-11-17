@@ -1,0 +1,13 @@
+{
+  "unchanged": true,
+  "tex_sha256": {
+    "dp-puzzle.tex": "0c8272da666dba4ec0494e62fafdd38493c707b552dec8dde1a5d60abcfd1de9",
+    "tables/five_stage_migrations.tex": "3d1f52c78c4b646010f002cd39fe67eecc6dcccc38e7063183b4a8a8f01f7e38",
+    "tables/group_compositions.tex": "cf62b0bddd91bab870bae2ca9c93737892b42bf56888d50ef2a0e3c36c9d3a25",
+    "tables/related_features.tex": "a0e6acfb52e77d0facef3bf35131c4ca81dcaff2d83ddd2a69c9b822f2bb12e0",
+    "tables/related_ppa_native.tex": "6e2fc44ca119c4ab42e86dbb233e970b6ff7300f4bad4dcd9660e2e37de78524",
+    "tables/vendor_ratios.tex": "86f40dc706fbce851cfcaf428a78c70e1c2f2133db899b8f4ff66b0cb05b7d29",
+    "template/bare_conf.tex": "cc4fa258aa90115ad6afbd8ca5555f448880b29a971398bf1a20ee5f240b45f7"
+  },
+  "phase_order": "A completed and fresh-extraction self-check passed before B0 build; B1 report-only followed successful B0."
+}
