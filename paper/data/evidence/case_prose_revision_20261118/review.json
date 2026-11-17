@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-18",
+  "scope": "Temporary Chapter V wording only",
+  "changes": [
+    "Replace both displayed equation groups with verbal budget and scoring definitions",
+    "Place deployment results directly after budget assumptions",
+    "Present overall selection and stage-dependent optima as findings"
+  ],
+  "checks": {
+    "other_draft_chapters_unchanged": true,
+    "formal_and_english_unchanged": true,
+    "figure_and_scenario_table_unchanged": true,
+    "citation_keys_preserved": true,
+    "no_displayed_equations": true,
+    "compile": "Passed; no overfull boxes or undefined references"
+  },
+  "chapter_characters_before": 2711,
+  "chapter_characters_after": 1893,
+  "chapter_sha256": "a0a0142396df38a93384c66287aa2b8a7aa61aba5651f0741b891fe6702bac44",
+  "evidence": [
+    "data/evidence/v41_five_stage_20261117/gains.csv",
+    "data/evidence/v41_five_stage_20261117/hardware.csv",
+    "data/evidence/v41_case_panels_overlay_20261118/manifest.json"
+  ],
+  "note": "All parameters, original-precision background work and equal-request mean-time metric retained. Other sections retain earlier wording pending separate synchronization."
+}

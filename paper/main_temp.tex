@@ -330,34 +330,16 @@ B_{\mathrm{in}}(K,x)=fbK\left(\frac{m}{x}+n\right),\qquad
 \label{sec:workload}
 本节以 DeepSeek-V4.1-Flash 的主要 GEMM 为例，构造五阶段精度迁移假设，分析固定面积与功耗预算下，哪种算力配比能够兼顾当前负载和未来低精度需求。
 
-\subsection{联合预算与芯片算力}
-以 $1:2:4$ 的 $N_0=36$ 核设计为基准，每核含 $D=256$ 个 DP，$f=1$\,GHz、II=1。参考 Cube 计算簇占 AI Core 面积 32.7\% 的公开评估~\cite{luo2024hifloat8area}，取基准阵列面积占比 $\alpha=0.327$，保持每核外围存储与控制面积不变。取 $\beta=1$，使九种候选同时满足与基准相同的核心集合面积预算和 DP 阵列功耗上限。
+\subsection{联合预算下的部署规模}
+九种候选共享与 $1:2:4$ 基准相同的核心集合面积预算和 DP 阵列功耗上限（$\beta=1$）。基准含 36 核，每核 256 个 DP，工作于 1\,GHz、II=1；参考 Cube 计算簇占 AI Core 面积 32.7\% 的公开评估~\cite{luo2024hifloat8area}，取基准阵列面积占比 $\alpha=0.327$，保持每核外围存储与控制面积不变。以单 DP 综合面积和三精度实测功耗的最大值确定两项预算各自允许的整数核数，取较小值，并结合每核 DP 数量及分精度吞吐得到芯片峰值算力。每种候选在所有负载场景中采用同一部署规模。
 
-以三种精度实测功耗的最大值 $p_j^{\max}$ 表征候选 $j$ 的单 DP 功耗，记面积倍率 $r_j=a_j/a_0$、功耗倍率 $\rho_j=p_j^{\max}/p_0^{\max}$。部署核数及分精度峰值为
-\begin{equation}
-\begin{aligned}
-n_j&=\min\!\left\{\left\lfloor\frac{N_0}{1+\alpha(r_j-1)}\right\rfloor,
-\left\lfloor\frac{\beta N_0}{\rho_j}\right\rfloor\right\},\\
-C_{j,p}&=2fDn_jK_{j,p}.
-\end{aligned}
-\label{eq:core_area_budget}
-\end{equation}
-$K_{j,p}$ 为精度 $p$ 的原生点积长度，乘加计 2 FLOP。图~\ref{fig:fixed_budget_compact}(a) 对比仅面积约束与联合约束下的部署核数；每种候选采用后者确定芯片算力，核数在全部精度和负载场景中保持不变。
+图~\ref{fig:fixed_budget_compact}(a) 表明，加入功耗约束后，$1:4:8$、$1:8:16$ 分别由 29、22 核降至 20、10 核，$1:2:8$ 则保持 32 核。尽管 $1:2:8$ 与 $1:4:8$ 的单 DP FP4 吞吐相同，前者的芯片 FP4 峰值高 60\%。因此，低精度增配的芯片级收益同时取决于单元吞吐与预算内的部署密度。
 
-\subsection{精度迁移与统一评价}
-依据 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 的结构与执行流程，统计 batch=1、1K--1M 的 11 个按二倍递增上下文下的冷启动 prefill GEMM 工作量。表~\ref{tab:five_stage_migrations} 以 A 为参考，依次将路由专家转为 FP4、主注意力及 Grouped O-down 转为 FP8、共享专家及 Q-up/O-up 转为 FP4，最后将主注意力及 Grouped O-down 进一步转为 FP4。每一步保留此前迁移，算子形状与总 FLOP 不变。专家 W4A4 部署~\cite{nvidiav41routed2026} 和 FP8/FP4 注意力量化~\cite{flashattention3,sageattention3} 为这条假设路径提供依据，用于考察未来计算精度演进下的配比选择。
+\subsection{精度迁移下的配比选择}
+案例覆盖 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 在 batch=1、1K--1M 共 11 个按二倍递增上下文下的冷启动 prefill GEMM。表~\ref{tab:five_stage_migrations} 构造从 A 到 E 的五阶段迁移假设，逐步降低路由专家、共享专家与 Q-up/O-up、主注意力与 Grouped O-down 的计算精度，保留此前变更及原有算子形状、总 FLOP。专家 W4A4 部署~\cite{nvidiav41routed2026} 和 FP8/FP4 注意力量化~\cite{flashattention3,sageattention3} 为这一未来负载假设提供依据。
 \input{tables/temp/five_stage_migrations}
 
-A 中 W4A8 路由专家按 FP8 吞吐建模。其余算子均保持原精度，包括 Q-down、KV 与 indexer 投影，以及原生 FP4 的索引 QK；其中 BF16/FP8/FP4 工作量继续计入，FP32 单独记录、不计入计算时间。设 $F_{s,L,p}$ 为场景 $s$、上下文 $L$ 下精度 $p$ 的 GEMM 计算量，在充分供数、阵列完全利用下估算
-\begin{equation}
-\begin{aligned}
-T_j(s,L)&=\sum_{p\in\{H,Q,E\}}\frac{F_{s,L,p}}{C_{j,p}},\\
-\overline T_j&=\frac{1}{55}\sum_{s\in\{A,\ldots,E\}}\sum_L T_j(s,L),
-\quad S_j=\frac{\overline T_0}{\overline T_j}.
-\end{aligned}
-\label{eq:case_mean_time}
-\end{equation}
-每个场景--上下文组合赋予相同请求权重，先平均计算时间，再求基准与候选之比；较长上下文按其实际计算量贡献时间。图~\ref{fig:fixed_budget_compact}(b) 的 A--E 分别汇总 11 个上下文，All 汇总全部 55 个组合，用于选择一款跨场景使用的固定芯片。
+A 中 W4A8 路由专家按 FP8 吞吐建模；表外算子保持原精度，包括 Q-down、KV 与 indexer 投影及原生 FP4 的索引 QK。统计 BF16/FP8/FP4 工作量，FP32 单独记录、不参与计算时间评价。以各精度计算量除以对应芯片峰值再求和，估算充分供数、阵列满利用下的 GEMM 计算时间。55 个场景--上下文组合按请求等权平均时间，再求同负载基准与候选的平均时间之比；较长上下文按其实际计算量贡献时间。
 
 \begin{figure}[t]
 \centering
@@ -366,9 +348,9 @@ T_j(s,L)&=\sum_{p\in\{H,Q,E\}}\frac{F_{s,L,p}}{C_{j,p}},\\
 \label{fig:fixed_budget_compact}
 \end{figure}
 
-\textbf{功耗约束改变增配收益。} 图~\ref{fig:fixed_budget_compact}(a) 中，加入功耗约束后，$1:4:8$、$1:8:16$ 分别由 29、22 核降至 20、10 核，$1:2:8$ 则保持 32 核。因此，单 DP FP4 吞吐相同的 $1:2:8$ 比 $1:4:8$ 获得高 60\% 的芯片 FP4 峰值；更大的 $1:8:16$ 在图~\ref{fig:fixed_budget_compact}(b) 中 All 仅为 $0.77\times$。
+\textbf{适度 FP4 增配取得最佳综合收益。} 图~\ref{fig:fixed_budget_compact}(b) 中，$1:2:8$ 的 All 为 $1.13\times$（13.11\%），优于 $1:2:6$ 的 $1.10\times$；更大的 $1:2:12$、$1:8:16$ 分别为 $0.93\times$、$0.77\times$。在相同预算下，$1:2:8$ 保留较高部署密度与高精度吞吐，兼顾低精度增益和剩余混合精度工作量。
 
-\textbf{跨阶段选型偏向适度 FP4 增配。} A、E 分别偏好 $1:2:4$、$1:2:12$，而 $1:2:8$ 在 B--D 最优，并以 $1.13\times$（13.11\%）取得 All 最优；$1:2:6$ 与 $1:2:12$ 的 All 分别为 $1.10\times$、$0.93\times$。这表明，在本预算和迁移假设下，为最终 FP4 场景增配最多算力并不能获得最低的跨阶段平均时间。$1:2:8$ 保留较高部署密度及高精度吞吐，在低精度收益与迁移前后仍存在的混合精度需求之间取得更好的折中。
+\textbf{单阶段最优不等于固定芯片最优。} A、E 分别偏好 $1:2:4$、$1:2:12$，而 $1:2:8$ 在 B--D 及跨阶段综合评价中最优。这表明，在本迁移假设与请求权重下，固定配比应兼顾精度演进的多个阶段，而非仅针对最终 FP4 场景增配。
 
 \section{结论}
 \label{sec:conclusion}
