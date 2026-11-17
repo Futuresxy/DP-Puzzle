@@ -89,7 +89,8 @@
     "test/data/dp/bf16/K16/correct_961/manifest.json": "e807802def9f2f3ca4e9b966649c8922a880aff31522b0228b380240619d1f92",
     "test/data/dp/mxfp4_e2m1/K192/petile_low32_native_961/manifest.json": "78e006d5d7b83c1d7668db5f3f153ac05bc241d572071586423b261c213756cb",
     "paper/data/DP_area_power/dp11_area_power_fixed_20261116.sources.json": "857d923b381bee14b424f6f4667e0487b67915efeaf9d28f1c3422ac8648a707",
-    "paper/sections/04_evaluation.tex": "e2d54002cab17c075c57b6a548510932c55b52c64f42f023741635abc9142632"
+    "paper/sections/04_evaluation.tex": "76b1be93eef776d763883856d2c764862650e9a722300159c785dbc9ad772e39",
+    "test/tests/test_qwen_power_data.py": "f95e0d56c4e39d9462ae2ac880fe15ca6c23886e58a1fa8f79d244386d7da115"
   },
   "verification_notes": [
     "Existing recorded RTL runs are summarized; no new RTL or gate-level replay was performed.",
@@ -101,20 +102,16 @@
   ],
   "final_form": {
     "subsection": "实验设置与验证",
-    "paragraphs": 3,
-    "organization": [
-      "Implementation and process/PVT",
-      "Workload-driven power measurement",
-      "Functional and numerical validation"
-    ],
-    "detail_policy": "Sampling and corpus details remain in provenance records."
+    "organization": "Preserve the author-merged paragraph; describe tools/conditions, model-derived activity, and exact-reference accuracy concisely.",
+    "power_wording": "Power Compiler uses steady-state switching activity from 1 GHz gate-level simulation; simulator name, trace format, and sampling-window mechanics omitted from prose.",
+    "golden_wording": "Independent exact binary arithmetic including block scaling and C, rounded once to FP32 with ties to even. Implemented with Fraction, not an FP64 surrogate."
   },
   "build": {
     "command": "make pdf",
     "status": "passed",
     "body_pages": 6,
     "reference_pages": 2,
-    "pdf_sha256": "28c1add0dbca796b3e89c7b2108784bfa7b8e44b8f822ccc01d3e8b80bf716b4",
+    "pdf_sha256": "7a582e3e160c7f547ad837e8448d9b91f444f4d8e527a074e2649a24014af707",
     "overfull_boxes": 0,
     "undefined_references": 0,
     "duplicate_labels": 0,

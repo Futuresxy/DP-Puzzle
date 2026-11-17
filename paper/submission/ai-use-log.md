@@ -60,3 +60,6 @@
 
 
 2026-11-17 中文 Evaluation 方法补充与精简：按用户要求，仅完善正式中文第四章。将 A/B 合并为“实验设置与验证”，用三个简短段落说明 Verilog 实现、DC X-2025.06、TSMC 12 nm TT/0.7 V/85°C/1 GHz 及 Qwen3-8B/WikiText-2 负载驱动的门级活动功耗分析；数值验证段说明 Verilator、每配置 11 格式/10,747 笔验证、架构模型逐位一致和相对独立精确有理数参考的 FP32 ULP 结果。九种配置的 99 项逐格式摘要与功耗源 metadata 哈希已核对，WikiText 文献元数据经 arXiv 原始页面核验；详细采样与测试组成留在 data/evidence/evaluation_methods_20261117/，不展开于正文。沿用既有测试及测量记录，本轮未执行新 RTL/EDA 实验。中文编译通过，正文 6 页、参考文献 2 页；英文稿、临时稿和其余正文保持原样。
+
+
+2026-11-17 Evaluation 方法表述凝练：按用户要求，将功耗方法概括为 Power Compiler 基于 1 GHz 门级仿真的稳态开关活动估算，去除正文中的 VCS、SAIF 及采样窗口操作细节。核对 test/tests/test_qwen_power_data.py 与 test/reference/exact.py，将数值 golden 描述为独立精确二进制算术参考，包含块缩放及 C，最终仅作一次 FP32 最近偶数舍入；不改称 FP64 参考。保留受测格式、用例数及 ULP 结果，并保持作者合并后的段落组织。仅修改中文第四章，编译通过，无新实验。
