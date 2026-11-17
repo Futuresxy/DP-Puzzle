@@ -1,0 +1,126 @@
+{
+  "status": "analytical_uncalibrated",
+  "scope": "Temporary Chinese Chapter V only",
+  "inputs": [
+    {
+      "path": "scripts/plot_v41_case_panels.py",
+      "sha256": "351cbe0efd28fed79b7865373ac591519e8d2f8dc37ab67a56ac5fc97999c49b"
+    },
+    {
+      "path": "data/evidence/v41_five_stage_20261117/manifest.json",
+      "sha256": "c3b35f356c56ce6b1983fd7ebcd746bf9db4d067bdc4e84da7454685580b9a81"
+    },
+    {
+      "path": "data/evidence/v41_five_stage_20261117/hardware.csv",
+      "sha256": "8c84503627f10a74ca6a64810c13d871fbb6b6a00ae8e2da779459eda2b1ae0c"
+    },
+    {
+      "path": "data/evidence/v41_five_stage_20261117/gains.csv",
+      "sha256": "0a4754dedd7cd642ebf907f0c1455ad3e7e2e09c91034dac6ac778e060bf1830"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "figures/temp/v41_case_panels_overlay.pdf",
+      "sha256": "e37080d4f64c07e1834ba7d19893bb213f85f524e355e2277329f1ea4c0bcfe2"
+    }
+  ],
+  "config": {
+    "model": "DeepSeek-V4.1-Flash",
+    "model_config": "data/inputs/models/DeepSeek-V4.1-Flash/inference/config.json",
+    "scope": "ced_cold_prefill",
+    "batch": 1,
+    "contexts": [
+      1024,
+      2048,
+      4096,
+      8192,
+      16384,
+      32768,
+      65536,
+      131072,
+      262144,
+      524288,
+      1048576
+    ],
+    "alpha": "0.327",
+    "beta": "1",
+    "baseline_cores": 36,
+    "dp_per_core": 256,
+    "utilization": 1,
+    "weighting": "equal_requests_and_scenarios",
+    "scenarios": [
+      {
+        "id": "A",
+        "label": "Reference",
+        "routed": "FP8",
+        "shared": "FP8",
+        "projections": "FP8",
+        "attention": "BF16",
+        "output": "BF16",
+        "basis": "Reference mapping; routed W4A8 uses FP8 capacity.",
+        "previous_scenario_id": "A"
+      },
+      {
+        "id": "B",
+        "label": "Routed FP4",
+        "routed": "FP4",
+        "shared": "FP8",
+        "projections": "FP8",
+        "attention": "BF16",
+        "output": "BF16",
+        "basis": "From A: routed-expert W4A4 compute.",
+        "previous_scenario_id": "B"
+      },
+      {
+        "id": "C",
+        "label": "Attention FP8",
+        "routed": "FP4",
+        "shared": "FP8",
+        "projections": "FP8",
+        "attention": "FP8",
+        "output": "FP8",
+        "basis": "From B: main attention and grouped output BF16 to FP8.",
+        "previous_scenario_id": "D"
+      },
+      {
+        "id": "D",
+        "label": "Linear FP4",
+        "routed": "FP4",
+        "shared": "FP4",
+        "projections": "FP4",
+        "attention": "FP8",
+        "output": "FP8",
+        "basis": "From C: shared experts and Q-up/O-up FP8 to FP4.",
+        "previous_scenario_id": "E"
+      },
+      {
+        "id": "E",
+        "label": "Attention FP4",
+        "routed": "FP4",
+        "shared": "FP4",
+        "projections": "FP4",
+        "attention": "FP4",
+        "output": "FP4",
+        "basis": "From D: main attention and grouped output FP8 to FP4.",
+        "previous_scenario_id": "F"
+      }
+    ],
+    "budget_rationale": "Matched area and DP-array power budgets relative to 1:2:4; no added power allowance.",
+    "migration_path": "A -> B -> C -> D -> E; previous A -> B -> D -> E -> F, removing the previous C branch."
+  },
+  "panels": {
+    "a": "Overlaid counts: gray area-only and blue joint-budget deployment; equal counts labeled once",
+    "b": "Joint-budget modeled GEMM speedup; each column winner outlined"
+  },
+  "checks": {
+    "source_hashes_verified": true,
+    "joint_count_not_above_area_count": true,
+    "baseline_speedup_one": true,
+    "design_rows": 9,
+    "count_values": 18,
+    "count_labels": 15,
+    "heatmap_cells": 54
+  },
+  "interpretation": "Same model, budgets, workloads and scores as the five-stage source; no new experiment."
+}

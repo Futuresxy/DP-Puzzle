@@ -13,8 +13,8 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'data/evidence/v41_five_stage_20261117'
-OUTPUT = ROOT / 'data/evidence/v41_case_panels_20261117'
-FIGURE = ROOT / 'figures/temp/v41_case_panels.pdf'
+OUTPUT = ROOT / 'data/evidence/v41_case_panels_overlay_20261118'
+FIGURE = ROOT / 'figures/temp/v41_case_panels_overlay.pdf'
 
 
 def fingerprint(path):
@@ -46,21 +46,22 @@ def main():
 
     plt.rcParams.update({'font.family': 'serif', 'font.serif': ['DejaVu Serif'],
                          'font.size': 7.5, 'pdf.fonttype': 42})
-    fig = plt.figure(figsize=(3.49, 3.05))
+    fig = plt.figure(figsize=(3.49, 2.65))
     grid = fig.add_gridspec(1, 2, width_ratios=[1, 1.75], left=.16,
                            right=.99, bottom=.24, top=.80, wspace=.10)
     bars = fig.add_subplot(grid[0])
     heat = fig.add_subplot(grid[1], sharey=bars)
     y = np.arange(len(ratios))
     area_color, joint_color = '#d5d8dc', '#3c5488'
-    bars.barh(y-.23, area, height=.40, color=area_color,
+    bars.barh(y, area, height=.78, color=area_color,
               edgecolor='#858b92', linewidth=.4)
-    bars.barh(y+.23, joint, height=.40, color=joint_color)
+    bars.barh(y, joint, height=.50, color=joint_color)
     for i, (na, nj) in enumerate(zip(area, joint)):
-        bars.text(na-.7, i-.23, str(na), ha='right', va='center',
-                  fontsize=6.2, color='#202020')
-        bars.text(nj-.7, i+.23, str(nj), ha='right', va='center',
-                  fontsize=6.2, color='white')
+        if na != nj:
+            bars.text(na+.7, i, str(na), ha='left', va='center',
+                      fontsize=6.8, color='#50565c')
+        bars.text(nj-.7, i, str(nj), ha='right', va='center',
+                  fontsize=6.8, color='white')
     bars.set(ylim=(len(ratios)-.5, -.5), xlim=(0, 40),
              yticks=y, yticklabels=ratios, xticks=[0, 20, 40])
     bars.set_xlabel('Core count', labelpad=2)
@@ -113,11 +114,13 @@ def main():
         'inputs': [fingerprint(p) for p in (Path(__file__), SOURCE/'manifest.json',
                                           SOURCE/'hardware.csv', SOURCE/'gains.csv')],
         'outputs': [fingerprint(FIGURE)], 'config': source_manifest['config'],
-        'panels': {'a': 'Paired counts: area-only versus area-and-power-constrained deployment',
+        'panels': {'a': 'Overlaid counts: gray area-only and blue joint-budget deployment; equal counts labeled once',
                    'b': 'Joint-budget modeled GEMM speedup; each column winner outlined'},
         'checks': {'source_hashes_verified': True, 'joint_count_not_above_area_count': True,
                    'baseline_speedup_one': True, 'design_rows': len(ratios),
-                   'count_labels': len(ratios)*2, 'heatmap_cells': matrix.size},
+                   'count_values': len(ratios)*2,
+                   'count_labels': len(ratios)+int(np.count_nonzero(area != joint)),
+                   'heatmap_cells': matrix.size},
         'interpretation': 'Same model, budgets, workloads and scores as the five-stage source; no new experiment.'
     }
     (OUTPUT/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
