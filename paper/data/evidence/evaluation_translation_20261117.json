@@ -1,0 +1,33 @@
+{
+  "scope": "Translate current Chinese Chapter IV only into dp_puzzle.tex",
+  "source": "sections/04_evaluation.tex",
+  "source_sha256": "97febfb622c4502d6268bdfcddb1e02831f267c05ac7af0be641f9437cca02cb",
+  "translation_block_sha256": "015133299945d48b8671a91e1ca116deb7fffd7ecfdf6d070126458d36c99c10",
+  "shared_table": "tables/related_ppa_native.tex",
+  "shared_figure": "figures/dp_ratio_area_power.pdf",
+  "checks": {
+    "source_unchanged": true,
+    "english_outside_inserted_section_unchanged_except_blank_lines": true,
+    "compilation_passed": true,
+    "overfull_boxes": false,
+    "visual_review_pages": [
+      5,
+      6
+    ]
+  },
+  "layout": {
+    "evaluation_text_page": 5,
+    "comparison_table_and_cost_figure_page": 6,
+    "references_start_page": 7,
+    "pdf_pages": 8
+  },
+  "remaining_warnings": [
+    "Undefined sec:workload and sec:conclusion: later English chapters absent in current working draft",
+    "References exceed one page"
+  ],
+  "notes": [
+    "Translated current author text, including approximate 3x Ten-Four comparison",
+    "Omitted isolated stray approximately symbol between source subsections; no Chinese changes",
+    "No new measurements or claims; synthesis-before-CTS/P&R scope retained"
+  ]
+}

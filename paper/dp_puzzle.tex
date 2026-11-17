@@ -207,59 +207,39 @@ The DP adds bidirectional shifters for the new Groups, extends exponent comparis
 This composition maps throughput-ratio choices to the addition of specialized Groups. The next section compares the area and power of the nine configurations at the same process node and frequency, providing the hardware costs for chip-level throughput-ratio exploration.
 % END REVIEW PAIR: 03_architecture.tex
 
-% BEGIN REVIEW PAIR: 05_evaluation.tex
-\section{Hardware Implementation and Evaluation}
+% BEGIN REVIEW PAIR: 04_evaluation.tex
+\section{Evaluation}
 \label{sec:evaluation}
 
-\subsection{Methodology}
+\subsection{Experimental Setup and Verification}
 \label{sec:eval_setup}
+\label{sec:numerical_validation}
 
-All six DPs are synthesized with Synopsys Design Compiler at 12\,nm, TT, 0.7\,V, and 85$^\circ$C, using a 1\,GHz clock and integrated clock gating. Each retains eight pipeline stages and II=1 and meets timing and electrical constraints. Area includes combinational logic, pipeline registers, and clock-gating cells. Power workloads use the first-layer MLP down-projection of Qwen3-8B~\cite{qwen3technicalreport}, encoded as BF16, MXFP8 E4M3, or MXFP4 E2M1. VCS gate-level simulation issues 1024 independent requests continuously and generates SAIF activity from the middle 512 cycles. Power Compiler estimates internal, switching, and leakage power with complete activity annotation~\cite{synopsysActivityPower}. Area and power are post-synthesis estimates before clock-tree synthesis and routing.
+We implement the nine dot-product configurations in Verilog RTL and verify their functionality using Verilator. All designs are synthesized and analyzed for timing using Synopsys Design Compiler in TSMC 12\,nm technology at the TT corner (0.7\,V, 85$^\circ$C), targeting 1\,GHz with integrated clock gating enabled. The designs meet timing and electrical constraints. Area includes combinational logic, pipeline registers, and clock-gating cells. For power evaluation, we collect activations and weights from the first-layer MLP down-projection of Qwen3-8B running on WikiText-2~\cite{qwen3technicalreport,merity2016pointer}, and quantize them to BF16, MXFP8 E4M3, and MXFP4 E2M1. Power Compiler estimates total power using steady-state switching activity extracted from gate-level simulation at 1\,GHz. Area and power results correspond to synthesized dot-product units before clock-tree synthesis and place-and-route.
 
-\subsection{Baseline Performance and Comparison with Prior Work}
-\label{sec:reuse_evaluation}
-\label{sec:area_breakdown}
+\subsection{Baseline Comparison with Prior Multi-Precision Units}
 \label{sec:related_dp_evaluation}
-
-
-Table~\ref{tab:related_dp} compares implementation conditions and efficiency at each design's reported process node, without technology normalization. The two DP-Puzzle columns represent the full-precision $1:2:4$ baseline and the low-precision-only $0:2:4$ implementation. TransDot area efficiencies are estimates derived from its reported throughput and figure-read cell area; its relative gains over FPnew refer to the original paper's 12\,nm comparison.
-
 
 \input{tables/related_ppa_native.tex}
 
-Fig.~\ref{fig:six_dp_costs} compares area and power across the six DPs. Removing high-precision paths reduces E64/Q32E64 area to 34.92\%/72.35\% of the baseline. K-expanded $1{:}2{:}6$ and $1{:}2{:}8$ increase area by 16.69\%/33.60\% for 50\%/100\% more E throughput. The $1{:}4{:}8$ design doubles Q/E throughput; Q-mode power reaches 28.789\,mW, the highest among its modes. Power changes across precisions are not proportional to area growth.
+Tables~\ref{tab:related_features} and~\ref{tab:related_dp} compare format coverage and implementation efficiency, respectively. Under the original published technology nodes and evaluation conditions, the DP-Puzzle $1:2:4$ baseline achieves $3.74\times$/$2.45\times$ the area/energy efficiency of MiniFloats at FP8. Relative to TransDot, the corresponding ratios are approximately $2.97\times$/$3.36\times$ at FP8 and $2.97\times$/$4.69\times$ at FP4. Separately, we use DeepScaleTool~\cite{sarangi2021deepscaletool} to scale Ten-Four from 7\,nm to 14\,nm as an approximate reference for our 12\,nm implementation. Under this estimate, our baseline achieves approximately $3\times$ the MXFP8 area efficiency of both full-format Ten-Four configurations.
 
-\subsection{Area and Power of K/N Expansion}
+Under the original-node comparison, the $0:2:4$ low-precision unit achieves $5.26\times$/$2.68\times$ the area/energy efficiency of MPICC at FP8 and $2.63\times$/$2.35\times$ at FP4. Compared with MXDOTP, also implemented at 12\,nm, it achieves $1.19\times$/$2.57\times$ the MXFP8 area/energy efficiency while additionally supporting MXFP4, NVFP4, and HiF4.
+
+\subsection{Area and Power Across Nine Throughput Ratios}
 \label{sec:lowp_costs}
-\label{sec:kn_evaluation}
 
-\begin{figure}[t]
+Fig.~\ref{fig:ratio4_costs} shows the area and power of the nine configurations. \textbf{Expanding MXFP4 throughput incurs less area overhead than expanding MXFP8.} Relative to $1:2:4$, $1:2:8$ doubles MXFP4 throughput with only 33.60\% more area, whereas $1:4:8$ doubles both MXFP8 and MXFP4 throughput with 68.21\% more area. At higher ratios, $1:2:16$ and $1:8:16$ both provide four times the baseline MXFP4 throughput, but their area overheads are 83.68\% and 190.29\%, respectively. This difference reflects the lower cost of specialized MXFP4 datapaths, which omit portions of the exponent-comparison and alignment logic and use narrower reduction paths.
+
+\textbf{Expanding MXFP8 throughput imposes a tighter power constraint than expanding MXFP4.} MXFP8 has the highest power consumption in every configuration with increased MXFP8 throughput, rising from 28.79\,mW in $1:4:8$ to 52.85\,mW in $1:8:16$. In contrast, $1:2:16$, which expands only MXFP4 throughput, has a maximum power of 29.38\,mW across precision modes, reached in MXFP4 mode. BF16 power increases by at most 6.27\% across all nine configurations, indicating that power growth primarily comes from low-precision expansion. Thus, configurations with identical peak MXFP4 throughput can face different power limits. The subsequent DSE jointly considers area and the maximum power across precision modes to determine deployment scale.
+
+\begin{figure*}[t]
 \centering
-\subfloat[Area\label{fig:six_dp_area}]{\includegraphics[width=0.94\columnwidth]{oldfig/latest6_area.png}}\par
-\subfloat[Power\label{fig:six_dp_power}]{\includegraphics[width=0.94\columnwidth]{oldfig/latest6_power.png}}
-\caption{Area and total power of the six DPs, normalized to baseline area and baseline BF16 power, respectively.}
-\label{fig:six_dp_costs}
-\end{figure}
-
-Table~\ref{tab:kn_costs} compares matched per-precision peaks, normalizing costs by the number of baseline DPs. The model sums only complete-DP area and active power, excluding storage, interconnect, and peripheral logic. In N composition, inactive added DPs are assumed to be ideally power-gated: their area is retained, but dynamic power, leakage, and power-down/wakeup overheads are omitted. K expansion shares the alignment and accumulation backend, reducing area by 0.65\%--2.40\% and power by 2.02\%--3.97\% in modes that use the added units. DP costs are close for the two organizations, with reuse of floating-point and integer output circuitry giving K expansion a modest area and energy-efficiency advantage.
-
-\input{tables/legacy/kn_costs.tex}
-
-\subsection{Bandwidth Requirements of K/N Expansion}
-
-For an $r$-fold throughput expansion in a given precision, the K and N arrays have dimensions $m\times n\times rk$ and $m\times rn\times k$, respectively. In steady state, A is spatially reused along rows and B along columns; fill and drain are omitted. The m-side A data are loaded once every $\tau_m$ issues and remain resident in between, while n-side B data change every issue. C/D are read and written once every $\tau$ accumulation updates. Thus, $\tau_m$ and $\tau$ describe distinct input and partial-sum residency intervals. Let $f$ be the issue frequency, $V$ the vector width including block scales ($rV$ after K expansion), and $c$ the accumulator width. With sufficient resident buffering and accumulation contexts, and identical $\tau_m$ and $\tau$ for both organizations, average bandwidth between resident storage and the next memory level is, in bit/s,
-\begin{equation}
-\begin{aligned}
-B_K &= f[mrV/\tau_m+nrV+2mnc/\tau],\\
-B_N &= f[mV/\tau_m+rnV+2rmnc/\tau],\\
-B_N-B_K &= f(r-1)m(2nc/\tau-V/\tau_m).
-\end{aligned}
-\label{eq:kn_bandwidth_difference}
-\end{equation}
-N saves input traffic by sharing A across more columns, but multiplies concurrent accumulator state and C/D traffic by $r$. For identical residency parameters and $r>1$, K requires less average interface bandwidth when $2nc/\tau>V/\tau_m$; N requires less when the inequality is reversed, and equality gives the same bandwidth. For NVFP4 K64 with FP32 accumulation, $V=64(4+8/16)=288$ bits~\cite{nvidia2024nvfp4}, so K is favored when $n>4.5\tau/\tau_m$. At $\tau_m=\tau=1$, K is favored for $n\ge5$, while elongated arrays with $m=16$ or 32 and $n\le4$ favor N. If $\tau_m\ge5$ and $\tau=1$, K requires less bandwidth for any $n\ge1$.
-
-The bandwidth trade-off depends jointly on scheduling and input/accumulator buffer capacity. With $\tau$ fixed, m-side weight-stationary (WS) scheduling increases $\tau_m$ and amortizes K's A-loading cost. With $\tau_m$ fixed, output-stationary (OS) scheduling increases $\tau$ and reduces N's C/D traffic; whether the preferred organization changes follows the criterion above. Input reuse is common in high-performance GEMM implementations such as CUTLASS~\cite{nvidia2026cutlassgemm}. NVIDIA's collector mechanism also supports reusing A while changing B, although reuse hits are not guaranteed~\cite{nvidia2025ptxcollector}. We therefore focus on workloads with substantial input reuse and, considering K's DP-cost and accumulator-state advantages, use K expansion for the following workload analysis.
-% END REVIEW PAIR: 05_evaluation.tex
+\includegraphics[width=\textwidth]{dp_ratio_area_power.pdf}
+\caption{Synthesized area and total power of the nine throughput-ratio configurations. Area bars use the left axis, with labels indicating ratios relative to $1:2:4$; power bars for the three precision modes use the right axis (mW).}
+\label{fig:ratio4_costs}
+\end{figure*}
+% END REVIEW PAIR: 04_evaluation.tex
 
 % BEGIN REVIEW PAIR: 06_workload.tex
 \section{Case study:Workload-Driven Throughput-Ratio Analysis}
