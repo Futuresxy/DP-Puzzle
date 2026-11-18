@@ -12,5 +12,20 @@
     "optional": 3
   },
   "queries": 7,
-  "tex_unchanged": true
+  "tex_unchanged": true,
+  "baseline_scope": "initial B0/B1 snapshot only; subsequent user table and abstract edits have not been rebuilt by this documentation-only update",
+  "author_reply": {
+    "decisions_file": "author-decisions.json",
+    "query_entries": 7,
+    "source_already_updated": [
+      "M01"
+    ],
+    "remaining_candidate_entries": 12,
+    "manuscript_modified_by_assistant": false,
+    "open_details": [
+      "Q6: sign-magnitude versus two's-complement wording",
+      "Q5: other operator-label expansions not supplied",
+      "Q7: absolute meaning of 1K not asserted; current typography retained"
+    ]
+  }
 }

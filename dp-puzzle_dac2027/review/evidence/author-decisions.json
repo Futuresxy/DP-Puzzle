@@ -1,0 +1,88 @@
+{
+  "mode": "report-only",
+  "source": "user reply to review/queries.md after initial B1 report",
+  "decisions": [
+    {
+      "id": "Q1",
+      "status": "confirmed_source_already_updated",
+      "decision": "基础 Group 表头应为 T2H4Q8E16。",
+      "wording": "T2H4Q8E16",
+      "note": "本轮开始前 tables/group_compositions.tex:13 已有该修改。保留用户工作区变更；不由本次报告更新再次改写或提交该 .tex。"
+    },
+    {
+      "id": "Q2",
+      "status": "confirmed_pending_manuscript_edit",
+      "decision": "所有功耗均为 Power Compiler 的软件估计值，不是硅上实际测量。",
+      "wording": "the maximum estimated power across precision modes",
+      "note": "与已有 gate-level activity、综合后/CTS 和布线前等限定一起保留；不把真实负载驱动误写成真实芯片实测。"
+    },
+    {
+      "id": "Q3",
+      "status": "confirmed_pending_manuscript_edit",
+      "decision": "所讨论结果具体指 MXFP4；FP4/FP8 在概括性讨论中是按位宽区分的精度族代称。",
+      "wording": "doubling MXFP4 throughput",
+      "note": "摘要具体收益使用 MXFP4；族级论述可保留 FP4/FP8，不进行全局替换，不推断其它编码拥有相同功耗/效率结果。"
+    },
+    {
+      "id": "Q4",
+      "status": "confirmed_pending_manuscript_edit",
+      "decision": "面积和功耗为共同上限约束；不同配置的实际消耗不要求相等。",
+      "wording": "Under common area and power budgets",
+      "note": "避免用不带 budgets 的 matched area and power 暗示实际面积、功耗完全一致。"
+    },
+    {
+      "id": "Q5",
+      "status": "attention_names_confirmed_other_labels_not_expanded",
+      "decision": "注意力侧 SWA 为 Sliding-Window Attention；应使用 Compressed Sparse Attention 2 (CSA2)。硬件侧 CSA 仍是 carry-save adder。",
+      "wording": "Main QK/PV includes Sliding-Window Attention (SWA) and Compressed Sparse Attention 2 (CSA2).",
+      "note": "本轮开始前表注已有 SWA 与 compressed Sparse attention (CSA) 的用户修改，但尚不是最新确认的 CSA2。保留现状，在候选清单记录准确目标。Q-up/O-up/Grouped O-down 与 QK/PV 的具体展开未由本条回复补充，不编造。"
+    },
+    {
+      "id": "Q6",
+      "status": "u31_verified_s1p2_q_notation_requires_encoding_distinction",
+      "decision": "作者希望以 Q1.2 表达一位符号、一位整数和两位小数的布局；U31 是否只表示 31 位无符号容器已由本地规格确认。",
+      "wording": "U31 denotes a 31-bit unsigned magnitude container; its binary-point position depends on the precision mode.",
+      "note": "S1P2 的现用输入编码是 sign-magnitude，而稿件 QI.F 被定义为二补码。可以说明同为 1+1+2 位分配，不能直接把 S1P2 编码改称本稿定义下的 Q1.2。建议保持二补码 QI.F 约定，并明确 HiF4 元素为符号—幅值定点编码；这是待作者选择的表述，不是实施编码变更。"
+    },
+    {
+      "id": "Q7",
+      "status": "context_length_and_relative_scale_confirmed",
+      "decision": "1K–1M 表示上下文长度，且 1M = 1024K。",
+      "wording": "context lengths from 1K to 1M tokens, where 1M = 1024K",
+      "note": "保留现有排版。本回复只明确 M/K 比例，未单独确认 1K 对应多少 tokens；不额外写成 1K=1024 tokens 或新增绝对端点数字。"
+    }
+  ],
+  "local_sources": [
+    {
+      "path": "../src/spec/dp/lane/unpack.md",
+      "sha256": "537e555412e2483074fec4423d25658babb99e470fb093f846b1de57a9cd2a46"
+    },
+    {
+      "path": "../src/spec/dp/group/dp_group_E.md",
+      "sha256": "f8f0a13897973c888e996707215770735f9cb27ea0c39a93b257e366f347ece0"
+    },
+    {
+      "path": "../src/spec/dp/dptop/dp-top-v1.8.md",
+      "sha256": "74f38c01eadc9a87a3a148619e7eb631339e6bc7290b81ec709ec5ffc29c85d5"
+    },
+    {
+      "path": "dp-puzzle.tex",
+      "sha256": "ee4a33a5204b4619c49e48281a8423c6daaefec99b3bd306978333b164440ce7"
+    }
+  ],
+  "encoding_check": {
+    "S1P2": "s=data[3], u=data[2:0]; value=(-1)^s*u/4 (before shared scaling)",
+    "manuscript_Q1_2": "signed two's-complement with I=1, F=2, total width 4",
+    "example": "1000 represents negative zero in S1P2 but -2 in the manuscript's Q1.2 definition",
+    "basis": "unpack.md:76 and dp-puzzle.tex:119; derived example, not a new RTL simulation"
+  },
+  "manuscript_modified_by_this_update": false,
+  "existing_user_tex_changes": [
+    "tables/group_compositions.tex",
+    "tables/five_stage_migrations.tex"
+  ],
+  "concurrent_user_tex_changes_observed": [
+    "dp-puzzle.tex"
+  ],
+  "local_sources_scope": "Hashes at document-update snapshot; see author-reply-integrity.json for later concurrent changes."
+}

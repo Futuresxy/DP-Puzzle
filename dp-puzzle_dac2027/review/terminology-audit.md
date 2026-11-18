@@ -1,5 +1,24 @@
 # Terminology audit
 
+最终检查另观察到 `dp-puzzle.tex` 的摘要及关键词有并行工作区修改；本助手未写入任何 `.tex`，也未提交这些修改。下文候选保留审计时的原句，不构成对新增摘要措辞的完整重审；旧编译结果不覆盖当前稿件。
+
+## 作者回复后的状态更新
+
+本节优先于下方初次 A/B1 审计的待确认描述。作者回复与本地核验已记录到 [queries.md](queries.md) 和 [author-decisions.json](evidence/author-decisions.json)。
+
+| 项目 | 当前有效口径 |
+| --- | --- |
+| 基础 Group | T2H4Q8E16。当前用户工作区表头已修正，M01 不再待改。 |
+| 功耗来源 | Power Compiler 软件估计；不是硅上实际测量。M02 的 estimated 候选已获得技术确认，尚未由本轮写入正文。 |
+| FP4/FP8 | 可作位宽精度族的概括称呼；摘要所讨论具体收益指 MXFP4，不能全局替换族名。 |
+| matched area/power | 共同上限预算，不保证各配置实际面积或功耗相等。 |
+| 注意力名称 | Sliding-Window Attention (SWA)、Compressed Sparse Attention 2 (CSA2)。硬件 CSA=carry-save adder 保持不变；当前用户表注仍需与 CSA2 名称对齐。其它算子标签未据此自动展开。 |
+| U31 | 31 位无符号幅值容器；小数点位置按模式确定，符号独立传递。 |
+| S1P2 / Q1.2 | 相同 1+1+2 位分配，但现用 S1P2 为符号—幅值，稿件 QI.F 为二补码。不能直接替换编码名；参见 Q6 的本地规格证据与候选说明。 |
+| 1K–1M | 上下文长度，1M=1024K；不额外假定 1K 的绝对 token 数，当前排版保留。 |
+
+本次开始时两份 tables/*.tex 已有用户修改，本轮没有修改或提交它们。下方 B0 编译通过和 7 个 TeX 哈希不变的结论属于初次审计快照，不是当前表格的新编译验收。本轮文件保护回执另见 [author-reply-integrity.json](evidence/author-reply-integrity.json)。
+
 ## 阶段 A：语料内冲突与术语裁决（2026-11-18）
 
 本节仅记录语料学习。尚不代表对目标论文进行了 B1 审计，也未修改论文。八篇 PDF、统计和引用证据见 `skills/dp-puzzle-en-writing/references/`。

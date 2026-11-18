@@ -1,0 +1,29 @@
+{
+  "scope": "author-reply documentation update only",
+  "initial_B1_source_integrity_record_preserved": true,
+  "current_tables_include_preexisting_user_edits": true,
+  "tex_sha256_at_document_update": {
+    "dp-puzzle.tex": "ee4a33a5204b4619c49e48281a8423c6daaefec99b3bd306978333b164440ce7",
+    "tables/five_stage_migrations.tex": "f812ac24f76486ad8c61dfb9b8d430fbbe7291f5ce81ab73ceeaf7b53a74373f",
+    "tables/group_compositions.tex": "9f8720ac7cc9f1710d072afe6eb6f339bb95c083d0182aa1de9de5984d7bcd88",
+    "tables/related_features.tex": "a0e6acfb52e77d0facef3bf35131c4ca81dcaff2d83ddd2a69c9b822f2bb12e0",
+    "tables/related_ppa_native.tex": "6e2fc44ca119c4ab42e86dbb233e970b6ff7300f4bad4dcd9660e2e37de78524",
+    "tables/vendor_ratios.tex": "86f40dc706fbce851cfcaf428a78c70e1c2f2133db899b8f4ff66b0cb05b7d29",
+    "template/bare_conf.tex": "cc4fa258aa90115ad6afbd8ca5555f448880b29a971398bf1a20ee5f240b45f7"
+  },
+  "tex_unchanged_at_document_update": true,
+  "tex_sha256_at_final_check": {
+    "dp-puzzle.tex": "eedf4e4432747fca581219100414f7b3c74cd4df5776ef1273e6f91d074fbe6a",
+    "tables/five_stage_migrations.tex": "f812ac24f76486ad8c61dfb9b8d430fbbe7291f5ce81ab73ceeaf7b53a74373f",
+    "tables/group_compositions.tex": "9f8720ac7cc9f1710d072afe6eb6f339bb95c083d0182aa1de9de5984d7bcd88",
+    "tables/related_features.tex": "a0e6acfb52e77d0facef3bf35131c4ca81dcaff2d83ddd2a69c9b822f2bb12e0",
+    "tables/related_ppa_native.tex": "6e2fc44ca119c4ab42e86dbb233e970b6ff7300f4bad4dcd9660e2e37de78524",
+    "tables/vendor_ratios.tex": "86f40dc706fbce851cfcaf428a78c70e1c2f2133db899b8f4ff66b0cb05b7d29",
+    "template/bare_conf.tex": "cc4fa258aa90115ad6afbd8ca5555f448880b29a971398bf1a20ee5f240b45f7"
+  },
+  "files_changed_after_document_update": [
+    "dp-puzzle.tex"
+  ],
+  "manuscript_modified_by_assistant": false,
+  "note": "dp-puzzle.tex changed concurrently after the documentation snapshot. The assistant issued no TeX writes and preserved all user edits. Initial B0 compilation does not validate this later state."
+}
