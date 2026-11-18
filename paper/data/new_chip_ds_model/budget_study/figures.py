@@ -79,14 +79,15 @@ def heatmap(data,out,width,manifest):
     stages=list(dict.fromkeys(r['scenario'] for r in rows))
     lookup={(r['ratio'],r['scenario']):r for r in rows}
     first=[lookup[r,stages[0]] for r in ratios]
-    fig,(left,right)=plt.subplots(1,2,figsize=(width,2.62),sharey=True,
+    fig,(left,right)=plt.subplots(1,2,figsize=(width,2.86),sharey=True,
                                  gridspec_kw={'width_ratios':[1,2.06]})
-    fig.subplots_adjust(left=.143,right=.986,top=.885,bottom=.24,wspace=.08)
+    fig.subplots_adjust(left=.143,right=.986,top=.89,bottom=.285,wspace=.08)
     y=np.arange(len(ratios))
     left.barh(y,[int(r['physical']) for r in first],height=.84,color='#dadee2',
-              edgecolor='#9ca5ad',lw=.4)
+              edgecolor='#9ca5ad',lw=.4,label='Physical cores')
     for i,(field,marker,color) in enumerate(MODE_MARKERS):
-        left.scatter([int(r[field]) for r in first],y+(i-1)*.24,s=10,marker=marker,color=color,zorder=3)
+        left.scatter([int(r[field]) for r in first],y+(i-1)*.24,s=10,marker=marker,color=color,zorder=3,
+                     label=field.removeprefix('active_'))
     left.set(ylim=(len(ratios)-.5,-.5),xlim=(0,39),xlabel='Core count',title='(a)',xticks=[0,20,36])
     left.set_yticks(y,ratios)
     left.tick_params(length=2,pad=2)
@@ -107,8 +108,13 @@ def heatmap(data,out,width,manifest):
                        color='white' if norm(v)<.16 or norm(v)>.84 else '#222222')
             if int(lookup[r,s]['rank'])==1:
                 right.add_patch(Rectangle((i-.48,j-.46),.96,.92,fill=False,edgecolor='black',lw=.65))
+    handles, labels = left.get_legend_handles_labels()
+    entries = dict(zip(labels, handles))
+    legend_labels = ['Physical cores', *[field.removeprefix('active_') for field, _, _ in MODE_MARKERS]]
+    fig.legend([entries[label] for label in legend_labels], legend_labels, loc='lower center',
+               ncol=4, frameon=False, handlelength=.85, handletextpad=.25, columnspacing=.65)
     box=right.get_position()
-    cax=fig.add_axes([box.x0,.098,box.width,.025])
+    cax=fig.add_axes([box.x0,.17,box.width,.022])
     bar=fig.colorbar(image,cax=cax,orientation='horizontal',ticks=[bounds[0],1,bounds[1]])
     bar.solids.set_rasterized(False)
     bar.ax.xaxis.set_major_formatter('{x:.1f}')
