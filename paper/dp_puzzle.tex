@@ -204,7 +204,7 @@ Fig.~\ref{fig:ratio4_costs} shows the area and power of the nine configurations.
 \subsection{Modeling Chip Throughput Under Area and Power Constraints}
 The area budget sets the physical core count. Mode-specific DP power limits how many cores can run concurrently. GPUs can lower clock frequency under a power cap~\cite{nvidia2024nvmlpower}. Our model holds $f=1$\,GHz fixed and limits active cores using the power estimates in Fig.~\ref{fig:ratio4_costs}.
 
-The $1:2:4$ baseline has $N_0=36$ cores with $D=256$ DPs each. Four 64-DP arrays ($16\times4$ or $32\times2$ each), modeled after the A100's four tensor cores per SM~\cite{nvidia2020a100}, give the same peak dot products per cycle as one $16\times16$ Ascend Cube-style array~\cite{liao2019davinci}. At fixed total core area and fixed per-core peripheral area, $N_j=\lfloor N_0/[1+\alpha(r_j-1)]\rfloor$ cores fit, where $r_j$ is design $j$'s DP area relative to baseline and $\alpha$ is the baseline DP-array share of core area. The reported Cube-cluster share of Ascend AI Core area motivates our reference $\alpha=0.327$~\cite{luo2024hifloat8area}.
+The $1:2:4$ baseline has $N_0=36$ cores with $D=256$ DPs each. Blackwell Ultra groups four tensor cores per SM~\cite{aubrey2025blackwellultra}. We model each as a 64-DP array ($16\times4$ or $32\times2$). Together they issue as many dot products per cycle as one $16\times16$ Ascend Cube-style array~\cite{liao2019davinci} at full utilization. At fixed total core area and fixed per-core peripheral area, $N_j=\lfloor N_0/[1+\alpha(r_j-1)]\rfloor$ cores fit, where $r_j$ is design $j$'s DP area relative to baseline and $\alpha$ is the baseline DP-array share of core area. The reported Cube-cluster share of Ascend AI Core area motivates our reference $\alpha=0.327$~\cite{luo2024hifloat8area}.
 
 Let $P_{j,p}$ be the workload-driven power of one DP in mode $p$ and $I_j$ its idle power, approximated by the largest leakage estimate across modes. The DP-array power budget is $B=\beta N_0D\max_p P_{0,p}$, or 147.47\,W at $\beta=1$. During a GEMM in mode $p$, the active core count $n_{j,p}$ is the largest integer up to $N_j$ for which
 \begin{equation}
@@ -226,8 +226,10 @@ We use the lengths of 2,047 first requests from FreeInference agent sessions (Au
 \caption{Trace-weighted prefill. (a) Color identifies the ratio with the lowest mean GEMM time over the largest fraction of each $0.01\times0.1$ budget cell. (b) At $\alpha=0.327$ (dashed line), shading gives the corresponding winner in each power band. Dots compare band-averaged times with $1:2:4$, and bars span the winner's speedup range.}
 \label{fig:first_request_budget_sweep}
 \end{figure}
-\textbf{Under a power cap, doubling per-core throughput can leave chip throughput unchanged.}
-At $\alpha=0.327$ and $\beta=1$, widening $1:4:8$ to $1:8:16$ doubles per-core FP8 and FP4 throughput. In FP4, the active core count halves from 28 to 14, exactly canceling the gain. In FP8, 10 active cores replace 19, yielding only 5.3\% more throughput. In BF16, the wider design fits 22 cores versus 29 (Fig.~\ref{fig:first_request_case_32k}(a)). This trade-off favors $1:4:8$ across the trace-weighted workloads at baseline power ($1.14\times$). As more cores can run the wider datapath, $1:8:16$ takes the lead throughout $1.4\le\beta\le2$ (Fig.~\ref{fig:first_request_budget_sweep}).
+\textbf{Allowing each precision to use its own active core count changes which throughput ratio minimizes mean GEMM time.}
+At $\alpha=0.327$ and $\beta=1$, limiting each design to the core count sustainable in its highest-power mode favors $1:2:8$ ($1.10\times$ over baseline). With the same budgets and trace weights, $1:4:8$ leads ($1.14\times$) when only FP8 GEMMs incur its 19-core limit. BF16 and FP4 can use 29 and 28 cores, respectively (Fig.~\ref{fig:first_request_case_32k}(a)). Relative to $1:2:8$, the wider FP8 datapath saves 186\,ms of FP8 time per request on average, exceeding the combined 110\,ms penalty in BF16 and FP4. The model also sets a power target for the expanded datapath. At $\beta=1$, reducing FP8 power per $1:4:8$ DP from 28.79 to 28.69\,mW would enable a twentieth FP8 core at the same area, clock, and idle power. As the cap relaxes, $1:8:16$ leads throughout $1.4\le\beta\le2$ (Fig.~\ref{fig:first_request_budget_sweep}).
+% Fixed-count comparison uses min_p n_{j,p} from the active-core model for every mode of design j.
+% Time differences use the exact agent_first FLOP means and active_tflops in results/{workload,hardware}.csv.
 
 \begin{figure}[!t]
 \centering
@@ -236,8 +238,8 @@ At $\alpha=0.327$ and $\beta=1$, widening $1:4:8$ to $1:8:16$ doubles per-core F
 \label{fig:first_request_case_32k}
 \end{figure}
 \begin{samepage}
-\textbf{FP4-only expansion trades time saved on FP4 GEMMs for time lost on the remaining precisions.}
-At the same budgets, widening $1:2:8$ to $1:2:16$ reduces active FP4 cores from 32 to 19. Chip-level FP4 throughput rises by 18.75\%, while BF16 and FP8 throughput fall by 12.5\% as only 28 cores fit. These rates favor the wider design when FP4 exceeds 47.5\% of GEMM time on $1:2:8$. At 32K, FP4 already accounts for 77.6\% of FLOPs in D but only 46.3\% of that time. Moving main attention and grouped O-down to FP4 in E raises its time share to 79.7\%. Only then does $1:2:16$ overtake $1:2:8$, delivering $1.77\times$ versus $1.60\times$ over baseline (Fig.~\ref{fig:first_request_case_32k}(b)).\par
+\textbf{FP4 can dominate the operation count before it warrants a wider FP4 datapath.}
+At the same budgets, widening $1:2:8$ to $1:2:16$ doubles FP4 throughput per core, but only 19 of 28 cores can run FP4, down from 32. Chip-level FP4 throughput rises by 18.75\%, while BF16 and FP8 throughput fall by 12.5\%. The wider design therefore saves time only when FP4 accounts for more than 47.5\% of GEMM time on $1:2:8$. At 32K, FP4 comprises 77.6\% of FLOPs in stage D yet takes only 46.3\% of GEMM time. Moving main attention and grouped O-down to FP4 raises its time share to 79.7\% in E. Only then does $1:2:16$ overtake $1:2:8$, at $1.77\times$ versus $1.60\times$ over baseline (Fig.~\ref{fig:first_request_case_32k}(b)).\par
 \end{samepage}
 
 % END REVIEW PAIR: 05_dse.tex
