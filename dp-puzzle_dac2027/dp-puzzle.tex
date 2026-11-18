@@ -33,7 +33,7 @@
 
 % BEGIN REVIEW PAIR: 00_abstract.tex
 \begin{abstract}
-Growing demand for low-precision computation in LLMs has pushed BF16:MXFP8:MXFP4 peak throughput ratios  beyond the conventional $1:2:4$ in industrial AI accelerators. However, the costs and benefits of alternative ratios remain unclear. To this end, DP-Puzzle combines shared multi-precision datapaths with specialized low-precision units to implement nine throughput ratios in dot-product units. We find that expanding MXFP4 throughput incurs smaller area and power increases than MXFP8. Under our GEMM compute model for DeepSeek-V4.1-Flash prefill and matched area and power budgets, $1:2:8$ ranks first among the nine ratios across the five precision-migration scenarios, yielding a $1.13times$ compute-only speedup over $1:2:4$.
+Growing demand for low-precision computation in large language models (LLMs) has pushed BF16:MXFP8:MXFP4 peak throughput ratios  beyond the conventional $1:2:4$ in industrial AI accelerators. However, the costs and benefits of alternative ratios remain unclear. To this end, DP-Puzzle combines shared multi-precision datapaths with specialized low-precision units to implement nine throughput ratios in dot-product units. We find that expanding MXFP4 throughput incurs smaller area and power increases than expanding MXFP8 throughput. Under our general matrix multiplication (GEMM) compute model for DeepSeek-V4.1-Flash prefill and matched area and power budgets, $1:2:8$ ranks first among the nine ratios across the five precision-migration scenarios, yielding a $1.13\times$ compute-only speedup over $1:2:4$.
 %, based on operation counts and peak throughput.
 
 
@@ -46,11 +46,11 @@ throughput ratios, dot-product units, LLMs, multi-precision, AI accelerators
 % BEGIN REVIEW PAIR: 01_introduction.tex
 \section{Introduction}
 \label{sec:introduction}
-LLM inference involves mixed-precision computation within a single model. Operators use numerical formats according to their accuracy requirements. Common formats include TF32, FP16, BF16, FP8, INT8, and emerging FP6, FP4, and microscaling (MX) formats~\cite{ocpmx2023}. For example, DeepSeek-V4.1-Flash~\cite{deepseekv41source} uses FP8 for mixture-of-experts (MoE) computations and most attention projections. Its sparse attention indexer uses MXFP4 for QK computation, whereas the main attention module uses BF16 for QK and PV computations. This operator-level mix of precisions requires inference hardware to efficiently support multiple numerical formats, including emerging low-precision formats, within the same workload.
+Inference in large language models (LLMs) involves mixed-precision computation within a single model. Operators use numerical formats according to their accuracy requirements. Common formats include TF32, FP16, BF16, FP8, INT8, and emerging FP6, FP4, and microscaling (MX) formats~\cite{ocpmx2023}. For example, DeepSeek-V4.1-Flash~\cite{deepseekv41source} uses FP8 for mixture-of-experts (MoE) computations and most attention projections. Its sparse attention indexer uses MXFP4 for QK computation, whereas the main attention module uses BF16 for QK and PV computations. This operator-level mix of precisions requires inference hardware to efficiently support multiple numerical formats, including emerging low-precision formats, within the same workload.
 
 Supporting these mixed-precision workloads requires not only multiple numerical formats but also suitable throughput ratios across precisions. Under a fixed input data-width budget, halving the element width allows twice as many elements to be supplied in parallel. This motivates the conventional BF16:FP8:FP4 peak throughput ratio of $1:2:4$. Recent industrial AI accelerators allocate additional resources to FP4, or to both FP8 and FP4, resulting in different throughput ratios, as summarized in Table~\ref{tab:vendor_ratios}. Such provisioning can provide headroom for the growing use of low-precision computation. However, chip design and fabrication cycles are much longer than model iteration cycles. A ratio tailored to current workloads may therefore be poorly matched to models deployed later in the chip's lifetime. Selecting suitable throughput ratios therefore requires balancing hardware cost against current workload requirements and anticipated shifts in precision demand.
 
-We present DP-Puzzle to relate the hardware cost of throughput ratios to workload benefits. Tensor cores typically organize dot-product units into two-dimensional arrays with systolic~\cite{jouppi2017tpu} or broadcast dataflows. The array-level throughput ratio follows from the unit-level one, so we focus on the dot-product unit and build nine throughput-ratio configurations. We characterize these configurations using synthesis and power analysis at 12\,nm and 1\,GHz, then model chip-level throughput under joint area and power budgets to estimate GEMM compute latency across five precision-migration scenarios.
+We present DP-Puzzle to relate the hardware cost of throughput ratios to workload benefits. Tensor cores typically organize dot-product units into two-dimensional arrays with systolic~\cite{jouppi2017tpu} or broadcast dataflows. The array-level throughput ratio follows from the unit-level one, so we focus on the dot-product unit and build nine throughput-ratio configurations. We characterize these configurations using synthesis and power analysis at 12\,nm and 1\,GHz, then model chip-level throughput under joint area and power budgets to estimate general matrix multiplication (GEMM) compute latency across five precision-migration scenarios.
 Our contributions are as follows:
 \begin{itemize}
 \item We propose DP-Puzzle, a composable dot-product microarchitecture supporting TF32, FP16, BF16, INT8, MXFP8/6/4, NVFP4, and HiF4. Lanes share arithmetic across precisions and form Groups. Adding specialized low-precision Groups adjusts the BF16:MXFP8:MXFP4 peak throughput ratio.
@@ -114,7 +114,7 @@ DP-Puzzle organizes each dot-product unit (DP) into Groups of Lanes. To expand t
 \subsection{Precision Classes and Notation}
 \label{sec:notation_conventions}
 
-We group the supported formats into four precision classes and refer to them as T, H, Q, and E: T for TF32, H for FP16 and BF16, Q for MXFP8 and MXFP6, and E for MXFP4, NVFP4, and HiF4. Compute parallelism is denoted by $\mathrm{T}x_T\mathrm{H}x_H\mathrm{Q}x_Q\mathrm{E}x_E$, where $x_p$ is the number of element pairs processed per cycle in precision mode $p$. A T1H2Q4E8 Lane thus processes one, two, four, or eight pairs per cycle, depending on the selected mode. Specialized Groups list only the modes they support. A Q8E16 Group processes eight Q pairs or sixteen E pairs per cycle, while Q8 and E16 each support a single class.
+We group the supported floating-point formats into four precision classes and refer to them as T, H, Q, and E: T for TF32, H for FP16 and BF16, Q for MXFP8 and MXFP6, and E for MXFP4, NVFP4, and HiF4. Compute parallelism is denoted by $\mathrm{T}x_T\mathrm{H}x_H\mathrm{Q}x_Q\mathrm{E}x_E$, where $x_p$ is the number of element pairs processed per cycle in precision mode $p$. A T1H2Q4E8 Lane thus processes one, two, four, or eight pairs per cycle, depending on the selected mode. Specialized Groups list only the modes they support. A Q8E16 Group processes eight Q pairs or sixteen E pairs per cycle, while Q8 and E16 each support a single class.
 
 \subsection{Baseline Datapath and Shared Partial-Sum Interface}
 \label{sec:unpack_recode}
@@ -140,7 +140,7 @@ Each Group combines its two Lane sums and applies block scaling. One Group cover
 \subsection{Low-Precision Group Specialization}
 \label{sec:specialized_midgroups}
 
-Each specialized Group retains the baseline decoding, alignment precision, and block-scaling rules for its supported formats. A Q8E16 Lane uses eight $4\times4$ multipliers, activating four in Q mode and all eight in E mode. It retains the 28-bit alignment path for Q and scale mantissa multiplication for E. A Q8 Lane requires only four $4\times4$ multipliers and omits E decoding, micro-exponent handling, and scale mantissa multiplication.
+Each specialized Group retains the baseline decoding, alignment precision, and block-scaling rules for its supported formats. Each Lane in a Q8E16 Group uses eight $4\times4$ multipliers, activating four in Q mode and all eight in E mode, and the Group retains scale mantissa multiplication for NVFP4 and HiF4. Each Lane in a Q8 Group requires only four $4\times4$ multipliers and omits E decoding, micro-exponent handling, and scale mantissa multiplication.
 
 E16 eliminates Group-wide element-exponent comparison and the wide alignment shifters in each Lane. A narrow adder tree reduces eight fixed-point products to a signed 14-bit Lane output, down from 31 bits in the baseline. After Group reduction and scaling, appending zeros at the least significant end maps the 22-bit magnitude to the 31-bit interface while preserving the bit weights of the baseline E path.
 
@@ -165,7 +165,7 @@ Each added Group has a bidirectional shifter. Active Groups participate in globa
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=\textwidth]{dp_ratio_area_power.pdf}
-\caption{Synthesized area and total power across the evaluated throughput ratios. Area bars use the left axis, with labels indicating ratios relative to $1:2:4$. Power bars use the right three axis (mW), and black labels show power relative to the gold-outlined 1:2:4 MXFP8 bar.}
+\caption{Synthesized area and total power across the evaluated throughput ratios. Area series use the left axis, with labels indicating ratios relative to $1:2:4$. The three power series share the right axis (mW). The labels are normalized to the outlined baseline MXFP8 bar.}
 \label{fig:ratio4_costs}
 \end{figure*}
 
@@ -190,7 +190,7 @@ Under the original-node comparison, the $0:2:4$ low-precision unit achieves $5.2
 
 \textbf{Maximum DP power grows modestly through $1:2:8$ and more sharply at $1:2:12$.} Relative to $1:2:4$, the maximum estimated DP power across the three modes rises by 9.95\% at $1:2:8$ and by 46.63\% at $1:2:12$. Doubling MXFP8 as well raises this maximum by 79.91\% at $1:4:8$, even though its MXFP4 throughput matches $1:2:8$. MXFP8 sets the maximum in the joint expansion, while MXFP4 sets it in both MXFP4-only expansions.
 
-\textbf{Under joint MXFP8 and MXFP4 expansion, maximum mode power grows faster than DP area.} At $1:4:8$, $1:6:12$, and $1:8:16$, area reaches $1.68\times$, $2.37\times$, and $2.90\times$ the $1:2:4$ baseline, respectively, while maximum estimated power reaches $1.80\times$, $2.58\times$, and $3.30\times$ its baseline value. At $1:8:16$, each low-precision mode thus delivers 37.79\% more throughput per unit area, but the DP also draws 13.78\% more power per unit area in its highest-power mode (MXFP8).
+\textbf{Under joint MXFP8 and MXFP4 expansion, maximum mode power grows faster than DP area.} At $1:4:8$, $1:6:12$, and $1:8:16$, area reaches $1.68\times$, $2.37\times$, and $2.90\times$ the $1:2:4$ baseline, respectively, while maximum estimated power reaches $1.80\times$, $2.58\times$, and $3.30\times$ its baseline value. At $1:8:16$, each low-precision mode thus delivers 37.79\% more throughput per unit area. In MXFP8 mode, its estimated power per unit area is 13.78\% higher than that of the baseline.
 
 % END REVIEW PAIR: 04_evaluation.tex
 
@@ -238,7 +238,7 @@ At $(\alpha,\beta)=(0.327,1)$, $1{:}2{:}8$ fits 32 cores, and the power cap redu
 \end{figure}
 
 \subsection{Throughput-Ratio Boundaries Under Joint Budgets}
-Figure~\ref{fig:budget_dse_extended}(a) shows which ratio minimizes mean GEMM compute time over $\alpha\in[0.25,0.50]$ and $\beta\in[1,2]$, with integer core counts given by~\eqref{eq:joint_core_count}.
+Fig.~\ref{fig:budget_dse_extended}(a) shows which ratio minimizes mean GEMM compute time over $\alpha\in[0.25,0.50]$ and $\beta\in[1,2]$, with integer core counts given by~\eqref{eq:joint_core_count}.
 
 \textbf{Tight power budgets favor moderate MXFP4 expansion.} At $\beta=1$, $1{:}2{:}8$ leads across most of the area sweep, up to $\alpha\approx0.48$. Its added MXFP4 throughput is paired with enough deployed cores to serve the remaining mixed-precision work. Larger expansions become competitive as the power cap admits more cores. At $\alpha=0.50$, the best speedup levels off after the winning design reaches its area-limited core count.
 

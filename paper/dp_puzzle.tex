@@ -202,9 +202,7 @@ Fig.~\ref{fig:ratio4_costs} shows the area and power of the nine configurations.
 \label{sec:workload}
 
 \subsection{Modeling Chip Throughput Under Area and Power Constraints}
-We model $D=256$ DPs per compute core to match the dot-product parallelism of an NVIDIA Blackwell SM~\cite{nvidia2025blackwellbrief,tirumala2024blackwell} and a Huawei Da Vinci AI Core~\cite{liao2019davinci}.
-
-We size the $1:2:4$ baseline at $N_0=36$ cores, the maximum Cube-core count of Ascend 950DT~\cite{huawei950}. A separate Ascend study reports a 32.7\% Cube-cluster share of AI Core area~\cite{luo2024hifloat8area}. We use $\alpha=0.327$ as the reference array fraction and sweep $0.25\le\alpha\le0.50$ to test sensitivity. With the total area budget and peripheral area per core held at their baseline values, the chip accommodates $N_j=\lfloor N_0/[1+\alpha(r_j-1)]\rfloor$ cores of design $j$, where $r_j$ is its DP area relative to baseline.
+We model $D=256$ DPs per compute core to match the dot-product parallelism of an NVIDIA Blackwell SM~\cite{nvidia2025blackwellbrief,tirumala2024blackwell} and a Huawei Da Vinci AI Core~\cite{liao2019davinci}. As for the core number, we size the $1:2:4$ baseline at $N_0=36$ cores, the maximum Cube-core count of Ascend 950DT~\cite{huawei950}. A separate Ascend study reports a 32.7\% Cube-cluster share of AI Core area~\cite{luo2024hifloat8area}. So we use $\alpha=0.327$ as a representative array fraction and sweep $0.25\le\alpha\le0.50$ to test sensitivity. With the total area budget and peripheral area per core held at their baseline values, the chip accommodates $N_j=\lfloor N_0/[1+\alpha(r_j-1)]\rfloor$ cores of design $j$, where $r_j$ is its DP area relative to baseline.
 
 GPUs can reduce frequency under a power cap~\cite{nvidia2024nvmlpower}. We fix $f=1$\,GHz and sweep the array power budget $B=\beta N_0D\max_p P_{0,p}$ over $1\le\beta\le2$ (147.47\,W at $\beta=1$). Here $P_{j,p}$ is active DP power in mode $p$ (Fig.~\ref{fig:ratio4_costs}) and $I_j$ is idle DP power, estimated from maximum leakage across modes. We activate the largest integer $n_{j,p}\le N_j$ satisfying
 \begin{equation}
