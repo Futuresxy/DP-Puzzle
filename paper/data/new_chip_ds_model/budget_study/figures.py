@@ -35,32 +35,35 @@ def budget(data,out,width,manifest):
         if manifest['outputs'][name]!=bins_manifest['inputs'][name]:
             raise ValueError('Band and fine-scan data are from different runs')
     bands=read(data,bins_manifest,'budget_bands.csv')
-    curve=[r for r in bands if r['scope']=='reference']
-    fig,(ax,detail)=plt.subplots(2,1,figsize=(width,4.35))
-    fig.subplots_adjust(left=.17,right=.94,top=.94,bottom=.18,hspace=.73)
+    reference=read(data,bins_manifest,'reference_bands.csv')
+    alpha=bins_manifest['alpha_reference']
+    fig,(ax,detail)=plt.subplots(1,2,sharey=True,figsize=(width,3.0),
+                                  gridspec_kw={'width_ratios':[1,1.1]})
+    fig.subplots_adjust(left=.15,right=.988,top=.91,bottom=.24,wspace=.13)
     for row in bands:
         if row['scope']=='map' and row['coverage_winner']=='1':
             al,ah,lo,hi=(float(row[k]) for k in ('alpha_lo','alpha_hi','beta_lo','beta_hi'))
             ax.add_patch(Rectangle((al,lo),ah-al,hi-lo,facecolor=COLORS[row['ratio']],
-                                   edgecolor='none', antialiased=False))
-    ax.axvline(.327,ls='--',color='#232323',lw=.7)
+                                   edgecolor='white',lw=.16))
+    ax.axvline(alpha,ls='--',color='#232323',lw=.8)
     ax.set(xlim=(.25,.50),ylim=(1,2),xlabel=r'$\alpha$',ylabel=r'$\beta$',title='(a)',
-           xticks=np.arange(.25,.51,.05),yticks=[1,1.5,2])
+           xticks=[.25,.35,.50],yticks=np.arange(10,21)/10)
     ax.xaxis.set_major_formatter('{x:.2f}')
     ax.yaxis.set_major_formatter('{x:.1f}')
-    for r,color in COLORS.items():
-        series=[row for row in curve if row['ratio']==r]
-        edges=[float(row['beta_lo']) for row in series]+[float(series[-1]['beta_hi'])]
-        mean=[float(row['band_speedup']) for row in series]
-        detail.stairs(mean,edges,baseline=None,color=color,lw=.85)
-        for row,v in zip(series,mean):
-            if row['coverage_winner']=='1':
-                detail.plot([float(row['beta_lo']),float(row['beta_hi'])],[v,v],
-                            color=color,lw=2.4,solid_capstyle='butt')
-    detail.set(xlim=(1,2),xlabel=r'$\beta$',ylabel='GEMM speedup',title='(b)')
+    ax.tick_params(pad=2,length=2)
+    detail.tick_params(axis='y',left=False)
+    for row in reference:
+        lo,hi=(float(row[k]) for k in ('beta_lo','beta_hi'))
+        low,mean,high=(float(row[k]) for k in ('winner_min_speedup','winner_band_speedup','winner_max_speedup'))
+        y=(lo+hi)/2
+        color=COLORS[row['coverage_winner']]
+        detail.axhspan(lo,hi,facecolor=color,alpha=.19,edgecolor='none')
+        detail.plot([low,high],[y,y],color=color,lw=1.4,solid_capstyle='butt')
+        detail.scatter([mean],[y],s=12,color=color,edgecolors='#272727',linewidths=.35,zorder=3)
+        detail.annotate(f'{mean:.2f}',(high,y),xytext=(3,0),textcoords='offset points',va='center')
+    detail.set(xlim=(1.10,1.84),xlabel='GEMM speedup',title='(b)',xticks=[1.2,1.4,1.6])
     detail.xaxis.set_major_formatter('{x:.1f}')
-    detail.yaxis.set_major_formatter('{x:.1f}')
-    detail.grid(axis='y',color='.88',lw=.4)
+    detail.tick_params(axis='x',pad=2,length=2)
     fig.legend(handles=[Patch(facecolor=c,label=r) for r,c in COLORS.items()],
                loc='lower center',ncol=3,frameon=False,handlelength=1,columnspacing=1.1)
     fig.savefig(out/'budget_sweep.pdf',metadata=META)
