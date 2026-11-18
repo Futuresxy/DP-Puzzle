@@ -202,16 +202,16 @@ Fig.~\ref{fig:ratio4_costs} shows the area and power of the nine configurations.
 \label{sec:workload}
 
 \subsection{Modeling Chip Throughput Under Area and Power Constraints}
-The area budget sets the physical core count. Mode-specific DP power limits how many cores can run concurrently. GPUs can lower clock frequency under a power cap~\cite{nvidia2024nvmlpower}. Our model holds $f=1$\,GHz fixed and limits active cores using the power estimates in Fig.~\ref{fig:ratio4_costs}.
+NVIDIA Blackwell Ultra groups four tensor cores per SM~\cite{aubrey2025blackwellultra}, while Huawei's Da Vinci Cube computes a $16\times16$ output tile~\cite{liao2019davinci}. We choose $D=256$ DPs per core, arranged as four 64-DP arrays ($16\times4$ or $32\times2$ each) or one $16\times16$ array. Our $1:2:4$ baseline uses $N_0=36$ cores, matching the largest Ascend 950DT Cube-core configuration~\cite{huawei950}. For the baseline DP-array area fraction, we take $\alpha=0.327$ from the Cube-cluster share of AI Core area in a separate Ascend study~\cite{luo2024hifloat8area}.
 
-The $1:2:4$ baseline has $N_0=36$ cores with $D=256$ DPs each. Blackwell Ultra groups four tensor cores per SM~\cite{aubrey2025blackwellultra}. We model each as a 64-DP array ($16\times4$ or $32\times2$). Together they issue as many dot products per cycle as one $16\times16$ Ascend Cube-style array~\cite{liao2019davinci} at full utilization. At fixed total core area and fixed per-core peripheral area, $N_j=\lfloor N_0/[1+\alpha(r_j-1)]\rfloor$ cores fit, where $r_j$ is design $j$'s DP area relative to baseline and $\alpha$ is the baseline DP-array share of core area. The reported Cube-cluster share of Ascend AI Core area motivates our reference $\alpha=0.327$~\cite{luo2024hifloat8area}.
+We sweep $\alpha$ from 0.25 to 0.50. At each value, all designs share the total area of the 36 baseline cores and the same peripheral area per core. Design $j$ then fits $N_j=\lfloor N_0/[1+\alpha(r_j-1)]\rfloor$ cores, where $r_j$ is its single-DP area relative to baseline (Fig.~\ref{fig:ratio4_costs}).
 
-Let $P_{j,p}$ be the workload-driven power of one DP in mode $p$ and $I_j$ its idle power, approximated by the largest leakage estimate across modes. The DP-array power budget is $B=\beta N_0D\max_p P_{0,p}$, or 147.47\,W at $\beta=1$. During a GEMM in mode $p$, the active core count $n_{j,p}$ is the largest integer up to $N_j$ for which
+GPUs can reduce frequency under a power cap~\cite{nvidia2024nvmlpower}. We fix $f=1$\,GHz and limit active cores under a DP-array budget $B=\beta N_0D\max_p P_{0,p}$. We sweep $1\le\beta\le2$ from a 147.47\,W baseline. Let $P_{j,p}$ be the workload-driven power of one DP in mode $p$ and $I_j$ its idle power, approximated by its largest leakage estimate across modes. The active core count $n_{j,p}$ is the largest integer up to $N_j$ satisfying
 \begin{equation}
 D\big[n_{j,p}P_{j,p}+(N_j-n_{j,p})I_j\big]\le B .
 \label{eq:active_core_budget}
 \end{equation}
-The available throughput is then $C_{j,p}=2fD K_{j,p}n_{j,p}$ FLOP/s, where $K_{j,p}$ is the native dot-product length. For example, $1:4:8$ fits 29 cores at the reference area. At baseline power, all 29 can run BF16, but only 19 can run MXFP8 and 28 can run MXFP4.
+The available throughput is then $C_{j,p}=2fD K_{j,p}n_{j,p}$ FLOP/s, where $K_{j,p}$ is the native dot-product length. At $\alpha=0.327$ and $\beta=1$, $1:4:8$ fits 29 cores and activates 29, 19, or 28 in BF16, MXFP8, or MXFP4, respectively.
 
 \subsection{Precision Migration and Request Lengths}
 We model batch-one cold prefill for the dominant GEMMs in DeepSeek-V4.1-Flash~\cite{deepseekv41source}. Table~\ref{tab:five_stage_migrations} gives five cumulative precision assignments. In A, routed experts use FP4 weights and FP8 activations and execute at the FP8 rate. Scenarios B--E explore lower-precision expert and attention computation, motivated by W4A4 routed experts and low-precision attention~\cite{nvidiav41routed2026,flashattention3,sageattention3}.
