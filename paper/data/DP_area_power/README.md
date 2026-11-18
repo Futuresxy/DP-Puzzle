@@ -12,7 +12,7 @@
 
 ### 论文九配比合图
 
-在仓库根目录运行 `python3 paper/data/DP_area_power/plot_latest6_area_power.py --scope nine`，从上述固定 CSV 的九种完整配比生成 [dp_ratio_area_power.pdf](../../figures/dp_ratio_area_power.pdf)。面积柱使用左轴（10³ µm²），柱内倍率以 `1:2:4` 的面积为基准。BF16、MXFP8 E4M3 和 MXFP4 E2M1 的柱高使用右轴（mW），各柱上方的倍率均为该柱总功耗除以 `1:2:4` 的 MXFP8 E4M3 总功耗（16.0019989013672 mW）。绘图使用原始精度计算，仅在标签上保留两位小数。
+在仓库根目录运行 `python3 paper/data/DP_area_power/plot_latest6_area_power.py --scope nine`，从上述固定 CSV 的九种完整配比生成 [dp_ratio_area_power.pdf](../../figures/dp_ratio_area_power.pdf)。面积柱使用左轴（10³ µm²），柱内红字为相对 `1:2:4` 面积的倍率。BF16、MXFP8 E4M3 和 MXFP4 E2M1 的功耗柱使用右轴（mW），柱内黑字为相对功耗倍率。金色边框标出统一的功耗基准，即 `1:2:4` 的 MXFP8 E4M3 总功耗（16.0019989013672 mW）。绘图使用原始精度计算，仅在标签上保留两位小数。
 
 ## 当前论文四配比视图（2026-11-11）
 
