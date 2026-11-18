@@ -11,6 +11,7 @@
 \usepackage{graphicx}
 \usepackage[caption=false,font=footnotesize]{subfig}
 \usepackage{booktabs}
+\usepackage{stfloats}
 \usepackage{cite}
 \usepackage[hidelinks]{hyperref}
 \graphicspath{{figures/}}
@@ -55,7 +56,7 @@ Our contributions are as follows:
 \begin{itemize}
 \item We propose DP-Puzzle, a composable dot-product microarchitecture supporting TF32, FP16, BF16, INT8, MXFP8/6/4, NVFP4, and HiF4. Lanes share arithmetic across precisions and form Groups. Adding specialized low-precision Groups adjusts the BF16:MXFP8:MXFP4 peak throughput ratio.
 \item We evaluate expansion costs with logic synthesis and power estimates based on Qwen3-8B~\cite{qwen3technicalreport} activity. Doubling MXFP4 throughput alone requires about half the added area and has 39\% lower maximum estimated power than doubling both MXFP4 and MXFP8. MXFP8 is the highest-power mode in every evaluated design that expands its throughput. At reported conditions, our baseline achieves $3.74\times$ and $2.45\times$ the FP8 area and energy efficiencies of MiniFloats~\cite{bertaccini2024minifloats}, respectively.
-\item We model GEMM compute time across precision-migration scenarios under common core-area and compute array power budgets. For DeepSeek-V4.1-Flash prefill, moderate FP4 expansion retains more deployable cores than aggressive expansion and gives the best aggregate modeled GEMM compute speedup, $1.13\times$ over the baseline.
+\item We model chip-level throughput under an area budget that bounds the physical core count and an array power budget that limits the number of concurrently active cores in each precision mode. Across five precision-migration scenarios for DeepSeek-V4.1-Flash prefill, the preferred ratio depends more on the power budget than on the array share of core area over the ranges studied. With baseline area and power budgets, $1:4:8$ minimizes trace-weighted mean GEMM time ($1.14\times$ modeled speedup over $1:2:4$). Reducing low-precision datapath power or improving cooling where thermal limits apply can favor wider FP8 and FP4 configurations.
 \end{itemize}
 
 % END REVIEW PAIR: 01_introduction.tex
@@ -92,7 +93,9 @@ The two inputs use the same scaling-block boundaries along the reduction dimensi
 \label{sec:datapath_sharing}
 
 For compute-resource reuse, Bit Fusion composes low-bit-width multiplication units through shifts and additions~\cite{bitfusion2018}. Park et al. share multipliers and reduction datapaths between FP16 mantissa multiplication and INT8/INT4 dot products~\cite{parkMultimode8KMACHWutilizationaware2022}. Abdel-Aziz et al. support higher precision through temporal decomposition and analyze the overhead of floating-point exponent alignment and addition~\cite{abdelaziz2021overheads}. For multi-format computation and fused reduction, FPnew supports multiple floating-point operations through configurable format slices~\cite{mach2020fpnew}. MiniFloats fuses two low-precision products with a higher-precision addend, reducing repeated normalization and rounding~\cite{bertaccini2022minifloat}. TransDot reuses multiplier partial products and partitionable shifters~\cite{transdot2026}. Ten-Four connects dot products in multiple formats to a shared reduction backend~\cite{rout2026tenfourv3}. MXDOTP uses a unified internal element representation, integrates MX scaling into the dot-product datapath, and accumulates in FP32~\cite{islamoglu2025mxdotp}.
-% Products can be aligned and reduced together with the addend $C$, or a floating-point adder can combine $C$ with the scaled dot product. Where $C$ enters the datapath determines the alignment range and accumulation overhead~\cite{bertaccini2022minifloat,lutzFusedFP84Way2024}. Internal accumulation order, truncation positions, and rounding rules jointly determine numerical results~\cite{sun2023tensorcores,xie2025mmasim}.
+
+Products can be aligned and reduced together with the addend $C$, or a floating-point adder can combine $C$ with the scaled dot product. Where $C$ enters the datapath determines the alignment range and accumulation overhead~\cite{bertaccini2022minifloat,lutzFusedFP84Way2024}. Internal accumulation order, truncation positions, and rounding rules jointly determine numerical results~\cite{sun2023tensorcores,xie2025mmasim}.
+
 In design-space exploration, Crafton et al. and MX-Like further examine trade-offs among low-precision formats, compute organization, and hardware cost~\cite{paretomac2025,zhao2026mxlike}, but neither addresses throughput-ratio selection.
 
 Table~\ref{tab:related_features} compares the precision formats supported by DP-Puzzle and related dot-product designs. DP-Puzzle adds specialized low-precision units to adjust peak throughput across formats.
@@ -152,6 +155,7 @@ The stand-alone $0:2:4$ DP evaluated in Section~\ref{sec:evaluation} uses four Q
 Adding four E16 Groups to the baseline doubles E throughput alone ($1:2:8$). Adding four Q8E16 Groups doubles both Q and E throughput ($1:4:8$). Table~\ref{tab:ratio9_composition} lists the Group counts and resulting parallelism for all nine configurations.
 
 \input{tables/group_compositions.tex}
+\input{tables/related_ppa_native.tex}
 
 Each added Group has a bidirectional shifter. Active Groups participate in global exponent selection and apply scales at the original block boundaries. After alignment, a carry-save network reduces the added partial sums to two rows. A $4:2$ compressor merges these with the baseline rows, which already include the addend $C$. The accumulator width scales with the number of participating Groups. A precision-controlled multiplexer selects the baseline or merged sum and carry rows for a shared carry-propagate adder. Floating-point results are rounded to FP32 using round-to-nearest, ties-to-even. Inactive Groups are excluded from exponent selection and special-value reduction, preserving the baseline high-precision results. All configurations accept one independent request per cycle with an eight-cycle pipeline latency.
 % END REVIEW PAIR: 03_architecture.tex
@@ -159,8 +163,6 @@ Each added Group has a bidirectional shifter. Active Groups participate in globa
 % BEGIN REVIEW PAIR: 04_evaluation.tex
 \section{Evaluation}
 \label{sec:evaluation}
-
-\input{tables/related_ppa_native.tex}
 
 \begin{figure*}[!t]
 \centering
