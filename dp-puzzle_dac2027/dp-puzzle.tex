@@ -53,7 +53,7 @@ DP-Puzzle explores the design space of tensor-core throughput ratios under area 
 Our contributions are as follows:
 \begin{itemize}
 \item We propose a composable dot-product microarchitecture supporting TF32, FP16, BF16, INT8, MXFP8/6/4, NVFP4, and HiF4. Lanes share arithmetic across precisions and form Groups. Adding specialized low-precision Groups adjusts the BF16:MXFP8:MXFP4 peak throughput ratio.
-\item We evaluate expansion costs with logic synthesis and power estimates based on Qwen3-8B~\cite{qwen3technicalreport} activity. Doubling MXFP4 throughput alone requires about half the added area and has 39\% lower maximum estimated power than doubling both MXFP4 and MXFP8. MXFP8 is the highest-power mode in every evaluated design that expands its throughput. At reported conditions, our baseline achieves $3.74\times$ and $2.45\times$ the FP8 area and energy efficiencies of MiniFloats~\cite{bertaccini2024minifloats}, respectively.
+\item We evaluate expansion costs with logic synthesis and power estimates based on Qwen3-8B~\cite{qwen3technicalreport} activity. Doubling MXFP4 throughput alone requires about half the added area and has 39\% lower maximum estimated power than doubling both MXFP4 and MXFP8. Among the three profiled modes, MXFP8 has the highest estimated power in each design with expanded MXFP8 throughput. At reported conditions, our baseline achieves $3.74\times$ and $2.45\times$ the FP8 area and energy efficiencies of MiniFloats~\cite{bertaccini2024minifloats}, respectively.
 \item We model chip-level throughput under an area budget that bounds the physical core count and an array power budget that limits the number of concurrently active cores in each precision mode. Across five precision-migration scenarios for DeepSeek-V4.1-Flash prefill, the preferred ratio depends more on the power budget than on the array share of core area over the ranges studied. At the reference budgets, \tpratio{1}{4}{8} minimizes the request-weighted mean GEMM time across five equally weighted scenarios ($1.15\times$ over \tpratio{1}{2}{4}). Reducing low-precision datapath power or improving cooling where thermal limits apply can favor wider FP8 and FP4 configurations.
 \end{itemize}
 
@@ -102,7 +102,7 @@ Table~\ref{tab:related_features} compares the formats supported by our dot-produ
 \label{sec:commercial_ratios}
 \label{sec:ratio_motivation}
 
-Table~\ref{tab:vendor_ratios} summarizes recent products and development roadmaps from major general-purpose graphics processing unit (GPGPU) and neural processing unit (NPU) vendors, illustrating industry interest in \tpratio{1}{2}{6}, \tpratio{1}{4}{8}, and \tpratio{1}{2}{8} ratios. These disclosures do not explain the rationale for selecting each ratio, and the configurations cover only a small part of the design space. We therefore extend the exploration to a larger design space of throughput ratios. Our objective is to determine how hardware cost should be traded against performance benefits as the precision requirements of future model workloads evolve.
+Table~\ref{tab:vendor_ratios} shows how commercial designs differ from the \tpratio{1}{2}{4} baseline. The B300 SXM expands FP4 throughput alone (\tpratio{1}{2}{6}), while the MI455X expands both FP8 and FP4 throughput (\tpratio{1}{4}{8}). We compare configurations that expand MXFP8 throughput, MXFP4 throughput, or both.
 % END REVIEW PAIR: 02_background.tex
 
 % BEGIN REVIEW PAIR: 03_architecture.tex
@@ -209,10 +209,10 @@ D\big[n_{j,p}P_{j,p}+(N_j-n_{j,p})I_j\big]\le B .
 The available throughput is then $C_{j,p}=2fD K_{j,p}n_{j,p}$ FLOP/s, where $K_{j,p}$ is the native dot-product length. At $\alpha=0.327$ and $\beta=1$, \tpratio{1}{4}{8} fits 29 cores and activates 29, 19, or 28 in BF16, MXFP8, or MXFP4, respectively.
 
 \subsection{Precision Migration and Request Lengths}
-We model batch-one cold prefill for the dominant GEMMs in DeepSeek-V4.1-Flash~\cite{deepseekv41source}. Table~\ref{tab:five_stage_migrations} gives five cumulative precision assignments. In A, routed experts use FP4 weights and FP8 activations and execute at the FP8 rate. Scenarios B--E explore lower-precision expert and attention computation, motivated by W4A4 routed experts and low-precision attention~\cite{nvidiav41routed2026,flashattention3,sageattention3}.
+We model batch-one cold prefill for the dominant GEMMs in DeepSeek-V4.1-Flash~\cite{deepseekv41source}. Table~\ref{tab:five_stage_migrations} gives five cumulative precision assignments. In scenario A, we assign routed-expert GEMMs with FP4 weights and FP8 activations to MXFP8 capacity. Scenarios B--E explore lower-precision expert and attention computation, motivated by W4A4 routed experts and low-precision attention~\cite{nvidiav41routed2026,flashattention3,sageattention3}.
 \input{tables/five_stage_migrations}
 
-We use 2,047 first requests from FreeInference agent sessions (Aug.~30--Sept.~5, 2026)~\cite{nixon2026requests}. The budget sweep in Fig.~\ref{fig:first_request_budget_sweep} uses observed input lengths. For the fixed-budget comparison in Fig.~\ref{fig:five_scenarios_compare}, we group requests into 11 bins with upper edges doubling from 1K to 1M tokens. We evaluate GEMM work at each upper edge and weight the resulting time by the fraction of requests in that bin. The most frequent bin, $(16\mathrm{K},32\mathrm{K}]$, contains 33.56\% of requests. In both experiments, modeled time sums each mode's FLOPs divided by $C_{j,p}$, assuming full utilization and sufficient bandwidth. Overall speedup divides the baseline mean time by the candidate mean time, with equal weight for the five scenarios.
+We use 2,047 first requests from FreeInference agent sessions (Aug.~30--Sept.~5, 2026)~\cite{nixon2026requests}. The budget sweep in Fig.~\ref{fig:first_request_budget_sweep} uses observed input lengths. For the fixed-budget comparison in Fig.~\ref{fig:five_scenarios_compare}, we group requests into 11 bins with upper edges doubling from 1K to 1M tokens. We evaluate GEMM work at each upper edge and weight the resulting time by the fraction of requests in that bin. The most frequent bin, $(16\mathrm{K},32\mathrm{K}]$, contains 33.56\% of requests. In both experiments, we sum FLOPs divided by $C_{j,p}$ over the modeled modes, assuming full utilization and sufficient bandwidth. This estimate excludes FP32 work and format conversion. Overall speedup divides the baseline mean time by the candidate mean time, with equal weight for the five scenarios.
 
 \subsection{How Power and Precision Mix Shape Throughput Gains}
 \begin{figure}[!t]
@@ -232,7 +232,7 @@ At $\alpha=0.327$ and $\beta=1$, \tpratio{1}{8}{16} fits 22 cores and can activa
 \end{figure}
 \begin{samepage}
 \textbf{Moving main attention and grouped O-down to FP4 favors wider FP4 datapaths.}
-At the reference budgets, \tpratio{1}{4}{8} minimizes mean GEMM time over the five equally weighted scenarios, using the request bins in (Fig.~\ref{fig:five_scenarios_compare}(b)). This yields a modeled $1.15\times$ speedup over $1:2:4$. In scenario D, experts and selected projections use FP4 while main attention still uses FP8. Here \tpratio{1}{4}{8} is within 2.1\% of the shortest mean time. Once main attention and grouped O-down also move to FP4 in scenario E, \tpratio{1}{2}{12} and \tpratio{1}{2}{16} deliver a further 17.3\% and 21.4\% speedup over \tpratio{1}{4}{8}, respectively.\par
+At the reference budgets, \tpratio{1}{4}{8} minimizes mean GEMM time over the five equally weighted scenarios, using the request-length bins in Fig.~\ref{fig:five_scenarios_compare}(b). This yields a modeled $1.15\times$ speedup over $1:2:4$. In scenario D, experts and selected projections use FP4 while main attention still uses FP8. Here \tpratio{1}{4}{8} is within 2.1\% of the shortest mean time. Once main attention and grouped O-down also move to FP4 in scenario E, \tpratio{1}{2}{12} and \tpratio{1}{2}{16} deliver a further 17.3\% and 21.4\% speedup over \tpratio{1}{4}{8}, respectively.\par
 \end{samepage}
 
 % END REVIEW PAIR: 05_dse.tex
@@ -245,7 +245,7 @@ DP-Puzzle provides a quantitative basis for choosing a fixed tensor-core through
 
 
 \section*{Content Generated by AI}
-We defined the architecture, migration scenarios, and evaluation criteria. OpenAI Codex assisted with RTL optimization and testing, EDA script generation, data analysis, and plotting in Sections~\ref{sec:evaluation} and~\ref{sec:workload}. We take responsibility for the paper and its results.
+We used OpenAI Codex (GPT-6 Astra) to test, debug, and optimize RTL and to generate EDA scripts. It also assisted with data analysis and plotting in Sections~\ref{sec:evaluation} and~\ref{sec:workload} and with manuscript translation and editing. We defined the architecture, migration scenarios, and evaluation criteria and take responsibility for the paper and its results.
 
 \clearpage
 \setcounter{DACreferencepage}{\value{page}}
