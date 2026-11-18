@@ -180,7 +180,7 @@ The DP introduces the addend $C$ after within-Group reduction and scale-factor i
 \end{equation}
 After zero-padding the original magnitude to a 39-bit window, a single bidirectional shift suffices; right shifts truncate toward zero. Signs are restored before summation through a carry-save adder (CSA) compression tree and a single carry-propagate adder (CPA). The result is then normalized and rounded to FP32 using round-to-nearest, ties-to-even.
 
-INT8/INT32 bypass floating-point alignment and output normalization while sharing the accumulation datapath. Registers are enabled according to the request's precision. All configurations retain an eight-cycle latency and a throughput of one independent request per cycle.
+INT8/INT32 bypass floating-point alignment and output normalization while sharing the accumulation datapath. Registers are enabled according to the request's precision.
 
 \subsection{Group Specialization and Throughput-Ratio Composition}
 \label{sec:specialized_midgroups}
@@ -190,11 +190,11 @@ Specialization preserves the numerical mappings, precision, and rounding rules o
 
 E16 further reduces the alignment and reduction hardware. Each Lane retains eight $4\times4$ multipliers but removes element-exponent comparison, local alignment-reference generation across Lanes, and wide shifters. A narrow adder tree performs reduction, with HiF4's second-level micro-exponent incorporated after local summation; the Lane output is reduced to 14 signed bits. Combining two Lanes produces a 15-bit Group sum. Scaling and LZD operate on a 22-bit result, which is mapped to the common U31 magnitude and Anchor interface. E16 expansion therefore avoids the cost of Q's wide alignment and reduction paths.
 
-Table~\ref{tab:ratio9_composition} lists the Group compositions of the nine DP configurations. Each retains four baseline multi-precision Groups and adds Q8, E16, or Q8E16 Groups to adjust low-precision throughput. Added Groups process additional $K$ segments for the same output, with scale factors distributed according to the original quantization-block boundaries.
+Products and roadmaps in Table~\ref{tab:vendor_ratios} extend the $1:2:4$ baseline by increasing E throughput alone ($1:2:6$, $1:2:8$) or both Q and E throughput ($1:4:8$). As Table~\ref{tab:ratio9_composition} shows, adding four E16 Groups to the four baseline Groups yields $1:2:8$, while adding four Q8E16 Groups yields $1:4:8$. More E16 Groups yield $1:2:12$ and $1:2:16$, and more Q8E16 Groups yield $1:6:12$ and $1:8:16$. Four additional Q8 Groups provide the Q-only comparison, $1:4:4$.
 
 \input{tables/group_compositions.tex}
 
-The DP adds bidirectional shifters for the new Groups, extends exponent comparison, and widens accumulation so that all participating sources align to a common reference. A 4:2 CSA network compresses the added results into two rows. A further 4:2 CSA merges these with the two baseline rows, which already include the single $C$ contribution. When only two Groups are added, their results enter the merge stage directly. A precision-controlled multiplexer (MUX) selects either the baseline or merged sum/carry pair for the shared CPA. Q8, E16, and Q8E16 participate in Q, E, and Q/E modes, respectively. When expansion is inactive, the MUX selects the baseline path, and the added Groups are excluded from exponent comparison and special-value reduction, preserving the original high-precision results.
+Each added Group applies scales at the original block boundaries and has a bidirectional shifter for alignment to the common exponent. A carry-save network reduces the aligned contributions from the added Groups to two rows. A $4:2$ compressor merges these with the baseline rows, which include $C$. Accumulation width scales with Group count. A precision-controlled multiplexer routes either the baseline or merged rows to the shared CPA for final addition. Floating-point results are rounded to FP32 using round-to-nearest, ties-to-even. Only active Groups participate in exponent selection and special-value reduction, preserving the baseline results in high-precision modes. All configurations accept one independent request per cycle with an eight-cycle latency.
 
 % \begin{figure}[t]
 % \centering
@@ -203,7 +203,6 @@ The DP adds bidirectional shifters for the new Groups, extends exponent comparis
 % \label{fig:dp_csa_expansion}
 % \end{figure}
 
-This composition maps throughput-ratio choices to the addition of specialized Groups. The next section evaluates all nine configurations at a common process node and frequency.
 % END REVIEW PAIR: 03_architecture.tex
 
 % BEGIN REVIEW PAIR: 04_evaluation.tex
