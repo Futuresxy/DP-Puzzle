@@ -204,19 +204,42 @@ Under the original-node comparison, the $0:2:4$ low-precision unit achieves $5.2
 \caption{Fixed-budget comparison ($\alpha=0.327$, $\beta=1$). (a) Core counts under area-only (gray) and joint (blue) budgets. (b) Ideal GEMM compute speedups over $1:2:4$. A--E each aggregate 11 contexts. All aggregates 55 combinations with equal request weights. Outlines mark column maxima.}
 \label{fig:fixed_budget_compact}
 \end{figure}
-We use five successive precision-migration scenarios for the dominant GEMMs in DeepSeek-V4.1-Flash to compare throughput ratios under fixed area and power budgets.
+We use five precision-migration scenarios for the dominant GEMMs in DeepSeek-V4.1-Flash prefill to compare throughput ratios across area and power budgets.
 
 \subsection{Deployment Scale Under Joint Budgets}
-We use the 36-core $1:2:4$ baseline to set a common area budget. Each core contains 256 DPs, each accepting one request per cycle at 1\,GHz. The parameter $\alpha$ denotes the fraction of a baseline core occupied by its DP array. We set $\alpha=0.327$ using the reported 32.7\% share of AI Core area occupied by the Ascend Cube cluster as a reference~\cite{luo2024hifloat8area}. For each candidate, we scale the array area in proportion to its synthesized single-DP area and hold the peripheral storage and control area per core fixed.
+The $1:2:4$ baseline has $N_0=36$ cores, each with 256 DPs that accept one request per cycle at 1\,GHz. The parameter $\alpha$ is the DP-array fraction of baseline core area. Our reference $\alpha=0.327$ follows the reported Ascend Cube cluster area share~\cite{luo2024hifloat8area}. At each $\alpha$, the area budget is the area of $N_0$ baseline cores. We hold non-array area per core fixed across candidates. If candidate $j$ has $r_j$ times the synthesized DP area of the baseline, its core area is $1+\alpha(r_j-1)$ times the baseline core area.
 
-The parameter $\beta$ sets the aggregate DP-array power budget as a multiple of the baseline value. We use $\beta=1$ and estimate each core's array power as 256 times the largest single-DP power estimate across BF16, MXFP8, and MXFP4. We divide the area budget by the candidate's core area and the power budget by its per-core array power. The smaller quotient, rounded down, gives the deployed core count. Fig.~\ref{fig:fixed_budget_compact}(a) shows that $1:2:8$ retains all 32 area-limited cores under the power cap, whereas $1:8:16$ drops from 22 cores to 10. For each design, we hold the deployed count fixed across workloads and multiply it by 256 and the per-DP throughput at each precision to obtain chip-level peak throughput.
+We set the DP-array power cap to $\beta P_0$, where $P_0=N_0p_0$ is the baseline array power estimate. The per-core array power $p_j$ is 256 times the largest Power Compiler estimate for a single DP across BF16, MXFP8, and MXFP4. The feasible core count is
+\begin{equation}
+N_j(\alpha,\beta)=\min\!\left\{
+\left\lfloor\frac{N_0}{1+\alpha(r_j-1)}\right\rfloor,
+\left\lfloor\frac{\beta P_0}{p_j}\right\rfloor
+\right\}.
+\label{eq:joint_core_count}
+\end{equation}
 
 \subsection{Ratio Selection Across Precision Migrations}
-We evaluate cold-start prefill at batch=1 over 11 doubling contexts from 1K to 1M tokens~\cite{deepseekv41source}. Table~\ref{tab:five_stage_migrations} progressively lowers major GEMM precisions through scenarios A--E. Other operators retain their original precision. Routed-expert W4A4 deployment~\cite{nvidiav41routed2026} and FP8/FP4 attention~\cite{flashattention3,sageattention3} motivate these future migration assumptions. We sum each precision's operation count divided by its chip-level peak throughput to estimate GEMM compute time under sufficient data supply and full array utilization. All 55 scenario--context combinations receive equal request weight. Aggregate speedup is the baseline's mean compute time divided by the candidate's mean. Longer contexts contribute according to their operation counts.
+We evaluate cold-start prefill at batch size one for 11 doubling context lengths from 1K to 1M tokens~\cite{deepseekv41source}. Table~\ref{tab:five_stage_migrations} specifies five assumed migrations, motivated by routed-expert W4A4 deployment~\cite{nvidiav41routed2026} and FP8/FP4 attention~\cite{flashattention3,sageattention3}. Under full array utilization and sufficient data supply, we estimate compute time for request $k$ as $\sum_p F_{k,p}/(N_jR_{j,p})$, where $F_{k,p}$ is the GEMM operation count at precision $p$ and $R_{j,p}$ is the per-core peak throughput. Each design serves all 55 scenario--context combinations at equal request weight. Speedup divides the $1:2:4$ baseline's mean compute time by the candidate's mean under the same budgets.
 \input{tables/five_stage_migrations}
 
-\textbf{Moderate expansion balances low-precision capacity and deployment density.}
-Aggressive low-precision expansion does not yield the best aggregate performance under these budgets in Fig.~\ref{fig:fixed_budget_compact}(b). The moderate FP4 expansion of $1:2:8$ achieves the highest aggregate benefit, with an ideal GEMM compute speedup of $1.13\times$ over $1:2:4$. Within the same budgets, $1:2:8$ retains relatively high deployment density and high-precision throughput, balancing low-precision gains against the remaining mixed-precision workload.
+At $(\alpha,\beta)=(0.327,1)$, $1:2:8$ retains all 32 area-limited cores. The power cap reduces $1:8:16$ from 22 area-limited cores to 10 (Fig.~\ref{fig:fixed_budget_compact}(a)). With twice the baseline MXFP4 throughput per DP, $1:2:8$ achieves the highest aggregate GEMM compute speedup of $1.13\times$ (Fig.~\ref{fig:fixed_budget_compact}(b)).
+
+% Scan evidence: build/v41_joint_budget_dse_extended/{scan.py,manifest.json,summary.json}.
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{joint_budget_dse_extended.pdf}
+\caption{Joint-budget sweep for five migration scenarios and 11 contexts. (a) Throughput ratio minimizing mean modeled GEMM compute time at each $(\alpha,\beta)$. (b) GEMM compute speedup over the same-budget $1:2:4$ baseline along the dashed $\alpha=0.327$ slice. Colors identify selected ratios. Markers denote switches at $\beta\approx1.1994$, $1.5792$, and $1.9267$.}
+\label{fig:budget_dse_extended}
+\end{figure}
+
+\subsection{Throughput-Ratio Boundaries Under Joint Budgets}
+We sweep $\alpha\in[0.25,0.50]$ and $\beta\in[1,2]$ over the same workloads. The changes in the integer core limits in~\eqref{eq:joint_core_count} partition this range into 6,665 cells with constant core counts. For each cell, we select the ratio with the lowest mean modeled GEMM compute time (Fig.~\ref{fig:budget_dse_extended}(a)).
+
+\textbf{Power headroom determines when MXFP8 expansion pays off.} At $\alpha=0.327$, the area cap is 455.59\,mm$^2$. Increasing the array power cap from 147.47 to 176.88\,W ($\beta\approx1.1994$) allows $1:4:8$ to deploy its 24th core and overtake $1:2:8$. The speedup rises from $1.13\times$ to $1.16\times$. Further switches occur at $\beta\approx1.5792$ and $1.9267$, where $1:6:12$ and $1:8:16$ achieve $1.42\times$ and $1.62\times$, respectively (Fig.~\ref{fig:budget_dse_extended}(b)).
+
+\textbf{Array area share changes the return on power headroom.} At $\beta=1$, $1:2:8$ leads through $\alpha\approx0.48005$. Above that boundary it drops from 31 to 30 cores, and $1:2:6$ wins with 33. At $\beta=2$, $1:6:12$ leads through $\alpha\approx0.28172$. Losing its 26th core shifts the choice to $1:8:16$. At $\alpha=0.50$, $1:8:16$ reaches its area limit of 18 cores at $\beta\approx1.6515$, and the best speedup stays at $1.39\times$ through $\beta=2$.
+
+\textbf{The power cost of added low-precision throughput sets the next useful expansion.} Under tight power caps, moderate MXFP4 expansion can preserve enough cores to outperform larger expansions on a mixed-precision workload. For a design whose area allows $n$ cores, the $n$th core becomes feasible at $\beta=np_j/P_0$. At the reference area and fixed peak rates, bringing the 24-core $1:4:8$ crossover to $\beta=1$ would require about 16.6\% lower maximum-mode array power per core. This gives a power target for expanding MXFP8 and MXFP4 throughput under a fixed budget.
 % END REVIEW PAIR: 05_dse.tex
 
 % BEGIN REVIEW PAIR: 06_conclusion.tex
