@@ -35,7 +35,7 @@
 
 % BEGIN REVIEW PAIR: 00_abstract.tex
 \begin{abstract}
-Large language models evolve faster than accelerators can be designed and fabricated. Commercial AI accelerators implement different BF16:MXFP8:MXFP4 peak throughput ratios. As more operators adopt lower precision, designers must choose a fixed ratio for workloads that will continue to evolve. DP-Puzzle explores these ratios with composable dot-product units, using synthesized area and workload-driven power estimates to model chip throughput across precision-migration scenarios. Array power is the main constraint on further low-precision expansion. Under baseline area and power budgets, \tpratio{1}{4}{8} offers a balanced choice across five DeepSeek-V4.1-Flash prefill scenarios, yielding a modeled $1.15\times$ GEMM speedup over \tpratio{1}{2}{4}.
+Large language models evolve faster than accelerators can be designed and fabricated. Commercial AI accelerators implement different BF16:MXFP8:MXFP4 peak throughput ratios. As more operators adopt lower precision, designers must choose a fixed ratio for workloads that will continue to evolve. DP-Puzzle explores these ratios with composable dot-product units, using synthesized area and workload-driven power estimates to model chip throughput across precision-migration scenarios. We find that the tensor-core power budget is the main limit on usable low-precision throughput. Under baseline area and power budgets, \tpratio{1}{4}{8} offers a balanced choice across five DeepSeek-V4.1-Flash prefill scenarios, yielding a modeled $1.15\times$ GEMM speedup over \tpratio{1}{2}{4}.
 \end{abstract}
 \begin{IEEEkeywords}
 throughput ratios, dot-product units, LLMs, multi-precision, AI accelerators
@@ -45,7 +45,7 @@ throughput ratios, dot-product units, LLMs, multi-precision, AI accelerators
 % BEGIN REVIEW PAIR: 01_introduction.tex
 \section{Introduction}
 \label{sec:introduction}
-Inference in large language models (LLMs) involves mixed-precision computation within a single model. Operators use numerical formats according to their accuracy requirements. Common formats include TF32, FP16, BF16, FP8, INT8, and emerging FP6, FP4, and microscaling (MX) formats~\cite{ocpmx2023}. For example, DeepSeek-V4.1-Flash~\cite{deepseekv41source} uses FP8 for mixture-of-experts (MoE) computations and most attention projections. Its sparse attention indexer uses MXFP4 for QK computation, whereas the main attention module uses BF16 for QK and PV computations. This operator-level mix of precisions requires inference hardware to efficiently support multiple numerical formats, including emerging low-precision formats, within the same workload.
+Inference in large language models (LLMs) mixes precisions across operators according to their accuracy requirements. Common formats include TF32, FP16, BF16, FP8, INT8, and emerging FP6, FP4, and microscaling (MX) formats~\cite{ocpmx2023}. For example, DeepSeek-V4.1-Flash~\cite{deepseekv41source} uses FP8 for mixture-of-experts (MoE) computations and most attention projections. Its sparse attention indexer uses MXFP4 for QK computation, whereas the main attention module uses BF16 for QK and PV computations. This operator-level mix of precisions requires inference hardware to efficiently support multiple numerical formats, including emerging low-precision formats, within the same workload.
 
 Supporting these mixed-precision workloads requires not only multiple numerical formats but also suitable throughput ratios across precisions. Under a fixed input data-width budget, halving the element width allows twice as many elements to be supplied in parallel. This motivates the conventional BF16:FP8:FP4 peak throughput ratio of \tpratio{1}{2}{4}. Recent industrial AI accelerators allocate additional resources to FP4, or to both FP8 and FP4, resulting in different throughput ratios, as summarized in Table~\ref{tab:vendor_ratios}. Such provisioning can provide headroom for the growing use of low-precision computation. However, chip design and fabrication cycles are much longer than model iteration cycles. A ratio tailored to current workloads may therefore be poorly matched to models deployed later in the chip's lifetime. Selecting suitable throughput ratios therefore requires balancing hardware cost against current workload requirements and anticipated shifts in precision demand.
 
@@ -54,7 +54,7 @@ Our contributions are as follows:
 \begin{itemize}
 \item We propose a composable dot-product microarchitecture supporting TF32, FP16, BF16, INT8, MXFP8/6/4, NVFP4, and HiF4. Lanes share arithmetic across precisions and form Groups. Adding specialized low-precision Groups adjusts the BF16:MXFP8:MXFP4 peak throughput ratio.
 \item We evaluate expansion costs with logic synthesis and power estimates based on Qwen3-8B~\cite{qwen3technicalreport} activity. Doubling MXFP4 throughput alone requires about half the added area and has 39\% lower maximum estimated power than doubling both MXFP4 and MXFP8. MXFP8 is the highest-power mode in every evaluated design that expands its throughput. At reported conditions, our baseline achieves $3.74\times$ and $2.45\times$ the FP8 area and energy efficiencies of MiniFloats~\cite{bertaccini2024minifloats}, respectively.
-\item We model chip-level throughput under an area budget that bounds the physical core count and an array power budget that limits the number of concurrently active cores in each precision mode. Across five precision-migration scenarios for DeepSeek-V4.1-Flash prefill, the preferred ratio depends more on the power budget than on the array share of core area over the ranges studied. With baseline area and power budgets, \tpratio{1}{4}{8} minimizes trace-weighted mean GEMM time ($1.15\times$ modeled speedup over \tpratio{1}{2}{4}). Reducing low-precision datapath power or improving cooling where thermal limits apply can favor wider FP8 and FP4 configurations.
+\item We model chip-level throughput under an area budget that bounds the physical core count and an array power budget that limits the number of concurrently active cores in each precision mode. Across five precision-migration scenarios for DeepSeek-V4.1-Flash prefill, the preferred ratio depends more on the power budget than on the array share of core area over the ranges studied. At the reference budgets, \tpratio{1}{4}{8} minimizes the request-weighted mean GEMM time across five equally weighted scenarios ($1.15\times$ over \tpratio{1}{2}{4}). Reducing low-precision datapath power or improving cooling where thermal limits apply can favor wider FP8 and FP4 configurations.
 \end{itemize}
 
 % END REVIEW PAIR: 01_introduction.tex
@@ -83,14 +83,14 @@ P_{j,i}^{(A)}P_{j,i}^{(B)}}_{q_j}
 \end{aligned}
 \label{eq:blockdot}
 \end{equation}
-The two inputs use the same scaling-block boundaries along the reduction dimension. Here, $g$ is the block size, $G_s=\lceil K/g\rceil$, and the final block is zero-padded. The term $q_j$ is the dot product within block $j$, and $\widetilde{X}_j$ is its effective scale. For conventional floating-point formats, $\widetilde{X}_j=1$ and $P_{j,i}$ is the original element value. For MX formats, $\widetilde{X}_j=X_j$. HiF4's local micro-exponents are incorporated into $P_{j,i}$.
+The two inputs use the same scaling-block boundaries along the reduction dimension. Here, $g$ is the block size, $G_s=\lceil K/g\rceil$, and the final block is zero-padded. The term $q_j$ is the dot product within block $j$, and $\widetilde{X}_j$ is its effective scale. For conventional floating-point formats, $\widetilde{X}_j=1$ and $P_{j,i}$ is the original element value. For MX formats, $\widetilde{X}_j=X_j$, where $X_j$ is the decoded block scale. HiF4's local micro-exponents are incorporated into $P_{j,i}$.
 
 \input{tables/related_features.tex}
 
 \subsection{Related Work on Dot-Product Design and Design-Space Exploration}
 \label{sec:datapath_sharing}
 
-For compute-resource reuse, Bit Fusion composes low-bit-width multiplication units through shifts and additions~\cite{bitfusion2018}. Park et al. share multipliers and reduction datapaths between FP16 mantissa multiplication and INT8/INT4 dot products~\cite{parkMultimode8KMACHWutilizationaware2022}. Abdel-Aziz et al. support higher precision through temporal decomposition and analyze the overhead of floating-point exponent alignment and addition~\cite{abdelaziz2021overheads}. For multi-format computation and fused reduction, FPnew supports multiple floating-point operations through configurable format slices~\cite{mach2020fpnew}. MiniFloat-NN's ExSdotp fuses two low-precision products with a wider addend and rounds once~\cite{bertaccini2022minifloat}. TransDot reuses multiplier partial products and partitionable shifters~\cite{transdot2026}. Ten-Four connects dot products in multiple formats to a shared reduction backend~\cite{rout2026tenfourv3}. MXDOTP uses a unified internal element representation, integrates MX scaling into the dot-product datapath, and accumulates in FP32~\cite{islamoglu2025mxdotp}.
+For compute-resource reuse, Bit Fusion composes low-bit-width multiplication units through shifts and additions~\cite{bitfusion2018}. Park et al. share multipliers and reduction datapaths between FP16 mantissa multiplication and INT8/INT4 dot products~\cite{parkMultimode8KMACHWutilizationaware2022}. Abdel-Aziz et al. support higher precision through temporal decomposition and analyze the overhead of floating-point exponent alignment and addition~\cite{abdelaziz2021overheads}. For multi-format computation and fused reduction, FPnew supports multiple floating-point operations through configurable format slices~\cite{mach2021fpnew}. MiniFloat-NN's ExSdotp fuses two low-precision products with a wider addend and rounds once~\cite{bertaccini2022minifloat}. TransDot reuses multiplier partial products and partitionable shifters~\cite{transdot2026}. Ten-Four connects dot products in multiple formats to a shared reduction backend~\cite{rout2026tenfourv3}. MXDOTP uses a unified internal element representation, integrates MX scaling into the dot-product datapath, and accumulates in FP32~\cite{islamoglu2025mxdotp}.
 
 Products can be aligned and reduced together with the addend $C$, or a floating-point adder can combine $C$ with the scaled dot product. Where $C$ enters the datapath determines the alignment range and accumulation overhead~\cite{lutzFusedFP84Way2024}. Internal accumulation order, truncation positions, and rounding rules jointly determine numerical results~\cite{sun2023tensorcores,xie2025mmasim}.
 
@@ -102,7 +102,7 @@ Table~\ref{tab:related_features} compares the formats supported by our dot-produ
 \label{sec:commercial_ratios}
 \label{sec:ratio_motivation}
 
-Table~\ref{tab:vendor_ratios} summarizes recent products and development roadmaps from major general-purpose graphics processing unit (GPGPU) and neural processing unit (NPU) vendors, illustrating industry interest in \tpratio{1}{2}{6}, \tpratio{1}{4}{8}, and \tpratio{1}{2}{8} ratios. These disclosures do not explain the rationale for selecting each ratio, and the configurations cover only a small part of the design space. We therefore extend the exploration to \tpratio{1}{4}{4}, \tpratio{1}{2}{12}, \tpratio{1}{2}{16}, \tpratio{1}{6}{12}, and \tpratio{1}{8}{16}. Together with the three ratios above and the \tpratio{1}{2}{4} baseline, these form a design space of nine candidates. Our objective is to determine how hardware cost should be traded against performance benefits as the precision requirements of future model workloads evolve.
+Table~\ref{tab:vendor_ratios} summarizes recent products and development roadmaps from major general-purpose graphics processing unit (GPGPU) and neural processing unit (NPU) vendors, illustrating industry interest in \tpratio{1}{2}{6}, \tpratio{1}{4}{8}, and \tpratio{1}{2}{8} ratios. These disclosures do not explain the rationale for selecting each ratio, and the configurations cover only a small part of the design space. We therefore extend the exploration to a larger design space of throughput ratios. Our objective is to determine how hardware cost should be traded against performance benefits as the precision requirements of future model workloads evolve.
 % END REVIEW PAIR: 02_background.tex
 
 % BEGIN REVIEW PAIR: 03_architecture.tex
@@ -195,7 +195,7 @@ Under the original-node comparison, the \tpratio{0}{2}{4} low-precision unit ach
 % END REVIEW PAIR: 04_evaluation.tex
 
 % BEGIN REVIEW PAIR: 05_dse.tex
-\section{Case Study: Throughput Ratios for LLM Prefill}
+\section{Throughput Ratios for LLM Prefill}
 \label{sec:workload}
 
 \subsection{Modeling Chip Throughput Under Area and Power Constraints}
@@ -231,8 +231,8 @@ At the baseline power cap and reference area fraction ($\beta=1$, $\alpha=0.327$
 \label{fig:five_scenarios_compare}
 \end{figure}
 \begin{samepage}
-\textbf{Moving main attention to FP4 shifts the advantage from balanced FP8/FP4 expansion to wider FP4 datapaths.}
-Across all five scenarios, \tpratio{1}{4}{8} yields the lowest mean GEMM time and a $1.15\times$ modeled speedup over \tpratio{1}{2}{4} (Fig.~\ref{fig:five_scenarios_compare}(b)). In stage D, experts and selected projections use FP4 while main attention still uses FP8. Here \tpratio{1}{4}{8} is within 2.1\% of the shortest mean time. Once main attention and grouped O-down also move to FP4 in stage E, \tpratio{1}{2}{12} and \tpratio{1}{2}{16} deliver a further 17.3\% and 21.4\% speedup over \tpratio{1}{4}{8}, respectively. Wider FP4 datapaths thus become attractive when FP4 attention is common in the target workload.\par
+\textbf{Moving main attention and grouped O-down to FP4 favors wider FP4 datapaths.}
+At the reference budgets, \tpratio{1}{4}{8} minimizes mean GEMM time over the five equally weighted scenarios, using the request bins in (Fig.~\ref{fig:five_scenarios_compare}(b)). This yields a modeled $1.15\times$ speedup over $1:2:4$. In scenario D, experts and selected projections use FP4 while main attention still uses FP8. Here \tpratio{1}{4}{8} is within 2.1\% of the shortest mean time. Once main attention and grouped O-down also move to FP4 in scenario E, \tpratio{1}{2}{12} and \tpratio{1}{2}{16} deliver a further 17.3\% and 21.4\% speedup over \tpratio{1}{4}{8}, respectively.\par
 \end{samepage}
 
 % END REVIEW PAIR: 05_dse.tex
@@ -240,12 +240,12 @@ Across all five scenarios, \tpratio{1}{4}{8} yields the lowest mean GEMM time an
 % BEGIN REVIEW PAIR: 06_conclusion.tex
 \section{Conclusion}
 \label{sec:conclusion}
-DP-Puzzle provides a quantitative basis for choosing a fixed tensor-core throughput ratio as inference workloads shift toward lower precision. Across the dot-product designs evaluated here, shared FP8 and FP4 hardware saves area, but array power is the principal limit on how much of the added parallelism the chip can use. At matched area and power, \tpratio{1}{4}{8} gives the best overall result across five DeepSeek-V4.1-Flash prefill scenarios, with a modeled GEMM speedup of $1.15\times$ over \tpratio{1}{2}{4}. Further expansion should target the precision of the dominant operators and the active power required to sustain their throughput.
+DP-Puzzle provides a quantitative basis for choosing a fixed tensor-core throughput ratio as inference workloads shift toward lower precision. Across the dot-product designs evaluated here, shared FP8 and FP4 hardware saves area, but array power is the principal limit on how much of the added parallelism the chip can use. At the reference budgets, \tpratio{1}{4}{8} yields a modeled $1.15\times$ GEMM speedup over \tpratio{1}{2}{4} for DeepSeek-V4.1-Flash prefill, based on request-weighted length bins and five equally weighted scenarios. Further expansion should target the precision of the dominant operators and the active power required to sustain their throughput.
 % END REVIEW PAIR: 06_conclusion.tex
 
 
 \section*{Content Generated by AI}
-OpenAI Codex assisted with RTL testing, debugging, performance optimization, and EDA scripting. It also assisted with modeling, data analysis, and plotting for Sections~\ref{sec:evaluation} and~\ref{sec:workload}, and with manuscript drafting, translation, and editing. The authors take full responsibility for the paper and its results.
+We defined the architecture, migration scenarios, and evaluation criteria. OpenAI Codex assisted with RTL optimization and testing, EDA script generation, data analysis, and plotting in Sections~\ref{sec:evaluation} and~\ref{sec:workload}. We take responsibility for the paper and its results.
 
 \clearpage
 \setcounter{DACreferencepage}{\value{page}}
