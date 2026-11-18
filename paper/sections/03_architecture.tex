@@ -3,7 +3,7 @@
 \label{sec:architecture}
 \label{sec:brick_definition}
 
-图~\ref{fig:dp_architecture} 展示 DP-Puzzle 的 $1:2:4$ 基线配置。本节先介绍其 Lane--Group--DP 三层通路：Lane 共享乘法与局部规约，Group 融合块缩放并统一部分和表示，DP 完成全局对齐与累加。在此基础上增配低精度专用 Group，形成不同算力配比的 DP 设计；配比在设计时确定，各设计在运行时按请求选择精度。
+图~\ref{fig:dp_architecture}展示了 DP-Puzzle 的 $1:2:4$ 基线计算通路，包含 Lane、Group 和 DP 三个层级。Lane层共享乘法与局部规约，Group层融合块缩放并统一部分和表示，DP层完成全局对齐与累加。在此基础上增配低精度专用 Group，形成不同算力配比的 DP 设计。
 
 \subsection{符号约定与架构概览}
 \label{sec:notation_conventions}

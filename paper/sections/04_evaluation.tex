@@ -1,30 +1,28 @@
 % !TeX root = ../main.tex
-\section{算力配比的硬件成本表征}
+\section{Evaluation }
 \label{sec:evaluation}
 
 \subsection{实验设置与验证}
 \label{sec:eval_setup}
 \label{sec:numerical_validation}
 
-九种点积单元以 Verilog 实现，使用 Synopsys Design Compiler X-2025.06 在 TSMC 12\,nm 工艺、TT（0.7\,V、85$^\circ$C）工况下以 1\,GHz 综合，启用集成时钟门控，并通过时序与电气检查。面积统计包含组合逻辑、流水寄存器和门控单元。
-
-功耗评估采用 Qwen3-8B 在 WikiText-2 上运行时第一层 MLP 下投影的激活与权重~\cite{qwen3technicalreport,merity2016pointer}，分别量化为 BF16、MXFP8 E4M3 和 MXFP4 E2M1。Power Compiler 基于 1\,GHz 门级仿真提取的稳态开关活动估计总功耗。面积与功耗均对应综合后、CTS/布局布线前的单 DP。精度验证采用真实模型负载的多精度量化数据，结合随机及边界向量，通过 Verilator 对每种配置完成覆盖 11 种格式的 10,747 笔测试。以独立的精确二进制算术模型为参考，完整计算包含块缩放与累加项 $C$ 的点积，仅在最终结果处按最近偶数舍入至 FP32。在受测数据上，BF16 的最大误差为 3 个 FP32 ULP，其余浮点格式不超过 1\,ULP，其中 HiF4 为 0；INT8/INT32 精确匹配。
-
+九种算力配比的点积单元以 Verilog RTL实现，使用Verilator进行功能性验证.使用 Synopsys Design Compiler在 TSMC 12\,nm 工艺、TT工艺角（0.7\,V、85$^\circ$C）下以 1\,GHz 的目标时钟进行逻辑综合与时序分析，启用集成时钟门控，并通过时序与电气检查。面积统计包含组合逻辑、流水寄存器和门控单元。功耗评估使用Power Compiler 基于Qwen3-8B 在 WikiText-2 上运行时第一层 MLP 下投影的激活与权重~\cite{qwen3technicalreport,merity2016pointer}，分别量化为 BF16、MXFP8 E4M3 和 MXFP4 E2M1。基于 1\,GHz 门级仿真提取的稳态开关活动估计总功耗。面积与功耗均对应综合后、CTS/布局布线前的点积单元设计。
+≈
 \subsection{基线设计与同类多精度单元比较}
 \label{sec:related_dp_evaluation}
 
 \input{tables/related_ppa_native.tex}
 
-表~\ref{tab:related_features} 与表~\ref{tab:related_dp} 分别比较格式覆盖与实现效率。按各工作的原工艺与报告条件，本文完整多精度 $1:2:4$ 基线的 FP8 面效/能效为 MiniFloats 的 $3.74\times$/$2.45\times$；相对 TransDot，FP8 和 FP4 分别约为 $2.97\times$/$3.36\times$ 和 $2.97\times$/$4.69\times$。另采用 DeepScaleTool~\cite{sarangi2021deepscaletool} 将 Ten-Four 从 7\,nm 缩放至 14\,nm，作为本文 12\,nm 的近似参照；在该估算下，本文基线的 MXFP8 面效为其全格式 Q16 配置的 $3.01\times$。
+表~\ref{tab:related_features} 与表~\ref{tab:related_dp} 分别比较格式覆盖与实现效率。基于原始公布的数据，DP-Puzzle的 $1:2:4$基础点积单元MXFP8 面效/能效为 MiniFloats 的 $3.74\times$/$2.45\times$；相比TransDot，FP8 和 FP4 分别约为 $2.97\times$/$3.36\times$ 和 $2.97\times$/$4.69\times$。另采用 DeepScaleTool~\cite{sarangi2021deepscaletool} 将 Ten-Four 从 7\,nm 缩放至 14\,nm，作为本文 12\,nm 的近似参照；在该估算下，本文基线的 MXFP8 面效约为其两种配置下的 $3\times$。
 
-在原工艺比较下，$0:2:4$ 低精度专用单元的 FP8、FP4 面效/能效分别为 MPICC 的 $5.26\times$/$2.68\times$ 和 $2.63\times$/$2.35\times$；相对同为 12\,nm 的 MXDOTP，MXFP8 面效/能效为其 $1.19\times$/$2.57\times$，并增加 MXFP4、NVFP4 和 HiF4 支持。
+在原工艺比较下，$0:2:4$ 低精度专用单元的 FP8、FP4 面效/能效分别为 MPICC 的 $5.26\times$/$2.68\times$ 和 $2.63\times$/$2.35\times$；相对同为 12\,nm 的 MXDOTP，MXFP8 面效/能效为其 $1.19\times$/$2.57\times$，并增加了 MXFP4、NVFP4 和 HiF4 支持。
 
 \subsection{九种配比的面积与功耗}
 \label{sec:lowp_costs}
 
-图~\ref{fig:ratio4_costs} 展示九种配比的面积与功耗。\textbf{MXFP4 增配具有较低的面积成本：} 相比 $1:2:4$，$1:2:8$ 将 MXFP4 吞吐翻倍，面积仅增加 33.60\%；同时翻倍 MXFP8/MXFP4 吞吐的 $1:4:8$ 则增加 68.21\%。在更高配比下，$1:2:16$ 与 $1:8:16$ 均提供四倍 MXFP4 吞吐，面积增幅却分别为 83.68\% 和 190.29\%。这一差异体现了 MXFP4 专用通路省去部分指数比较、移位对齐逻辑并采用窄规约通路的成本优势。
+图~\ref{fig:ratio4_costs} 展示九种配比的面积与功耗。我们发现，\textbf{相比MXFP8，MXFP4 增加算力具有较低的面积成本：} 相比 $1:2:4$，$1:2:8$ 将 MXFP4 吞吐翻倍，面积仅增加 33.60\%；同时翻倍 MXFP8/MXFP4 吞吐的 $1:4:8$ 则增加 68.21\%。在更高配比下，$1:2:16$ 与 $1:8:16$ 均提供四倍 MXFP4 吞吐，面积增幅却分别为 83.68\% 和 190.29\%。这一差异体现了 MXFP4 专用通路省去部分指数比较、移位对齐逻辑并采用窄规约通路的成本优势。
 
-\textbf{MXFP8 增配会进一步收紧功耗约束：} 在增强 MXFP8 算力的配置中，MXFP8 模式均产生最高功耗，从 $1:4:8$ 的 28.79\,mW 上升至 $1:8:16$ 的 52.85\,mW；相比之下，仅增强 MXFP4 的 $1:2:16$ 最大模式功耗为 29.38\,mW，由 MXFP4 模式决定。九种配置的 BF16 功耗增幅均不超过 6.27\%，表明成本增长主要来自低精度扩展。因此，即使 MXFP4 峰值吞吐相同，不同配比也可能受到不同的功耗限制，后续 DSE 需联合面积与最大模式功耗确定可部署规模。
+\textbf{相比增加MXFP4，MXFP8 增加算力会进一步收紧功耗约束：} 在增强 MXFP8 算力的配置中，MXFP8 模式均产生最高功耗，从 $1:4:8$ 的 28.79\,mW 上升至 $1:8:16$ 的 52.85\,mW；相比之下，仅增强 MXFP4 的 $1:2:16$ 最大模式功耗为 29.38\,mW，由 MXFP4 模式决定。九种配置的 BF16 功耗增幅均不超过 6.27\%，表明成本增长主要来自低精度扩展。因此，即使 MXFP4 峰值吞吐相同，不同配比也可能受到不同的功耗限制，后续 DSE 需联合面积与最大模式功耗确定可部署规模。
 
 \begin{figure*}[t]
 \centering
@@ -32,16 +30,3 @@
 \caption{九种配比的综合面积与总功耗。面积柱按左轴读取，标签为相对 $1:2:4$ 的倍率；三种精度的功耗柱按右轴读取（mW）。}
 \label{fig:ratio4_costs}
 \end{figure*}
-
-
-
-\subsection{持续供数所需的带宽}
-\label{sec:ratio_bandwidth}
-
-考虑固定的 $m\times n$ DP 阵列：A 沿行广播并在本地寄存器中复用 $x$ 个周期，B 沿列广播且每周期更新。每个 DP 每拍处理 $K$ 项乘积，频率为 $f$，同一精度下每元素占 $b$ 位（含均摊尺度开销），则 shared memory 向阵列提供输入的稳态平均带宽需求为
-\begin{equation}
-B_{\mathrm{in}}(K,x)=fbK\left(\frac{m}{x}+n\right),\qquad
-\frac{B_{\mathrm{in}}(K_j,x)}{B_{\mathrm{in}}(K_0,x)}=\frac{K_j}{K_0}.
-\label{eq:ratio_bandwidth}
-\end{equation}
-这里固定阵列尺寸、频率及复用周期，并假设完整缩放块下输入位数随 $K$ 同比增长。A 的复用降低了重复读取开销，但每周期更新的 B 仍需持续供给。因此，相比 $1:2:4$，$1:2:8$ 的 E 模式、$1:4:8$ 的 Q/E 模式在满吞吐下均需要约两倍输入带宽。增配低精度算力时，需要同时考虑 shared memory 的供给是否跟得上阵列消费；后续 DSE 仍以供数充分为前提，不加入 shared memory 带宽约束。

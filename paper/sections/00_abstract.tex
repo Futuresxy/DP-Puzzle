@@ -1,7 +1,7 @@
 % !TeX root = ../main.tex
 \begin{abstract}
-支持多精度的张量计算单元通常在16位、8位、4 位浮点格式中使用$1:2:4$的峰值算力配比，以充分利用数据输入带宽。但随着大语言模型的计算负载不断向低精度浮点格式迁移，在硬件上额外增加低精度算力成为AI芯片的一种前瞻性设计。但是不同算力配比选择下带来的硬件成本和模型负载收益，仍缺乏系统的分析。因此，本文提出 DP-Puzzle，以多精度点积单元设计为切入点，探索面向负载精度迁移的多精度算力配比选择。本研究将模型负载变化与增加低精度的硬件成本结合起来，设计9种不同算力配比硬件单元，涵盖当前工业界已有选择。通过12nm工艺下的synthesis 面积和功耗数据建立硬件成本信息，并以此搭建约束下的不同配比选择下的芯片绝对算力建模。我们发现，增加FP4精度算力具有较低的面积成本在基线上，仅需增加 33.60\% 的面积成本便可实现FP4算力翻倍。同时以DeepseekV4.1模型为分析模型，合理预估通用矩阵乘法GEMM精度负载，在当前的模型结构更适合 $1:4:8$的配比；随着更多计算转向4位的低精度，$1:2:8$ 可凭借更高部署密度获的优势。该分析将可实现的微架构成本与负载精度需求联系起来，为算力配比选择提供依据。
+A tensor core’s throughput ratio specifies its relative peak compute rates for BF16, MXFP8, and MXFP4. As models shift toward lower precision, fixed hardware ratios can become mismatched to workload demand. DP-Puzzle combines shared datapaths with precision-specific groups to implement nine ratios. Synthesis and workload-driven power analysis show that expanding MXFP4 throughput costs less area and power than expanding MXFP8 throughput. Under matched area and power budgets, $1:2:8$ ranks first, delivering a modeled $1.13times$ aggregate GEMM compute speedup over $1:2:4$ for DeepSeek-V4.1-Flash prefill across five precision-migration scenarios and 11 context lengths.
 \end{abstract}
 \begin{IEEEkeywords}
-多精度算力配比，组合式点积单元，张量计算，硬件成本，AI计算负载
+AI workloads, dot-product units,LLM inference, mixed-precision arithmetic, multi-precision tensor core, throughput-ratio allocation
 \end{IEEEkeywords}

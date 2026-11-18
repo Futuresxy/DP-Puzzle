@@ -188,7 +188,7 @@ $\dagger$ denotes an R\&D roadmap target.}
 
 本文以 T、H、Q、E 分别表示 TF32、FP16/BF16、MXFP8/6 和 MXFP4/NVFP4/HiF4。定点数采用 $\mathrm{Q}I.F$ 和 $\mathrm{UQ}I.F$ 记号，分别表示二进制补码有符号数和无符号数；$I$ 为不含符号位的整数位数，$F$ 为小数位数，总位宽分别为 $1+I+F$ 和 $I+F$~\cite{ti2003qformat}。
 
-计算并行度记为 $\mathrm{T}x_T\mathrm{H}x_H\mathrm{Q}x_Q\mathrm{E}x_E$，其中 $x_p$ 表示精度模式 $p$ 下每拍处理的点积元素对数，各模式互斥。基线 Lane 支持 T1H2Q4E8，两个 Lane 构成 T2H4Q8E16 Group，四个 Group 构成 T8H16Q32E64 DP；另支持每拍 32 项 INT8 乘积与 INT32 累加。每笔请求在运行时选择精度，Group 的类型与数量则在设计时确定。对于相同阵列规模和频率，各模式的原生点积长度 $K_H:K_Q:K_E$ 决定峰值算力配比。
+计算并行度记为 $\mathrm{T}x_T\mathrm{H}x_H\mathrm{Q}x_Q\mathrm{E}x_E$，其中 $x_p$ 表示精度模式 $p$ 下每拍处理的点积元素对数，各模式互斥。基线 Lane 支持 T1H2Q4E8，两个 Lane 构成 T2H4Q8E16 Group，四个 Group 构成 T8H16Q32E64 DP；另支持每拍 32 项 INT8 乘积与 INT32 累加。因此，在相同阵列规模和频率下，本文主要关注的H,Q,E三种精度的算力配比转换为点积单元内部各自计算并行度的比例。
 
 \begin{figure}[t]
 \centering
@@ -336,10 +336,8 @@ B_{\mathrm{in}}(K,x)=fbK\left(\frac{m}{x}+n\right),\qquad
 图~\ref{fig:fixed_budget_compact}(a) 对比仅面积约束与联合约束下的部署核数，后者用于各负载场景的计算时间评价。
 
 \subsection{精度迁移下的配比选择}
-案例覆盖 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 在 batch=1、1K--1M 共 11 个按二倍递增上下文下的冷启动 prefill GEMM。表~\ref{tab:five_stage_migrations} 构造从 A 到 E 的五阶段迁移假设，逐步降低路由专家、共享专家与 Q-up/O-up、主注意力与 Grouped O-down 的计算精度，保留此前变更及原有算子形状、总 FLOP。专家 W4A4 部署~\cite{nvidiav41routed2026} 和 FP8/FP4 注意力量化~\cite{flashattention3,sageattention3} 为这一未来负载假设提供依据。
+案例覆盖 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 在 batch=1、1K--1M 共 11 个按二倍递增上下文下的冷启动 prefill GEMM。表~\ref{tab:five_stage_migrations} 针对占据主要GEMM计算的算子，构造从 A 到 E 的五阶段精度迁移假设，基于模型原始精度选择逐步降低计算精度，其他算子保持原有精度,统计BF16、FP8、FP4的计算负载。专家 W4A4 部署~\cite{nvidiav41routed2026} 和 FP8/FP4 注意力量化~\cite{flashattention3,sageattention3} 为这一未来负载假设提供可行依据。以各精度计算量除以对应芯片峰值再求和，估算充分供数、阵列满利用下的 GEMM 计算时间。55 个场景--上下文组合按请求等权平均时间，再求同负载基准与候选的平均时间之比；较长上下文按其实际计算量贡献时间。
 \input{tables/temp/five_stage_migrations}
-
-A 中 W4A8 路由专家按 FP8 吞吐建模；表外算子保持原精度，包括 Q-down、KV 与 indexer 投影及原生 FP4 的索引 QK。统计 BF16/FP8/FP4 工作量，FP32 单独记录、不参与计算时间评价。以各精度计算量除以对应芯片峰值再求和，估算充分供数、阵列满利用下的 GEMM 计算时间。55 个场景--上下文组合按请求等权平均时间，再求同负载基准与候选的平均时间之比；较长上下文按其实际计算量贡献时间。
 
 \begin{figure}[t]
 \centering

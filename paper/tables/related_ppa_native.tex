@@ -10,11 +10,11 @@ Metric & Ten-Four~\cite{rout2026tenfourv3} & MPICC~\cite{huangMPICCMultiplePreci
 \cmidrule(lr){8-9}
  & & & & & & & $1:2:4$ & $0:2:4$ \\
 \midrule
-Structure & Fused DP & $n$-term MAC & MX DP & SIMD FMA & SIMD wDotp & FMA / DP & MX DP & MX DP \\
+% Structure & Fused DP & $n$-term MAC & MX DP & SIMD FMA & SIMD wDotp & FMA / DP & MX DP & MX DP \\
 Technology (nm) & 7 & 28 & 12 & 22 & 12 & 12 & 12 & 12 \\
 Voltage (V) & 0.70 & 0.90 & 0.80 & 0.80 & 0.80 & 0.80 & 0.70 & 0.70 \\
 Frequency (GHz) & 1.58 & 1.43 & 1.09 & 0.92 & 1.26 & 1.00 & 1.00 & 1.00 \\
-Area ($\mu$m$^2$) & 2400 / 4650 & 2295 & 3150 & 49\,000 & 19\,000 & $\approx 6000^\dagger$ & 16\,165.12 & 9\,762.99 \\
+% Area ($\mu$m$^2$) & 2400 / 4650 & 2295 & 3150 & 49\,000 & 19\,000 & $\approx 6000^\dagger$ & 16\,165.12 & 9\,762.99 \\
 Accumulation & FP32/INT32 & FP12/INT8 & FP32 & Per format & FP16/FP32 & FP32 & FP32/INT32 & FP32 \\
 \midrule
 \shortstack[l]{Energy efficiency\\(TFLOP/s/W)} & --- & \Eff{FP8 & 1.95\\FP4 & 5.93} & \Eff{MXFP8 & 2.04} & \Eff{FP16 & 0.50\\BF16 & 0.58\\FP8 & 1.24} & \Eff{FP8 & 1.63\\FP16 & 0.82} & \Eff{FP16 & 0.56\\FP8 & 1.19\\FP4 & 2.44} & \Eff{BF16 & 2.09\\MXFP8 & 4.00\\MXFP4 & 11.43} & \Eff{MXFP8 & 5.23\\MXFP4 & 13.93} \\
@@ -23,7 +23,7 @@ Accumulation & FP32/INT32 & FP12/INT8 & FP32 & Per format & FP16/FP32 & FP32 & F
 \bottomrule\end{tabular*}
 \par\smallskip
 \parbox{\textwidth}{\raggedright
-All values use the reported process nodes without technology normalization; supported formats are listed in Table~\ref{tab:related_features}. Ten-Four pairs denote full-format Q8/Q16 configurations; per-format DP energy efficiency is unreported. MiniFloats reports the standalone wDotp FPU, excluding the cluster.
-$\dagger$: TransDot cell area is estimated from the 1\,ns point in its Fig. 7(a), with area efficiency calculated using the throughput in its Table II. Its mean FP16/FP8 area-efficiency gains of 1.46$\times$/2.92$\times$ are relative to its own 12\,nm FPnew baseline and are not applied to the 22\,nm FPnew results here. --- denotes unreported or inapplicable values.}
+All values use the reported process nodes without technology normalization; 
+$\dagger$: TransDot cell area is estimated from the 1\,ns point in its Fig. 7(a), with area efficiency calculated using the throughput in its Table II. --- denotes unreported or inapplicable values.}
 \endgroup
 \end{table*}

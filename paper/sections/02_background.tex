@@ -1,51 +1,40 @@
-% !TeX root = ../main.tex
 \section{背景与动机}
 \label{sec:background}
 
 \subsection{浮点精度与微缩放格式}
 \label{sec:formats}
 
-BF16/FP16 由逐元素的指数与有效数确定动态范围和精度~\cite{burgess2019bfloat16}；微缩放格式则将低位宽元素与共享尺度共同编码。OCP MXFP8/6/4 每 32 个元素共享一个 E8M0 尺度~\cite{ocpmx2023}；NVFP4 使用 16 元素一组的 E4M3 尺度~\cite{nvidia2024nvfp4}；HiF4 使用 64 元素一组的无符号 E6M2 基础尺度，并为每 8、4 个元素分别配置一位微指数~\cite{hifloat4}。元素编码、分组粒度和尺度编码分别决定解包、局部规约与尺度融合的硬件需求。
+浮点数由符号、指数与尾数三个字段组成，指数位宽决定动态范围，尾数位宽决定相对分辨率。TF32 保留 FP32 的指数范围并缩短尾数，以降低张量计算开销；FP16 与 BF16 则分别侧重分辨率与动态范围~\cite{burgess2019bfloat16}。开放计算项目（Open Compute Project, OCP）定义的微缩放格式（Microscaling, MX）~\cite{ocpmx2023}将元素表示为 $x_{j,i}=X_jP_{j,i}$，其中 $X_j$ 为组级共享缩放因子（scaling factor），$P_{j,i}$ 为元素解码值。MXFP8、MXFP6 与 MXFP4 分别采用 E5M2/E4M3、E3M2/E2M3 与 E2M1 元素编码，均以 32 个元素为一组共享一个 E8M0 缩放因子，以扩展可表示的数值范围。
 
-%不需要解释详细的格式了
-% \begin{figure}[t]
-% \centering
-% \includegraphics[width=\columnwidth]{fp_format.png}
-% \caption{元素编码与共享尺度~\cite{ocpmx2023,nvidia2024nvfp4,hifloat4}。字段标注为位宽，$g$ 为缩放组大小。}
-% \label{fig:fpformats}
-% \end{figure}
+然而，权重与激活同时量化为 MXFP4 时仍有明显的精度损失。其 E8M0 共享缩放因子只能取 2 的幂，是量化误差的主要来源~\cite{egiazarian2026bridging,zhang2026benchmarking}。为改善量化精度，NVFP4 保留 E2M1 元素编码，将分组缩小至 16，并采用 E4M3 组级与 FP32 张量级两级缩放，提升表示精度~\cite{nvidia2024nvfp4}；HiF4 则采用 S1P2 定点元素与分层微指数缩放，兼顾组内动态范围与分辨率~\cite{hifloat4}。这两类 MX-like 格式的缩放因子含小数位，在硬件上引入了尾数乘法的额外开销。
 
-
-\subsection{张量计算与点积单元}
+\subsection{面向微缩放格式的点积计算}
 \label{sec:tensor_organization}
 
-对于矩阵乘累加 $D=C+AB$，$M$、$N$ 是输出维度，$K$ 是归约维度。点积单元先对齐多个乘积并集中归约，再统一规格化和舍入，以共享后端摊薄逐项浮点处理的成本~\cite{lutzFusedFP84Way2024}。本文采用 H 类原生归约长度为 16 的 DP 作为基线，与已有数值建模研究识别的点积累加粒度相对应~\cite{xie2025mmasim}。完整 GEMM 沿归约维拆为多笔请求，单 DP 接收显式 $C$ 并输出 $D$，跨请求部分和保存在其外部。
-
-有无组尺度的格式可用同一局部点积结构描述。依据 OCP 的点积定义，共享尺度可提出组内归约~\cite{ocpmx2023}。将 $L$ 项乘积按缩放组边界划分为 $G=\lceil L/g\rceil$ 组，末组不足部分补零，加入累加输入 $c$ 后，有
+常规数据格式与微缩放格式~\cite{ocpmx2023}的点积累加可统一表示为
 \begin{equation}
-d=c+\sum_{j=0}^{G-1}X_j^{(A)}X_j^{(B)}
-\underbrace{\sum_{i=0}^{g-1}P_{j,i}^{(A)}P_{j,i}^{(B)}}_{q_j}.
+\begin{aligned}
+\operatorname{DP}_K(\mathbf{a},\mathbf{b},c)
+&=c+\sum_{k=0}^{K-1}a_kb_k \\
+&=c+\sum_{j=0}^{G_s-1}
+\widetilde{X}_j^{(A)}\widetilde{X}_j^{(B)}
+\underbrace{\sum_{i=0}^{g-1}
+P_{j,i}^{(A)}P_{j,i}^{(B)}}_{q_j},
+\end{aligned}
 \label{eq:blockdot}
 \end{equation}
-其中，$X_j^{(A)}$、$X_j^{(B)}$ 为两路输入第 $j$ 组的共享尺度，$P_{j,i}^{(A)}$、$P_{j,i}^{(B)}$ 为组内元素的解码值，$q_j$ 为组内点积；HiF4 的局部微指数计入元素解码。对于无组尺度的格式，令 $X_j^{(A)}=X_j^{(B)}=1$，即可得到普通点积累加。
+其中，两路输入沿归约维度采用相同的缩放分组边界，$g$ 为分组大小，$G_s=\lceil K/g\rceil$，末块补零；$q_j$ 为块内点积，$\widetilde{X}_j$ 为等效块缩放因子。常规浮点格式取 $\widetilde{X}_j=1$，$P_{j,i}$ 为原始元素值；MX 格式取 $\widetilde{X}_j=X_j$；HiF4 的局部微指数计入 $P_{j,i}$。
 
-式~\eqref{eq:blockdot} 给出分层共享的算术边界；内部位宽、顺序与舍入仍由具体实现约束。
-
-
-
-\subsection{通路复用与设计空间探索}
+\subsection{多精度点积单元设计与设计空间探索相关工作}
 \label{sec:datapath_sharing}
 
-表~\ref{tab:related_features} 汇总格式与组合能力。MX 列区分完整微缩放支持与仅元素运算支持；本文通过在共享 DP 内增配专用 Group 改变算力配比。
+在乘法复用方面，Bit Fusion 以移位加法组合低位宽乘法单元；Park 等人在 FP16 有效数乘法与 INT8/INT4 点积之间共享乘法器与归约通路；Abdel-Aziz 等人通过时间分解支持更高精度，并分析了浮点指数对齐与加法的额外开销~\cite{bitfusion2018,parkMultimode8KMACHWutilizationaware2022,abdelaziz2021overheads}。在多格式计算与融合归约方面，FPnew 以可配置的格式切片支持多种浮点运算；MiniFloats 将两项低精度乘积与高精度累加项融合，减少重复的规格化与舍入~\cite{mach2020fpnew,bertaccini2022minifloat}。TransDot 复用乘法部分积与可分区移位器；Ten-Four 将多种格式的点积接入共享归约后端；MXDOTP 采用统一的内部元素表示，在点积通路中融合 MX 缩放并累加至 FP32~\cite{transdot2026,rout2026tenfourv3,islamoglu2025mxdotp}。
+在 $C$ 累加阶段的选择上，乘积既可与累加项共同对齐归约，也可在形成缩放点积后送入浮点加法器；接入位置决定对齐范围与累加通路开销~\cite{bertaccini2022minifloat,lutzFusedFP84Way2024}。此外，内部累加顺序、截断位置与舍入规则共同决定数值结果~\cite{sun2023tensorcores,xie2025mmasim}。在设计空间探索方面，Crafton 等与 MX-Like 进一步分析了低精度格式、计算组织与硬件成本之间的权衡~\cite{paretomac2025,zhao2026mxlike}，但均未涉及算力配比的选择问题。
 
-已有工作通过跨精度共享降低单元成本：TransDot 重组乘法器与移位器~\cite{transdot2026}，MPICC 将多种格式映射为统一内部表示~\cite{huangMPICCMultiplePrecisionInterCombined2025}，融合 FP8 点积设计复用累加和舍入后端~\cite{lutzFusedFP84Way2024}。DSE 研究进一步联合探索数值格式与 MAC 微架构~\cite{paretomac2025}，或共享尺度、权重和激活格式~\cite{zhao2026mxlike}；Timeloop 则以循环分块与存储层次分析阵列映射~\cite{timeloop2019}。本文固定目标格式集合，将 H/Q/E 峰值配比作为设计变量，考察实测单元成本如何通过面积与功耗预算影响部署规模与负载收益。
+表~\ref{tab:related_features} 对比了本文与相关点积单元工作的精度格式覆盖范围。与上述工作相比，本文在支持多种精度格式的基础上，通过增加低精度专用单元改变点积单元内各格式间的峰值算力，从而实现多种算力配比。
 
 \subsection{算力配比的设计动机}
 \label{sec:commercial_ratios}
 \label{sec:ratio_motivation}
 
-表~\ref{tab:vendor_ratios} 展示了从 $1:2:4$ 向 E 增强或 Q/E 同时增强的产品与研发路线。已有选择给出了配比变化的方向，但不能覆盖不同负载和硬件预算下的全部选择。本文进一步考察只增强 Q、提高 E 增配幅度以及扩大 Q/E 共同增配的组合，将 $1:4:4$、$1:2:12$、$1:2:16$、$1:6:12$ 和 $1:8:16$ 纳入探索，与上述四种配比共同构成九候选设计空间。
-
-
-
-更高的低精度峰值需要额外乘法、对齐和规约资源，也会改变整核面积和逐模式功耗。因此，配比选择需要同时回答：单位成本能增加多少低精度吞吐，以及面积与功耗预算允许配置多少核心。本文以组合式微架构构造候选，以同工况测量建立成本，再将预算决定的绝对算力映射到 H/Q/E 负载组成，分析工业界已有选择和更大增配方案各自的优势区域。
+表~\ref{tab:vendor_ratios} 列出了当前主流 GPGPU 与 NPU 厂商的最新产品与研发路线，体现了工业界对 $1:2:6$、$1:4:8$ 与 $1:2:8$ 三种配比的认同，但均未说明其选择依据，且既有选择仍局限于较小的探索空间。因此，本文进一步考察算力配比的可选组合，将 $1:4:4$、$1:2:12$、$1:2:16$、$1:6:12$ 与 $1:8:16$ 纳入探索，与上述四种配比（含基准 $1:2:4$）共同构成九种候选设计空间。本文希望在未来负载精度格式迁移的背景下，回答如何在硬件设计中权衡开销与收益这一问题。
