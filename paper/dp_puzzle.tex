@@ -256,9 +256,16 @@ Fig.~\ref{fig:ratio4_costs} shows the area and power of the nine configurations.
 Using the dominant GEMMs in DeepSeek-V4.1-Flash, we construct five successive precision-migration scenarios to examine which throughput ratio balances current workloads and future low-precision demand under fixed area and power budgets.
 
 \subsection{Deployment Scale Under Joint Budgets}
-All nine candidates share the core-area budget and DP-array power limit of $1:2:4$ ($\beta=1$). The baseline has 36 cores, each with 256 DPs at 1\,GHz and one request per cycle. We set the baseline array-area fraction to $\alpha=0.327$, referencing the reported 32.7\% Cube-cluster share of AI Core area~\cite{luo2024hifloat8area}, and fix peripheral storage and control area per core. Single-DP area and the maximum measured power across precision modes determine the integer core counts allowed by each budget; the smaller count determines deployment. Multiplying this count by DPs per core and precision-specific DP throughput gives chip-level peak throughput. Deployment remains fixed across workloads.
-
-Fig.~\ref{fig:fixed_budget_compact}(a) compares core counts under the area budget alone and under joint area and power budgets. The latter counts are used to evaluate GEMM compute time.
+The $1:2:4$ baseline has $N_0=36$ cores with $D=256$ DPs per core at $f=1$\,GHz and one request per DP per cycle. We fix the per-core peripheral area and set the baseline DP-array area fraction to $\alpha=0.327$, using the reported 32.7\% Cube-cluster share of AI Core area~\cite{luo2024hifloat8area} as a reference. The budgets are the baseline total core area and $\beta$ times its DP-array power ($\beta=1$). For candidate $j$, $r_j=a_j/a_0$ and $\rho_j=P_j^{\max}/P_0^{\max}$ compare synthesized single-DP area and maximum estimated single-DP power across BF16, MXFP8, and MXFP4 with the baseline. Deployment and peak throughput follow as
+\begin{equation}
+\begin{aligned}
+n_j &= \min\!\left\{\left\lfloor\frac{N_0}{1+\alpha(r_j-1)}\right\rfloor,
+        \left\lfloor\frac{\beta N_0}{\rho_j}\right\rfloor\right\},\\
+C_{j,p} &= 2fDn_jK_{j,p}.
+\end{aligned}
+\label{eq:core_area_budget}
+\end{equation}
+Here, $K_{j,p}$ is the native dot-product length in mode $p$, with two FLOPs per multiply-accumulate. Fig.~\ref{fig:fixed_budget_compact}(a) compares the area-only and joint core counts. The joint count $n_j$ is fixed across modes and workloads.
 
 \subsection{Ratio Selection Across Precision Migrations}
 We evaluate cold-start prefill at batch=1 over 11 doubling contexts from 1K to 1M tokens~\cite{deepseekv41source}. Table~\ref{tab:five_stage_migrations} progressively lowers major GEMM precisions through scenarios A--E; other operators retain their original precision. Routed-expert W4A4 deployment~\cite{nvidiav41routed2026} and FP8/FP4 attention~\cite{flashattention3,sageattention3} motivate these future migration assumptions. We sum each precision's operation count divided by its chip-level peak throughput to estimate GEMM compute time under sufficient data supply and full array utilization. All 55 scenario--context combinations receive equal request weight. Aggregate speedup is the baseline's mean compute time divided by the candidate's mean; longer contexts contribute according to their operation counts.
