@@ -1,4 +1,4 @@
-"""Export the current N12 six-DP records and plot area / workload power."""
+"""Plot N12 DP area and workload power from the six-DP records or frozen nine-ratio data."""
 
 import argparse
 import csv
@@ -295,20 +295,78 @@ def draw_ratios(areas, groups, output, dpi):
                 dpi=dpi, figures=["ratio4_area.png", "ratio4_power.png"], **power_metadata)
 
 
+def draw_nine_ratios(output):
+    """Combine synthesized area and total power for the nine full-precision designs."""
+    rows = [r for r in read_csv(HERE / "dp11_area_power_fixed_20261116.csv")
+            if int(r["h_native"]) > 0]
+    ratios = [r["ratio"] for r in rows]
+    require(len(rows) == len(set(ratios)) == 9, "Expected nine distinct full-DP ratios")
+    baseline = rows[ratios.index("1:2:4")]
+    area_ref = float(baseline["area_um2"])
+    power_ref = float(baseline["mxfp8_e4m3_total_mw"])
+    centers = np.arange(len(ratios))
+    width = .206
+    pitch = .224
+    border = dict(edgecolor="#555D66", linewidth=.38)
+
+    with plt.rc_context({"font.family": "STIXGeneral", "font.size": 8,
+                         "pdf.fonttype": 42, "hatch.linewidth": .45}):
+        fig, area_ax = plt.subplots(figsize=(6.70, 1.90))
+        fig.subplots_adjust(left=.063, right=.940, bottom=.225, top=.825)
+        power_ax = area_ax.twinx()
+        areas = np.array([float(r["area_um2"]) for r in rows])
+        bars = area_ax.bar(centers - 1.5 * pitch, areas / 1000, width,
+                           label="Area (left axis)", color="#DFA0A6", **border)
+        area_ax.bar_label(bars, labels=[f"{a / area_ref:.2f}×" for a in areas],
+                          label_type="center", rotation=90, fontsize=7)
+        for index, (fmt, label, hatch) in enumerate(zip(FORMATS, LABELS, ("", "//", ".."))):
+            values = np.array([float(r[f"{fmt}_total_mw"]) for r in rows])
+            bars = power_ax.bar(centers + (index - .5) * pitch, values, width,
+                                label=label, color=COLORS[fmt], hatch=hatch, **border)
+            power_ax.bar_label(bars, labels=[f"{p / power_ref:.2f}×" for p in values],
+                               rotation=90, padding=1.2, fontsize=7)
+
+        area_ax.set_xticks(centers, ratios)
+        area_ax.set_xlim(-.5, len(ratios) - .5)
+        area_ax.set_xlabel("Throughput ratio (H:Q:E)", labelpad=1.6)
+        area_ax.set_ylabel("Area (10³ µm²)", labelpad=2)
+        power_ax.set_ylabel("Total power (mW)", labelpad=2)
+        for ax in (area_ax, power_ax):
+            ax.set_ylim(0, 70)
+            ax.yaxis.set_major_locator(MultipleLocator(10))
+            ax.spines["top"].set_visible(False)
+            ax.tick_params(length=2.1, width=.45, pad=2)
+        area_ax.tick_params(axis="x", length=0)
+        area_ax.set_axisbelow(True)
+        area_ax.grid(axis="y", color="#E1E6EB", linewidth=.45)
+        fig.legend(loc="center left", bbox_to_anchor=(.052, .943), ncol=4,
+                   frameon=False, borderaxespad=0, fontsize=7.5,
+                   handlelength=1.15, handletextpad=.35, columnspacing=1.15)
+        fig.text(.974, .943, f"Power labels: 1× = {power_ref:.2f} mW (1:2:4, MXFP8)",
+                 ha="right", va="center", fontsize=7.5)
+        fig.savefig(output / "dp_ratio_area_power.pdf", metadata={"CreationDate": None})
+        plt.close(fig)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--refresh-data", action="store_true", help="Re-export the pinned current HW indexes")
     parser.add_argument("--output-dir", type=Path, default=PAPER / "figures")
     parser.add_argument("--dpi", type=int, default=400)
-    parser.add_argument("--scope", choices=("six", "ratios"), default="six",
-                        help="Keep six-design history or plot the four full-DP DSE candidates")
+    parser.add_argument("--scope", choices=("six", "ratios", "nine"), default="six",
+                        help="Plot the historical six designs, four ratios, or nine paper ratios")
     args = parser.parse_args()
     if args.dpi <= 0:
         parser.error("--dpi must be positive")
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    if args.scope == "nine":
+        if args.refresh_data:
+            parser.error("--scope nine uses the frozen CSV and cannot refresh the six-DP records")
+        draw_nine_ratios(args.output_dir)
+        return
     if args.refresh_data:
         refresh_data()
     areas, groups = load_data()
-    args.output_dir.mkdir(parents=True, exist_ok=True)
     render = draw_ratios if args.scope == "ratios" else draw
     stem = "ratio4" if args.scope == "ratios" else "latest6"
     manifest = render(areas, groups, args.output_dir, args.dpi)
