@@ -4,9 +4,9 @@
 \subsection{浮点精度与微缩放格式}
 \label{sec:formats}
 
-浮点数由符号、指数与尾数三个字段组成，指数位宽决定动态范围，尾数位宽决定相对分辨率。TF32 保留 FP32 的指数范围并缩短尾数，以降低张量计算开销；FP16 与 BF16 则分别侧重分辨率与动态范围~\cite{burgess2019bfloat16}。开放计算项目（Open Compute Project, OCP）定义的微缩放格式（Microscaling, MX）~\cite{ocpmx2023}将元素表示为 $x_{j,i}=X_jP_{j,i}$，其中 $X_j$ 为组级共享缩放因子（scaling factor），$P_{j,i}$ 为元素解码值。MXFP8、MXFP6 与 MXFP4 分别采用 E5M2/E4M3、E3M2/E2M3 与 E2M1 元素编码，均以 32 个元素为一组共享一个 E8M0 缩放因子，以扩展可表示的数值范围。
+以 FP16 为例，二进制浮点编码包含符号、指数和小数字段（fraction field）。本文将小数字段与隐含前导位组成的无符号定点数称为尾数（mantissa）。正规数的前导位为 1，非正规数和零的前导位为 0。指数位宽决定动态范围，小数字段位宽决定相对分辨率。TF32 保留 FP32 的指数范围并缩短尾数，以降低张量计算开销；FP16 与 BF16 则分别侧重分辨率与动态范围~\cite{burgess2019bfloat16}。开放计算项目（Open Compute Project, OCP）定义的微缩放格式（Microscaling, MX）~\cite{ocpmx2023}将元素表示为 $x_{j,i}=X_jP_{j,i}$，其中 $X_j$ 为组级共享缩放因子（scaling factor），$P_{j,i}$ 为元素解码值。MXFP8、MXFP6 与 MXFP4 分别采用 E5M2/E4M3、E3M2/E2M3 与 E2M1 元素编码，均以 32 个元素为一组共享一个 E8M0 缩放因子，以扩展可表示的数值范围。
 
-然而，权重与激活同时量化为 MXFP4 时仍有明显的精度损失。其 E8M0 共享缩放因子只能取 2 的幂，是量化误差的主要来源~\cite{egiazarian2026bridging,zhang2026benchmarking}。为改善量化精度，NVFP4 保留 E2M1 元素编码，将分组缩小至 16，并采用 E4M3 组级与 FP32 张量级两级缩放，提升表示精度~\cite{nvidia2024nvfp4}；HiF4 则采用 S1P2 定点元素与分层微指数缩放，兼顾组内动态范围与分辨率~\cite{hifloat4}。这两类 MX-like 格式的缩放因子含小数位，在硬件上引入了尾数乘法的额外开销。
+然而，权重与激活同时量化为 MXFP4 时仍有明显的精度损失。其 E8M0 共享缩放因子只能取 2 的幂，是量化误差的主要来源~\cite{egiazarian2026bridging,zhang2026benchmarking}。为改善量化精度，NVFP4 保留 E2M1 元素编码，将分组缩小至 16，并采用 E4M3 组级与 FP32 张量级两级缩放，提升表示精度~\cite{nvidia2024nvfp4}；HiF4 则采用 S1P2 定点元素与分层微指数缩放，兼顾组内动态范围与分辨率~\cite{hifloat4}。NVFP4 和 HiF4 的块缩放因子含小数字段，施加块缩放时还需在指数调整之外进行缩放因子的尾数乘法。
 
 \subsection{面向微缩放格式的点积计算}
 \label{sec:tensor_organization}
@@ -28,7 +28,7 @@ P_{j,i}^{(A)}P_{j,i}^{(B)}}_{q_j},
 \subsection{多精度点积单元设计与设计空间探索相关工作}
 \label{sec:datapath_sharing}
 
-在乘法复用方面，Bit Fusion 以移位加法组合低位宽乘法单元；Park 等人在 FP16 有效数乘法与 INT8/INT4 点积之间共享乘法器与归约通路；Abdel-Aziz 等人通过时间分解支持更高精度，并分析了浮点指数对齐与加法的额外开销~\cite{bitfusion2018,parkMultimode8KMACHWutilizationaware2022,abdelaziz2021overheads}。在多格式计算与融合归约方面，FPnew 以可配置的格式切片支持多种浮点运算；MiniFloats 将两项低精度乘积与高精度累加项融合，减少重复的规格化与舍入~\cite{mach2020fpnew,bertaccini2022minifloat}。TransDot 复用乘法部分积与可分区移位器；Ten-Four 将多种格式的点积接入共享归约后端；MXDOTP 采用统一的内部元素表示，在点积通路中融合 MX 缩放并累加至 FP32~\cite{transdot2026,rout2026tenfourv3,islamoglu2025mxdotp}。
+在乘法复用方面，Bit Fusion 以移位加法组合低位宽乘法单元；Park 等人在 FP16 尾数乘法与 INT8/INT4 点积之间共享乘法器与归约通路；Abdel-Aziz 等人通过时间分解支持更高精度，并分析了浮点指数对齐与加法的额外开销~\cite{bitfusion2018,parkMultimode8KMACHWutilizationaware2022,abdelaziz2021overheads}。在多格式计算与融合归约方面，FPnew 以可配置的格式切片支持多种浮点运算；MiniFloats 将两项低精度乘积与高精度累加项融合，减少重复的规格化与舍入~\cite{mach2020fpnew,bertaccini2022minifloat}。TransDot 复用乘法部分积与可分区移位器；Ten-Four 将多种格式的点积接入共享归约后端；MXDOTP 采用统一的内部元素表示，在点积通路中融合 MX 缩放并累加至 FP32~\cite{transdot2026,rout2026tenfourv3,islamoglu2025mxdotp}。
 在 $C$ 累加阶段的选择上，乘积既可与累加项共同对齐归约，也可在形成缩放点积后送入浮点加法器；接入位置决定对齐范围与累加通路开销~\cite{bertaccini2022minifloat,lutzFusedFP84Way2024}。此外，内部累加顺序、截断位置与舍入规则共同决定数值结果~\cite{sun2023tensorcores,xie2025mmasim}。在设计空间探索方面，Crafton 等与 MX-Like 进一步分析了低精度格式、计算组织与硬件成本之间的权衡~\cite{paretomac2025,zhao2026mxlike}，但均未涉及算力配比的选择问题。
 
 表~\ref{tab:related_features} 对比了本文与相关点积单元工作的精度格式覆盖范围。与上述工作相比，本文在支持多种精度格式的基础上，通过增加低精度专用单元改变点积单元内各格式间的峰值算力，从而实现多种算力配比。
