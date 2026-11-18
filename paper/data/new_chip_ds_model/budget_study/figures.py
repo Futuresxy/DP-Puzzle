@@ -70,11 +70,10 @@ def budget(data,out,width,manifest):
     plt.close(fig)
 
 
-def heatmap(data,out,width,manifest):
+def heatmap(rows, output_pdf, width):
     import matplotlib.pyplot as plt
     from matplotlib.colors import TwoSlopeNorm
     from matplotlib.patches import Rectangle
-    rows=read(data,manifest,'case_32k.csv')
     ratios=list(dict.fromkeys(r['ratio'] for r in rows))
     stages=list(dict.fromkeys(r['scenario'] for r in rows))
     lookup={(r['ratio'],r['scenario']):r for r in rows}
@@ -121,7 +120,7 @@ def heatmap(data,out,width,manifest):
     bar.ax.tick_params(length=2,pad=1)
     bar.ax.get_xticklabels()[0].set_ha('left')
     bar.ax.get_xticklabels()[-1].set_ha('right')
-    fig.savefig(out/'case_32k.pdf',metadata=META)
+    fig.savefig(output_pdf,metadata=META)
     plt.close(fig)
 
 
@@ -139,7 +138,7 @@ def main():
     if args.figure in ('both','budget'):
         budget(args.data,args.output,width,manifest)
     if args.figure in ('both','case'):
-        heatmap(args.data,args.output,width,manifest)
+        heatmap(read(args.data,manifest,'case_32k.csv'),args.output/'case_32k.pdf',width)
 
 
 if __name__=='__main__':
