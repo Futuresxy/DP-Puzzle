@@ -219,15 +219,15 @@ We model batch-one cold prefill for the dominant GEMMs in DeepSeek-V4.1-Flash~\c
 
 We use the lengths of 2,047 first requests from FreeInference agent sessions (Aug.~30--Sept.~5, 2026)~\cite{nixon2026requests}. Among 11 doubling bins from 1K to 1M tokens, $(16\mathrm{K},32\mathrm{K}]$ is the most frequent (33.56\% of requests), and 22.72\% exceed 128K. At each observed length, ideal GEMM time is the sum of each mode's FLOPs divided by $C_{j,p}$, assuming full utilization and sufficient bandwidth. We average times using the observed length frequencies and equal weights for the five scenarios. Speedup is the ratio of baseline to candidate mean time.
 
-\subsection{Budget Sensitivity and Stage-Specific Choices}
+\subsection{How Power and Precision Mix Shape Throughput Gains}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{data/new_chip_ds_model/budget_study/budget_sweep.pdf}
-\caption{Trace-weighted prefill. (a) Color identifies the ratio with the lowest mean GEMM time over the largest fraction of each budget cell. (b) At $\alpha=0.327$ (dashed line), shading gives the corresponding winner in each power band. Dots compare band-averaged times with $1:2:4$, and bars span the winner's speedup range.}
+\caption{Trace-weighted prefill. (a) Color identifies the ratio with the lowest mean GEMM time over the largest fraction of each $0.01\times0.1$ budget cell. (b) At $\alpha=0.327$ (dashed line), shading gives the corresponding winner in each power band. Dots compare band-averaged times with $1:2:4$, and bars span the winner's speedup range.}
 \label{fig:first_request_budget_sweep}
 \end{figure}
-\textbf{\boldmath At the reference area, $1:4:8$ leads at baseline power, while $1:8:16$ leads consistently with 40--100\% more array power.}
-Fig.~\ref{fig:first_request_budget_sweep}(a) groups exact core-count transitions into $0.01\times0.1$ cells over $\alpha\in[0.25,0.50]$ and $\beta\in[1,2]$. At $\alpha=0.327$, $1:4:8$ achieves $1.14\times$ at $\beta=1$ and leads over most of each band below $\beta=1.2$. In the $[1.1,1.2)$ band its coverage is only 50.22\%, and $1:6:12$ wins the surrounding area cell. On the reference slice, $1:6:12$ leads over most of both bands from $\beta=1.2$ to $1.4$. Beyond this transition, $1:8:16$ leads throughout all six bands, with speedup rising from $1.44\times$ to $1.62\times$ (Fig.~\ref{fig:first_request_budget_sweep}(b)).
+\textbf{Under a power cap, doubling per-core throughput can leave chip throughput unchanged.}
+At $\alpha=0.327$ and $\beta=1$, widening $1:4:8$ to $1:8:16$ doubles per-core FP8 and FP4 throughput. In FP4, the active core count halves from 28 to 14, exactly canceling the gain. In FP8, 10 active cores replace 19, yielding only 5.3\% more throughput. In BF16, the wider design fits 22 cores versus 29 (Fig.~\ref{fig:first_request_case_32k}(a)). This trade-off favors $1:4:8$ across the trace-weighted workloads at baseline power ($1.14\times$). As more cores can run the wider datapath, $1:8:16$ takes the lead throughout $1.4\le\beta\le2$ (Fig.~\ref{fig:first_request_budget_sweep}).
 
 \begin{figure}[!t]
 \centering
@@ -236,8 +236,8 @@ Fig.~\ref{fig:first_request_budget_sweep}(a) groups exact core-count transitions
 \label{fig:first_request_case_32k}
 \end{figure}
 \begin{samepage}
-\textbf{\boldmath At 32K and baseline power, $1:4:8$ minimizes mean GEMM time across stages, while $1:2:16$ wins once the experts and main attention use FP4.}
-In Fig.~\ref{fig:first_request_case_32k}, the FP8-heavy stage A favors $1:4:4$ ($1.06\times$). Moving routed experts to FP4 favors $1:2:6$ in B ($1.04\times$). With FP8 attention and FP4 experts, $1:8:16$ leads in C and D. Once main attention and grouped O-down also move to FP4 in E, FP4 accounts for 94.06\% of modeled FLOPs. The FP4-only expansion $1:2:16$ gives $1.77\times$ in E but only $0.99\times$ overall. By comparison, $1:4:8$ delivers $1.12\times$ overall without leading any individual stage.\par
+\textbf{FP4-only expansion trades time saved on FP4 GEMMs for time lost on the remaining precisions.}
+At the same budgets, widening $1:2:8$ to $1:2:16$ reduces active FP4 cores from 32 to 19. Chip-level FP4 throughput rises by 18.75\%, while BF16 and FP8 throughput fall by 12.5\% as only 28 cores fit. These rates favor the wider design when FP4 exceeds 47.5\% of GEMM time on $1:2:8$. At 32K, FP4 already accounts for 77.6\% of FLOPs in D but only 46.3\% of that time. Moving main attention and grouped O-down to FP4 in E raises its time share to 79.7\%. Only then does $1:2:16$ overtake $1:2:8$, delivering $1.77\times$ versus $1.60\times$ over baseline (Fig.~\ref{fig:first_request_case_32k}(b)).\par
 \end{samepage}
 
 % END REVIEW PAIR: 05_dse.tex
