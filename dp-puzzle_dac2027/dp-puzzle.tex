@@ -243,7 +243,7 @@ At 32K tokens under the baseline array power cap, the modeled GEMM time of \tpra
 % BEGIN REVIEW PAIR: 06_conclusion.tex
 \section{Conclusion}
 \label{sec:conclusion}
-DP-Puzzle reduces the area cost of expanding FP8 and FP4 throughput by sharing multipliers across the two modes. At chip scale, array power is the main constraint on further expansion in our study because it limits the number of cores that can operate concurrently at each precision. Under the baseline area and power budgets, \tpratio{1}{4}{8} offers a balanced choice across five precision-migration scenarios for DeepSeek-V4.1-Flash prefill, yielding the lowest trace-weighted mean GEMM time in our model. Future tensor cores should pair wider datapaths for the precisions that dominate the workload with circuit optimizations that reduce their active power.
+DP-Puzzle provides a quantitative basis for choosing a fixed tensor-core throughput ratio as inference workloads shift toward lower precision. Across its composable dot-product designs, shared FP8 and FP4 hardware saves area, but array power is the principal limit on how much of the added parallelism the chip can use. At matched area and power, \tpratio{1}{4}{8} gives the best overall result across five DeepSeek-V4.1-Flash prefill scenarios, with a modeled GEMM speedup of $1.14\times$ over \tpratio{1}{2}{4}. Further expansion should target the precision of the dominant operators and the active power required to sustain their throughput.
 % END REVIEW PAIR: 06_conclusion.tex
 
 
