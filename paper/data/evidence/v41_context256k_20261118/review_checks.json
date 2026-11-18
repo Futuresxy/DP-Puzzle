@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-18",
+  "fresh_evaluations_match_original_subset": true,
+  "matching_evaluations": 405,
+  "relative_tolerance": 1e-12,
+  "hardware_byte_identical": true,
+  "only_context_set_changed": true,
+  "manuscripts_unchanged": true,
+  "files": [
+    {
+      "path": "data/evidence/v41_five_stage_20261117/manifest.json",
+      "sha256": "c3b35f356c56ce6b1983fd7ebcd746bf9db4d067bdc4e84da7454685580b9a81"
+    },
+    {
+      "path": "data/evidence/v41_five_stage_20261117/evaluations.csv",
+      "sha256": "b7b04e142c59345085b8dce89156afa73f93c248388fe11a532b54c93b19d937"
+    },
+    {
+      "path": "data/evidence/v41_five_stage_20261117/gains.csv",
+      "sha256": "0a4754dedd7cd642ebf907f0c1455ad3e7e2e09c91034dac6ac778e060bf1830"
+    },
+    {
+      "path": "data/evidence/v41_five_stage_20261117/cases.csv",
+      "sha256": "8129e9713ea6f5ea43f319a2d18b6688bd71293fc132baedaee427bcfccc76a1"
+    },
+    {
+      "path": "data/evidence/v41_context256k_20261118/scenario_comparison.csv",
+      "sha256": "aa9bcaf8e7f3164aef9d051d1c828a80a1024c4a3969062f7d3225474342ca00"
+    },
+    {
+      "path": "data/evidence/v41_context256k_20261118/aggregate_comparison.csv",
+      "sha256": "68e3c9d66b06cc89f0dc39744064cf54146563f6db29fa6071d47a793e921c74"
+    },
+    {
+      "path": "data/evidence/v41_context256k_20261118/workload_shares.csv",
+      "sha256": "d5427b7c6110be438465a788a3ebc5168d5e63eabcafbb977c434fa57d229563"
+    },
+    {
+      "path": "data/evidence/v41_context256k_20261118/README.md",
+      "sha256": "dddffee85bc5f7e6b1b1135e12c5e060ca3b099d1a82f3cbc3eb922cec5a7547"
+    }
+  ]
+}
