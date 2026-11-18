@@ -47,16 +47,13 @@ Growing model sizes and computational demands have made lower-precision numerica
 
 For a fixed input bit width, lower-precision formats allow more elements to be supplied in parallel, motivating the conventional BF16:MXFP8:MXFP4 peak throughput ratio of $1:2:4$. Recent commercial AI chips depart from this ratio by selectively increasing FP4 throughput or increasing both FP8 and FP4 throughput, as summarized in Table~\ref{tab:vendor_ratios}. Models evolve faster than chips, so a ratio suited to current demand may become inefficient for future workloads. Tensor cores must therefore balance hardware cost against current and future precision demands.
 
-We present DP-Puzzle to connect the hardware cost of throughput-ratio choices to their benefits for evolving model workloads. Tensor cores typically organize dot-product units into two-dimensional arrays with systolic~\cite{jouppi2017tpu} or broadcast dataflows. We therefore focus on dot-product units that support multiple formats and allow low-precision throughput to be increased independently. We characterize their area and power using Synopsys synthesis and power analysis at 12\,nm and 1\,GHz, then construct a chip-level throughput model under common area and power constraints. Five precision-migration scenarios represent possible changes in future workloads, allowing us to evaluate the estimated GEMM compute-latency benefits of nine throughput ratios.
+We present DP-Puzzle to relate the hardware cost of throughput ratios to workload benefits. Tensor cores typically organize dot-product units into two-dimensional arrays with systolic~\cite{jouppi2017tpu} or broadcast dataflows. We characterize nine configurations using Synopsys synthesis and power analysis at 12\,nm and 1\,GHz, then model chip-level throughput under joint area and power budgets to estimate GEMM compute latency across five precision-migration scenarios.
 Our contributions are as follows:
 \begin{enumerate}
 \item \textbf{Composable multi-precision dot-product microarchitecture.} We propose DP-Puzzle, which organizes computation into three levels (Lane, Group, and dot-product unit) and supports TF32, FP16/BF16, INT8, MXFP8/6/4, NVFP4, and HiF4. The design shares multiplication, alignment, and reduction resources across precisions and scales low-precision throughput independently by adding specialized Groups.
 \item \textbf{Implementation and evaluation of nine throughput ratios.} We implement dot-product configurations for nine BF16:MXFP8:MXFP4 peak throughput ratios, covering the baseline, three ratios reported by industry, and five expansion configurations. We quantify their implementation costs using 12\,nm logic synthesis and workload-driven power analysis. Compared with \mbox{$1:2:4$}, \mbox{$1:2:8$} doubles MXFP4 throughput with a 33.60\% area increase and improves MXFP4 area efficiency and energy efficiency by 49.70\% and 27.27\%, respectively.
 \item \textbf{Ratio selection under joint budgets.} For each ratio, we estimate the deployable core count and peak throughput by precision under common budgets for total core area and dot-product array power. In an aggregate evaluation across five precision-migration scenarios and 11 context lengths for DeepSeek-V4.1-Flash prefill, \mbox{$1:2:8$} ranks first among the nine ratios, achieving an ideal GEMM compute speedup of $1.13\times$ over \mbox{$1:2:4$}.
 \end{enumerate}
-
-Section~\ref{sec:background} presents background and motivation; Section~\ref{sec:architecture} describes the microarchitecture; Section~\ref{sec:evaluation} evaluates hardware costs; Section~\ref{sec:workload} studies workload-driven ratio selection; and Section~\ref{sec:conclusion} concludes.
-
 
 % END REVIEW PAIR: 01_introduction.tex
 
@@ -251,7 +248,7 @@ Fig.~\ref{fig:ratio4_costs} shows the area and power of the nine configurations.
 \caption{Fixed-budget comparison ($\alpha=0.327$, $\beta=1$). (a) Core counts under area-only (gray) and joint (blue) budgets. (b) Ideal GEMM compute speedups: A--E each aggregate 11 contexts; All aggregates 55 combinations with equal request weights. Outlines mark column maxima.}
 \label{fig:fixed_budget_compact}
 \end{figure}
-Using the dominant GEMMs in DeepSeek-V4.1-Flash, we construct five successive precision-migration scenarios to examine which throughput ratio balances current workloads and future low-precision demand under fixed area and power budgets.
+We use five successive precision-migration scenarios for the dominant GEMMs in DeepSeek-V4.1-Flash to compare throughput ratios under fixed area and power budgets.
 
 \subsection{Deployment Scale Under Joint Budgets}
 All nine candidates share the core-area budget and DP-array power limit of $1:2:4$ ($\beta=1$). The baseline has 36 cores, each with 256 DPs at 1\,GHz and one request per cycle. We set the baseline array-area fraction to $\alpha=0.327$, referencing the reported 32.7\% Cube-cluster share of AI Core area~\cite{luo2024hifloat8area}, and fix peripheral storage and control area per core. Single-DP area and the maximum measured power across precision modes determine the integer core counts allowed by each budget; the smaller count determines deployment. Multiplying this count by DPs per core and precision-specific DP throughput gives chip-level peak throughput. Deployment remains fixed across workloads.
@@ -275,7 +272,7 @@ DP-Puzzle combines shared multi-precision dot-product datapaths with precision-s
 
 
 \section*{Content Generated by AI}
-OpenAI Codex assisted with EDA scripting, interpretation of source code and microarchitecture, experimental modeling, data analysis, plotting scripts, and manuscript organization, drafting, and translation. The authors are responsible for the adopted scripts, results, and all claims in this paper.
+OpenAI Codex assisted with RTL testing, debugging, performance optimization, and EDA scripting. It also assisted with modeling, data analysis, and plotting for Sections~\ref{sec:evaluation} and~\ref{sec:workload}, and with manuscript drafting, translation, and editing. The authors take full responsibility for the paper and its results.
 
 \clearpage
 \setcounter{DACreferencepage}{\value{page}}
