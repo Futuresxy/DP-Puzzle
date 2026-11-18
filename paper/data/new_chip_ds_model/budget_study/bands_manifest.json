@@ -1,0 +1,13 @@
+{
+  "inputs": {
+    "budget_cells.csv.gz": "a368db3a0e4444831a1e69430e1d046e6b78cc28736ca4c42e877303f7d222cb",
+    "power_slice.csv": "d0f29a36ff531c612de67ed7385a188b1c0a970d0b1a64b92972b9a5bbc51447",
+    "bin_budgets.py": "8aee6696b4e6f23e80590f9aa0d244ec1ff8c46c6bd67df470fd3c383dd4e7df"
+  },
+  "beta_step": 0.1,
+  "selection": "maximum power-interval fraction at minimum GEMM time",
+  "outputs": {
+    "budget_bands.csv": "fc4820f34baf48d8fbabdfaa22b5fa43a5b27df289832f0cebb10e8ce85a63a4",
+    "reference_bands.csv": "5c8075ed37f1cc7da768c50afcc9e0fccb17570a02e80d3fc28d37bb908462e8"
+  }
+}
