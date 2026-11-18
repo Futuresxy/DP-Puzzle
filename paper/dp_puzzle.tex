@@ -226,10 +226,10 @@ We use the lengths of 2,047 first requests from FreeInference agent sessions (Au
 \caption{Trace-weighted prefill. (a) Color identifies the ratio with the lowest mean GEMM time over the largest fraction of each $0.01\times0.1$ budget cell. (b) At $\alpha=0.327$ (dashed line), shading gives the corresponding winner in each power band. Dots compare band-averaged times with $1:2:4$, and bars span the winner's speedup range.}
 \label{fig:first_request_budget_sweep}
 \end{figure}
-\textbf{Allowing each precision to use its own active core count changes which throughput ratio minimizes mean GEMM time.}
-At $\alpha=0.327$ and $\beta=1$, limiting each design to the core count sustainable in its highest-power mode favors $1:2:8$ ($1.10\times$ over baseline). With the same budgets and trace weights, $1:4:8$ leads ($1.14\times$) when only FP8 GEMMs incur its 19-core limit. BF16 and FP4 can use 29 and 28 cores, respectively (Fig.~\ref{fig:first_request_case_32k}(a)). Relative to $1:2:8$, the wider FP8 datapath saves 186\,ms of FP8 time per request on average, exceeding the combined 110\,ms penalty in BF16 and FP4. The model also sets a power target for the expanded datapath. At $\beta=1$, reducing FP8 power per $1:4:8$ DP from 28.79 to 28.69\,mW would enable a twentieth FP8 core at the same area, clock, and idle power. As the cap relaxes, $1:8:16$ leads throughout $1.4\le\beta\le2$ (Fig.~\ref{fig:first_request_budget_sweep}).
-% Fixed-count comparison uses min_p n_{j,p} from the active-core model for every mode of design j.
-% Time differences use the exact agent_first FLOP means and active_tflops in results/{workload,hardware}.csv.
+\textbf{\boldmath FP8 draws the most power in both $1:4:8$ and $1:8:16$, yet the gain in FP4 throughput tips the comparison as the power cap relaxes.}
+At $\alpha=0.327$ and $\beta=1$, widening $1:2:8$ to $1:4:8$ saves 186\,ms of FP8 time per trace-weighted request, outweighing the 110\,ms added in BF16 and FP4. Further widening to $1:8:16$ saves only another 50\,ms in FP8. Its doubled FP4 width is exactly offset by the drop from 28 to 14 active FP4 cores, while fewer physical cores add 142\,ms in BF16. At $\beta=1.4$, $1:8:16$ can activate 20 FP4 cores against 29 for $1:4:8$. It now saves 145\,ms in FP4 alone, covering the same BF16 penalty, and leads throughout $1.4\le\beta\le2$ (Fig.~\ref{fig:first_request_budget_sweep}). For this workload, lowering FP4 datapath power is therefore a design opportunity even though FP8 sets peak power.
+% Time differences are differences of mean GEMM times over agent_first requests and five equally weighted stages.
+% Use results/workload.csv and budget_study/run.py's precision-specific rates at alpha=0.327, beta=1 and 1.4.
 
 \begin{figure}[!t]
 \centering
