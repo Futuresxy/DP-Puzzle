@@ -165,7 +165,7 @@ Each added Group has a bidirectional shifter. Active Groups participate in globa
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=\textwidth]{dp_ratio_area_power.pdf}
-\caption{Synthesized area and total power of the nine throughput-ratio configurations. Area bars use the left axis, with labels indicating ratios relative to $1:2:4$. Power bars use the right three axis (mW), and black labels show power relative to the gold-outlined 1:2:4 MXFP8 bar.}
+\caption{Synthesized area and total power across the evaluated throughput ratios. Area bars use the left axis, with labels indicating ratios relative to $1:2:4$. Power bars use the right three axis (mW), and black labels show power relative to the gold-outlined 1:2:4 MXFP8 bar.}
 \label{fig:ratio4_costs}
 \end{figure*}
 
@@ -183,13 +183,14 @@ Tables~\ref{tab:related_features} and~\ref{tab:related_dp} compare format covera
 
 Under the original-node comparison, the $0:2:4$ low-precision unit achieves $5.26\times$/$2.68\times$ the area/energy efficiency of MPICC at FP8 and $2.63\times$/$2.35\times$ at FP4. Compared with MXDOTP, also implemented at 12\,nm, it achieves $1.19\times$/$2.57\times$ the MXFP8 area/energy efficiency while additionally supporting MXFP4, NVFP4, and HiF4.
 
-\subsection{Area and Power Across Nine Throughput Ratios}
+\subsection{Area and Power Across Throughput Ratios}
 \label{sec:lowp_costs}
 
-Fig.~\ref{fig:ratio4_costs} shows the area and power of the nine configurations. \textbf{Expanding MXFP4 throughput incurs less area overhead than expanding MXFP8.} Relative to $1:2:4$, $1:2:8$ doubles MXFP4 throughput with only 33.60\% more area, whereas $1:4:8$ doubles both MXFP8 and MXFP4 throughput with 68.21\% more area. At higher ratios, $1:2:16$ and $1:8:16$ both provide four times the baseline MXFP4 throughput, but their area overheads are 83.68\% and 190.29\%, respectively. This difference reflects the lower cost of specialized MXFP4 datapaths, which omit portions of the exponent-comparison and alignment logic and use narrower reduction paths.
+\textbf{Sharing low-precision hardware reduces the area cost of doubling both throughputs.} Relative to $1:2:4$, doubling MXFP8 alone ($1:4:4$) adds 48.56\% to DP area, and doubling MXFP4 alone ($1:2:8$) adds 33.60\% (Fig.~\ref{fig:ratio4_costs}). These increments sum to 82.16\% of baseline area. By reusing the same multipliers across modes in four added Q8E16 Groups, $1:4:8$ doubles both throughputs with 68.21\% more area, a 16.98\% saving on the combined incremental area.
 
-\textbf{Expanding MXFP8 throughput imposes a tighter power constraint than expanding MXFP4.} MXFP8 has the highest power consumption in every configuration with increased MXFP8 throughput, rising from 28.79\,mW in $1:4:8$ to 52.85\,mW in $1:8:16$. In contrast, $1:2:16$, which expands only MXFP4 throughput, has a maximum power of 29.38\,mW across precision modes, reached in MXFP4 mode. BF16 power increases by at most 6.27\% across all nine configurations, indicating that power growth primarily comes from low-precision expansion. Thus, configurations with identical peak MXFP4 throughput can face different power limits. The following case study jointly considers area and the maximum power across precision modes to determine deployment scale.
+\textbf{Maximum DP power grows modestly through $1:2:8$ and more sharply at $1:2:12$.} Relative to $1:2:4$, the maximum estimated DP power across the three modes rises by 9.95\% at $1:2:8$ and by 46.63\% at $1:2:12$. Doubling MXFP8 as well raises this maximum by 79.91\% at $1:4:8$, even though its MXFP4 throughput matches $1:2:8$. MXFP8 sets the maximum in the joint expansion, while MXFP4 sets it in both MXFP4-only expansions.
 
+\textbf{Under joint MXFP8 and MXFP4 expansion, maximum mode power grows faster than DP area.} At $1:4:8$, $1:6:12$, and $1:8:16$, area reaches $1.68\times$, $2.37\times$, and $2.90\times$ the $1:2:4$ baseline, respectively, while maximum estimated power reaches $1.80\times$, $2.58\times$, and $3.30\times$ its baseline value. At $1:8:16$, each low-precision mode thus delivers 37.79\% more throughput per unit area, but the DP also draws 13.78\% more power per unit area in its highest-power mode (MXFP8).
 
 % END REVIEW PAIR: 04_evaluation.tex
 
