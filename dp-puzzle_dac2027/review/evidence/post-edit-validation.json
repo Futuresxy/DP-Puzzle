@@ -1,0 +1,110 @@
+{
+  "mode": "must-fix and should-fix only",
+  "baseline": "pre-edit-build.log; original baseline-build.log preserved",
+  "build_exit_code": 0,
+  "pdf_pages": 8,
+  "references_start_page": 8,
+  "main_text_page_limit_passed": false,
+  "underfull_hbox": 11,
+  "underfull_vbox": 3,
+  "overfull": 0,
+  "undefined_references_or_citations": 0,
+  "change_log_rows": 10,
+  "phrase_replacements": 16,
+  "severity_by_location": {
+    "must-fix": 4,
+    "should-fix": 6
+  },
+  "category_by_location": {
+    "term": 10
+  },
+  "patch_removed_lines": 10,
+  "patch_added_lines": 10,
+  "optional_applied": [],
+  "author_confirmed_numeric_explanations": [
+    "U31: added 31-bit width explanation without changing the interface",
+    "CSA2: author-specified attention name, including 2; no experimental quantity changed"
+  ],
+  "checks": [
+    {
+      "file": "dp-puzzle.tex",
+      "before_sha256": "eedf4e4432747fca581219100414f7b3c74cd4df5776ef1273e6f91d074fbe6a",
+      "after_sha256": "b160bfda91ab51b61725d459c28a4088f88fded3c041f8a82119fafc4e3cec94",
+      "changed_locations": 9,
+      "protected_commands_equal": true,
+      "math_equal": true,
+      "macros_equal": true,
+      "prior_numeric_tokens_equal": true,
+      "unlogged_changes": false
+    },
+    {
+      "file": "tables/vendor_ratios.tex",
+      "before_sha256": "86f40dc706fbce851cfcaf428a78c70e1c2f2133db899b8f4ff66b0cb05b7d29",
+      "after_sha256": "86f40dc706fbce851cfcaf428a78c70e1c2f2133db899b8f4ff66b0cb05b7d29",
+      "changed_locations": 0,
+      "protected_commands_equal": true,
+      "math_equal": true,
+      "macros_equal": true,
+      "prior_numeric_tokens_equal": true,
+      "unlogged_changes": false
+    },
+    {
+      "file": "tables/related_features.tex",
+      "before_sha256": "a0e6acfb52e77d0facef3bf35131c4ca81dcaff2d83ddd2a69c9b822f2bb12e0",
+      "after_sha256": "a0e6acfb52e77d0facef3bf35131c4ca81dcaff2d83ddd2a69c9b822f2bb12e0",
+      "changed_locations": 0,
+      "protected_commands_equal": true,
+      "math_equal": true,
+      "macros_equal": true,
+      "prior_numeric_tokens_equal": true,
+      "unlogged_changes": false
+    },
+    {
+      "file": "tables/group_compositions.tex",
+      "before_sha256": "9f8720ac7cc9f1710d072afe6eb6f339bb95c083d0182aa1de9de5984d7bcd88",
+      "after_sha256": "9f8720ac7cc9f1710d072afe6eb6f339bb95c083d0182aa1de9de5984d7bcd88",
+      "changed_locations": 0,
+      "protected_commands_equal": true,
+      "math_equal": true,
+      "macros_equal": true,
+      "prior_numeric_tokens_equal": true,
+      "unlogged_changes": false
+    },
+    {
+      "file": "tables/related_ppa_native.tex",
+      "before_sha256": "6e2fc44ca119c4ab42e86dbb233e970b6ff7300f4bad4dcd9660e2e37de78524",
+      "after_sha256": "6e2fc44ca119c4ab42e86dbb233e970b6ff7300f4bad4dcd9660e2e37de78524",
+      "changed_locations": 0,
+      "protected_commands_equal": true,
+      "math_equal": true,
+      "macros_equal": true,
+      "prior_numeric_tokens_equal": true,
+      "unlogged_changes": false
+    },
+    {
+      "file": "tables/five_stage_migrations.tex",
+      "before_sha256": "f812ac24f76486ad8c61dfb9b8d430fbbe7291f5ce81ab73ceeaf7b53a74373f",
+      "after_sha256": "06b8ce43e13ffef75cf6db014027ae1bcc01edaca0bdb95a0bb15bdaa8f5496b",
+      "changed_locations": 1,
+      "protected_commands_equal": true,
+      "math_equal": true,
+      "macros_equal": true,
+      "prior_numeric_tokens_equal": true,
+      "unlogged_changes": false
+    },
+    {
+      "file": "template/bare_conf.tex",
+      "before_sha256": "cc4fa258aa90115ad6afbd8ca5555f448880b29a971398bf1a20ee5f240b45f7",
+      "after_sha256": "cc4fa258aa90115ad6afbd8ca5555f448880b29a971398bf1a20ee5f240b45f7",
+      "changed_locations": 0,
+      "protected_commands_equal": true,
+      "math_equal": true,
+      "macros_equal": true,
+      "prior_numeric_tokens_equal": true,
+      "unlogged_changes": false
+    }
+  ],
+  "branch": "feat/dp-verilog-v14",
+  "branch_reason": "Latest repository AGENTS instructions require working locally here and consent for new branches; no branch created.",
+  "review_scope": "Language editing only; no claim/data recomputation or submission compliance certification."
+}

@@ -1,3 +1,9 @@
+# Candidate changes — B2–B5 status
+
+当前状态优先于下方历史候选：M01 在编辑前已由作者修正；其余 9 项 must-fix / should-fix 已落地为 [change-log.md](change-log.md) 的 10 处源码修改。O01/O02/O03 均未落地，等待作者批准。历史原句及作者回复保留供追溯；最新源行与落地映射见 [candidates.json](evidence/candidates.json)。
+
+## 以下为先前 report-only 候选快照
+
 # Candidate changes — MODE=report-only
 
 最终检查另观察到 `dp-puzzle.tex` 的摘要及关键词有并行工作区修改；本助手未写入任何 `.tex`，也未提交这些修改。下文候选保留审计时的原句，不构成对新增摘要措辞的完整重审；旧编译结果不覆盖当前稿件。

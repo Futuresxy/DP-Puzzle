@@ -1,3 +1,20 @@
+# Terminology audit — post-edit B4
+
+本节为最新结果；下方阶段 A、B0/B1 与作者回复记录保留为历史快照。
+
+- **范围与差异**：只落地 must-fix / should-fix；10 处源码行、16 个片段，完整映射见 [change-log.md](change-log.md)。作者已有摘要开头、乘号形式和表头保留。optional 三处逐字不变。
+- **摘要/关键词/正文**：AI 在摘要与正文分别展开，关键词用完整名称；LLM 关键词改为 large language model inference。摘要与正文分别定义 GEMM。具体收益改称 MXFP4，FP4/FP8 仍用于作者确认的精度族。mixed-precision 描述负载，multi-precision 描述硬件，保留对象差异。
+- **缩写**：DSE 单次标题用全称；GPGPU、NPU、RTL、TT、MLP 首现建立映射。注意力使用作者指定 SWA/CSA2，与硬件 CSA/CPA 区分。厂商/产品/标准编码名 TF32、FP16、BF16、MXFP8/6/4、NVFP4、HiF4、E8M0、W4A4 等保持原名称，不编造英文展开；Q-up/O-up/Grouped O-down 与 QK/PV 的作者标签仍保留，见未决查询。
+- **编码与接口**：S1P2 保留名称并解释 sign-magnitude 的 1+1+2 位布局；不改写现有 QI.F 二补码约定。U31 明确为 31-bit unsigned magnitude；后文已有按模式划分的小数位，符号仍另传。
+- **证据强度**：measured power 改为 estimated power，与 Power Compiler 的方法说明一致；共同 area/power budgets 取代可能暗示实际消耗相等的措辞。所有 compute-only、modeled、ideal、满供数/满利用率、综合后/CTS 和布线前限定保留。
+- **语法、时态、语态与贡献**：逐段复读，设计/评测所用现在时具有一致语境；无须全改过去时。贡献条目沿用已有名词主题与陈述结构；没有新建列表、重排段落或重写通顺句。原有以分号连接的语句未当作逗号粘连。
+- **数值与单位**：原有数字、单位、比值与数学环境保留；新出现的 31 仅解释 U31，CSA2 的 2 来自作者指定名称。正文 `$1.13\times$` 与作者摘要 `1.13×` 形式差异保留，不以版式统一改变保护对象。1K/1M 和表题/图注 optional 等待批准。
+- **本地扫描**：qa.py --scan 无表面候选；它不是语义正确性证明。保护对象、未改文件、optional 位置与逐行变更日志均另行核对，见 [post-edit-validation.json](evidence/post-edit-validation.json)。
+- **编译/版面**：本轮新基线 [pre-edit-build.log](pre-edit-build.log) 为 7 页；改后 [build.log](build.log) 退出码 0，8 页，参考文献从第 8 页开始。无 Overfull/未定义引用；存在正文超 6 页告警，AI 使用说明移到第 7 页。未调整模板或删除内容，另请作者确定后续压缩范围。
+- **分支**：遵循最新 AGENTS，在 feat/dp-verilog-v14 完成本地编辑；未创建新分支。没有重新做阶段 A 统计或把作者术语释义伪装为新增语料证据。
+
+## 历史审计记录
+
 # Terminology audit
 
 最终检查另观察到 `dp-puzzle.tex` 的摘要及关键词有并行工作区修改；本助手未写入任何 `.tex`，也未提交这些修改。下文候选保留审计时的原句，不构成对新增摘要措辞的完整重审；旧编译结果不覆盖当前稿件。

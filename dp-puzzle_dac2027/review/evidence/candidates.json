@@ -11,9 +11,13 @@
     "basis": "R08；glossary group/lane；本稿交叉证据",
     "query": "Q1",
     "scope": "included table; read-only / author-only",
-    "status": "confirmed_source_already_updated",
+    "status": "already_resolved_by_author_before_B2",
     "author_resolution": "本轮开始前当前表头已为 T2H4Q8E16；此项不再是当前源码的待改项。",
-    "current_source_line": "H:Q:E & \\shortstack{T2H4Q8E16 \\\\Group} & \\shortstack{Q8\\\\Group}& \\shortstack{E16\\\\Group} & \\shortstack{Q8E16\\\\Group} & \\shortstack{Total DP\\\\parallelism} \\\\"
+    "current_source_line": "H:Q:E & \\shortstack{T2H4Q8E16 \\\\Group} & \\shortstack{Q8\\\\Group}& \\shortstack{E16\\\\Group} & \\shortstack{Q8E16\\\\Group} & \\shortstack{Total DP\\\\parallelism} \\\\",
+    "b2_b5_change_ids": [],
+    "b2_b5_status": "already_resolved_by_author_before_B2",
+    "b2_b5_source_line": "H:Q:E & \\shortstack{T2H4Q8E16 \\\\Group} & \\shortstack{Q8\\\\Group}& \\shortstack{E16\\\\Group} & \\shortstack{Q8E16\\\\Group} & \\shortstack{Total DP\\\\parallelism} \\\\",
+    "pre_edit_status": "confirmed_source_already_updated"
   },
   {
     "id": "M02",
@@ -27,9 +31,15 @@
     "basis": "R11（实测/综合/模型不可互换）",
     "query": "Q2",
     "scope": "technical provenance; confirm first",
-    "status": "confirmed_pending_manuscript_edit",
+    "status": "applied",
     "author_resolution": "所有功耗均为 Power Compiler 的软件估计值，不是硅上实际测量。",
-    "current_source_line": "All nine candidates share the core-area budget and DP-array power limit of $1:2:4$ ($\\beta=1$). The baseline has 36 cores, each with 256 DPs at 1\\,GHz and one request per cycle. We set the baseline array-area fraction to $\\alpha=0.327$, referencing the reported 32.7\\% Cube-cluster share of AI Core area~\\cite{luo2024hifloat8area}, and fix peripheral storage and control area per core. Single-DP area and the maximum measured power across precision modes determine the integer core counts allowed by each budget; the smaller count determines deployment. Multiplying this count by DPs per core and precision-specific DP throughput gives chip-level peak throughput. Deployment remains fixed across workloads."
+    "current_source_line": "All nine candidates share the core-area budget and DP-array power limit of $1:2:4$ ($\\beta=1$). The baseline has 36 cores, each with 256 DPs at 1\\,GHz and one request per cycle. We set the baseline array-area fraction to $\\alpha=0.327$, referencing the reported 32.7\\% Cube-cluster share of AI Core area~\\cite{luo2024hifloat8area}, and fix peripheral storage and control area per core. Single-DP area and the maximum measured power across precision modes determine the integer core counts allowed by each budget; the smaller count determines deployment. Multiplying this count by DPs per core and precision-specific DP throughput gives chip-level peak throughput. Deployment remains fixed across workloads.",
+    "b2_b5_change_ids": [
+      "C09"
+    ],
+    "b2_b5_status": "applied",
+    "b2_b5_source_line": "All nine candidates share the core-area budget and DP-array power limit of $1:2:4$ ($\\beta=1$). The baseline has 36 cores, each with 256 DPs at 1\\,GHz and one request per cycle. We set the baseline array-area fraction to $\\alpha=0.327$, referencing the reported 32.7\\% Cube-cluster share of AI Core area~\\cite{luo2024hifloat8area}, and fix peripheral storage and control area per core. Single-DP area and the maximum estimated power across precision modes determine the integer core counts allowed by each budget; the smaller count determines deployment. Multiplying this count by DPs per core and precision-specific DP throughput gives chip-level peak throughput. Deployment remains fixed across workloads.",
+    "pre_edit_status": "confirmed_pending_manuscript_edit"
   },
   {
     "id": "M03",
@@ -43,9 +53,15 @@
     "basis": "R14；R08；glossary carry-save",
     "query": "Q5",
     "scope": "included table; read-only / author-only",
-    "status": "confirmed_pending_manuscript_edit",
+    "status": "applied",
     "author_resolution": "SWA/CSA2 展开已由作者提供；当前表注仍是 CSA，保留用户已有修改。",
-    "current_source_line": "Experts include gate/up/down; Main QK/PV includes Sliding Window Attention (SWA) and compressed Sparse attention (CSA)."
+    "current_source_line": "Experts include gate/up/down; Main QK/PV includes Sliding Window Attention (SWA) and compressed Sparse attention (CSA).",
+    "b2_b5_change_ids": [
+      "C10"
+    ],
+    "b2_b5_status": "applied",
+    "b2_b5_source_line": "Experts include gate/up/down; Main QK/PV includes Sliding-Window Attention (SWA) and Compressed Sparse Attention 2 (CSA2).",
+    "pre_edit_status": "confirmed_pending_manuscript_edit"
   },
   {
     "id": "M04",
@@ -59,8 +75,14 @@
     "basis": "R14；prompt.md B1；glossary GEMM",
     "query": null,
     "scope": "language candidate; not applied",
-    "status": "not_applied",
-    "current_source_line": "AI workloads mix precisions and shift toward lower precision, so splitting tensor-core peak throughput across 16/8/4-bit floating-point formats becomes a key design choice. DP-Puzzle combines shared multi-precision datapaths with precision-specific compute units to tune throughput allocation; we compare nine configurations, jointly modeling area, power, and precision migration. At 12 nm and 1 GHz, doubling FP4 throughput raises area by 33.6\\% while improving area and energy efficiency by 49.7\\% and 27.3\\%. At matched area and power, 1:2:8 performs best overall among the nine, yielding a modeled 1.13× compute-only speedup on DeepSeek-V4.1-Flash GEMMs. Moderate expansion thus balances low-precision capacity and deployment density."
+    "status": "applied",
+    "current_source_line": "AI workloads mix precisions and shift toward lower precision, so splitting tensor-core peak throughput across 16/8/4-bit floating-point formats becomes a key design choice. DP-Puzzle combines shared multi-precision datapaths with precision-specific compute units to tune throughput allocation; we compare nine configurations, jointly modeling area, power, and precision migration. At 12 nm and 1 GHz, doubling FP4 throughput raises area by 33.6\\% while improving area and energy efficiency by 49.7\\% and 27.3\\%. At matched area and power, 1:2:8 performs best overall among the nine, yielding a modeled 1.13× compute-only speedup on DeepSeek-V4.1-Flash GEMMs. Moderate expansion thus balances low-precision capacity and deployment density.",
+    "b2_b5_change_ids": [
+      "C01"
+    ],
+    "b2_b5_status": "applied",
+    "b2_b5_source_line": "Artificial intelligence (AI) workloads mix precisions and shift toward lower precision, so splitting tensor-core peak throughput across 16/8/4-bit floating-point formats becomes a key design choice. DP-Puzzle combines shared multi-precision datapaths with precision-specific compute units to tune throughput allocation; we compare nine configurations, jointly modeling area, power, and precision migration. At 12 nm and 1 GHz, doubling MXFP4 throughput raises area by 33.6\\% while improving area and energy efficiency by 49.7\\% and 27.3\\%. Under common area and power budgets, 1:2:8 performs best overall among the nine, yielding a modeled 1.13× compute-only speedup on DeepSeek-V4.1-Flash general matrix multiplications (GEMMs). Moderate expansion thus balances low-precision capacity and deployment density.",
+    "pre_edit_status": "not_applied"
   },
   {
     "id": "M05",
@@ -74,8 +96,16 @@
     "basis": "R14；prompt.md B1",
     "query": null,
     "scope": "language candidate; not applied",
-    "status": "not_applied",
-    "current_source_line": "AI workloads mix precisions and shift toward lower precision, so splitting tensor-core peak throughput across 16/8/4-bit floating-point formats becomes a key design choice. DP-Puzzle combines shared multi-precision datapaths with precision-specific compute units to tune throughput allocation; we compare nine configurations, jointly modeling area, power, and precision migration. At 12 nm and 1 GHz, doubling FP4 throughput raises area by 33.6\\% while improving area and energy efficiency by 49.7\\% and 27.3\\%. At matched area and power, 1:2:8 performs best overall among the nine, yielding a modeled 1.13× compute-only speedup on DeepSeek-V4.1-Flash GEMMs. Moderate expansion thus balances low-precision capacity and deployment density."
+    "status": "applied",
+    "current_source_line": "AI workloads mix precisions and shift toward lower precision, so splitting tensor-core peak throughput across 16/8/4-bit floating-point formats becomes a key design choice. DP-Puzzle combines shared multi-precision datapaths with precision-specific compute units to tune throughput allocation; we compare nine configurations, jointly modeling area, power, and precision migration. At 12 nm and 1 GHz, doubling FP4 throughput raises area by 33.6\\% while improving area and energy efficiency by 49.7\\% and 27.3\\%. At matched area and power, 1:2:8 performs best overall among the nine, yielding a modeled 1.13× compute-only speedup on DeepSeek-V4.1-Flash GEMMs. Moderate expansion thus balances low-precision capacity and deployment density.",
+    "b2_b5_change_ids": [
+      "C01",
+      "C02",
+      "C03"
+    ],
+    "b2_b5_status": "applied",
+    "b2_b5_source_line": "Artificial intelligence (AI) workloads mix precisions and shift toward lower precision, so splitting tensor-core peak throughput across 16/8/4-bit floating-point formats becomes a key design choice. DP-Puzzle combines shared multi-precision datapaths with precision-specific compute units to tune throughput allocation; we compare nine configurations, jointly modeling area, power, and precision migration. At 12 nm and 1 GHz, doubling MXFP4 throughput raises area by 33.6\\% while improving area and energy efficiency by 49.7\\% and 27.3\\%. Under common area and power budgets, 1:2:8 performs best overall among the nine, yielding a modeled 1.13× compute-only speedup on DeepSeek-V4.1-Flash general matrix multiplications (GEMMs). Moderate expansion thus balances low-precision capacity and deployment density.",
+    "pre_edit_status": "not_applied"
   },
   {
     "id": "S01",
@@ -89,9 +119,15 @@
     "basis": "R09；R08；glossary MXFP4/NVFP4/HiF4；OCP S01",
     "query": "Q3",
     "scope": "technical referent; confirm first",
-    "status": "confirmed_pending_manuscript_edit",
+    "status": "applied",
     "author_resolution": "所讨论结果具体指 MXFP4；FP4/FP8 在概括性讨论中是按位宽区分的精度族代称。",
-    "current_source_line": "AI workloads mix precisions and shift toward lower precision, so splitting tensor-core peak throughput across 16/8/4-bit floating-point formats becomes a key design choice. DP-Puzzle combines shared multi-precision datapaths with precision-specific compute units to tune throughput allocation; we compare nine configurations, jointly modeling area, power, and precision migration. At 12 nm and 1 GHz, doubling FP4 throughput raises area by 33.6\\% while improving area and energy efficiency by 49.7\\% and 27.3\\%. At matched area and power, 1:2:8 performs best overall among the nine, yielding a modeled 1.13× compute-only speedup on DeepSeek-V4.1-Flash GEMMs. Moderate expansion thus balances low-precision capacity and deployment density."
+    "current_source_line": "AI workloads mix precisions and shift toward lower precision, so splitting tensor-core peak throughput across 16/8/4-bit floating-point formats becomes a key design choice. DP-Puzzle combines shared multi-precision datapaths with precision-specific compute units to tune throughput allocation; we compare nine configurations, jointly modeling area, power, and precision migration. At 12 nm and 1 GHz, doubling FP4 throughput raises area by 33.6\\% while improving area and energy efficiency by 49.7\\% and 27.3\\%. At matched area and power, 1:2:8 performs best overall among the nine, yielding a modeled 1.13× compute-only speedup on DeepSeek-V4.1-Flash GEMMs. Moderate expansion thus balances low-precision capacity and deployment density.",
+    "b2_b5_change_ids": [
+      "C01"
+    ],
+    "b2_b5_status": "applied",
+    "b2_b5_source_line": "Artificial intelligence (AI) workloads mix precisions and shift toward lower precision, so splitting tensor-core peak throughput across 16/8/4-bit floating-point formats becomes a key design choice. DP-Puzzle combines shared multi-precision datapaths with precision-specific compute units to tune throughput allocation; we compare nine configurations, jointly modeling area, power, and precision migration. At 12 nm and 1 GHz, doubling MXFP4 throughput raises area by 33.6\\% while improving area and energy efficiency by 49.7\\% and 27.3\\%. Under common area and power budgets, 1:2:8 performs best overall among the nine, yielding a modeled 1.13× compute-only speedup on DeepSeek-V4.1-Flash general matrix multiplications (GEMMs). Moderate expansion thus balances low-precision capacity and deployment density.",
+    "pre_edit_status": "confirmed_pending_manuscript_edit"
   },
   {
     "id": "S02",
@@ -105,9 +141,15 @@
     "basis": "R08；R09；L257 的部署定义",
     "query": "Q4",
     "scope": "technical interpretation; confirm first",
-    "status": "confirmed_pending_manuscript_edit",
+    "status": "applied",
     "author_resolution": "面积和功耗为共同上限约束；不同配置的实际消耗不要求相等。",
-    "current_source_line": "AI workloads mix precisions and shift toward lower precision, so splitting tensor-core peak throughput across 16/8/4-bit floating-point formats becomes a key design choice. DP-Puzzle combines shared multi-precision datapaths with precision-specific compute units to tune throughput allocation; we compare nine configurations, jointly modeling area, power, and precision migration. At 12 nm and 1 GHz, doubling FP4 throughput raises area by 33.6\\% while improving area and energy efficiency by 49.7\\% and 27.3\\%. At matched area and power, 1:2:8 performs best overall among the nine, yielding a modeled 1.13× compute-only speedup on DeepSeek-V4.1-Flash GEMMs. Moderate expansion thus balances low-precision capacity and deployment density."
+    "current_source_line": "AI workloads mix precisions and shift toward lower precision, so splitting tensor-core peak throughput across 16/8/4-bit floating-point formats becomes a key design choice. DP-Puzzle combines shared multi-precision datapaths with precision-specific compute units to tune throughput allocation; we compare nine configurations, jointly modeling area, power, and precision migration. At 12 nm and 1 GHz, doubling FP4 throughput raises area by 33.6\\% while improving area and energy efficiency by 49.7\\% and 27.3\\%. At matched area and power, 1:2:8 performs best overall among the nine, yielding a modeled 1.13× compute-only speedup on DeepSeek-V4.1-Flash GEMMs. Moderate expansion thus balances low-precision capacity and deployment density.",
+    "b2_b5_change_ids": [
+      "C01"
+    ],
+    "b2_b5_status": "applied",
+    "b2_b5_source_line": "Artificial intelligence (AI) workloads mix precisions and shift toward lower precision, so splitting tensor-core peak throughput across 16/8/4-bit floating-point formats becomes a key design choice. DP-Puzzle combines shared multi-precision datapaths with precision-specific compute units to tune throughput allocation; we compare nine configurations, jointly modeling area, power, and precision migration. At 12 nm and 1 GHz, doubling MXFP4 throughput raises area by 33.6\\% while improving area and energy efficiency by 49.7\\% and 27.3\\%. Under common area and power budgets, 1:2:8 performs best overall among the nine, yielding a modeled 1.13× compute-only speedup on DeepSeek-V4.1-Flash general matrix multiplications (GEMMs). Moderate expansion thus balances low-precision capacity and deployment density.",
+    "pre_edit_status": "confirmed_pending_manuscript_edit"
   },
   {
     "id": "S03",
@@ -121,9 +163,17 @@
     "basis": "R14；glossary Q-format 的 manuscript-only 状态",
     "query": "Q6",
     "scope": "symbol definition; author-only",
-    "status": "partly_resolved_encoding_wording_pending",
+    "status": "applied",
     "author_resolution": "S1P2 的现用输入编码是 sign-magnitude，而稿件 QI.F 被定义为二补码。可以说明同为 1+1+2 位分配，不能直接把 S1P2 编码改称本稿定义下的 Q1.2。建议保持二补码 QI.F 约定，并明确 HiF4 元素为符号—幅值定点编码；这是待作者选择的表述，不是实施编码变更。",
-    "current_source_line": "Two Lanes form a T2H4Q8E16 Group, matching NVFP4's 16-element scaling block; larger blocks broadcast the same scale factor across Groups. The Group first combines the Lane results and separates the sign and magnitude, then applies the shared scale factors. Only NVFP4/HiF4 require scale-significand multiplication. The two four-bit scale significands are premultiplied into an eight-bit coefficient. After removing structurally zero low-order bits, the 14-bit Group magnitude is multiplied by this coefficient using a shared $14\\times8$ multiplier. The resulting 22-bit value is mapped to the U31 magnitude interface. MX's E8M0 scale factors contribute only to the exponent."
+    "current_source_line": "Two Lanes form a T2H4Q8E16 Group, matching NVFP4's 16-element scaling block; larger blocks broadcast the same scale factor across Groups. The Group first combines the Lane results and separates the sign and magnitude, then applies the shared scale factors. Only NVFP4/HiF4 require scale-significand multiplication. The two four-bit scale significands are premultiplied into an eight-bit coefficient. After removing structurally zero low-order bits, the 14-bit Group magnitude is multiplied by this coefficient using a shared $14\\times8$ multiplier. The resulting 22-bit value is mapped to the U31 magnitude interface. MX's E8M0 scale factors contribute only to the exponent.",
+    "b2_b5_change_ids": [
+      "C04",
+      "C07"
+    ],
+    "b2_b5_status": "applied",
+    "b2_b5_source_line": "Two Lanes form a T2H4Q8E16 Group, matching NVFP4's 16-element scaling block; larger blocks broadcast the same scale factor across Groups. The Group first combines the Lane results and separates the sign and magnitude, then applies the shared scale factors. Only NVFP4/HiF4 require scale-significand multiplication. The two four-bit scale significands are premultiplied into an eight-bit coefficient. After removing structurally zero low-order bits, the 14-bit Group magnitude is multiplied by this coefficient using a shared $14\\times8$ multiplier. The resulting 22-bit value is mapped to the U31 (31-bit unsigned magnitude) interface. MX's E8M0 scale factors contribute only to the exponent.",
+    "b2_b5_resolution": "S1P2 name retained and existing sign-magnitude encoding explained; U31 width explained; QI.F two-complement definition unchanged.",
+    "pre_edit_status": "partly_resolved_encoding_wording_pending"
   },
   {
     "id": "S04",
@@ -137,8 +187,14 @@
     "basis": "R14；prompt.md B1",
     "query": null,
     "scope": "language candidate; not applied",
-    "status": "not_applied",
-    "current_source_line": "\\subsection{Related Work on Dot-Product Design and DSE}"
+    "status": "applied",
+    "current_source_line": "\\subsection{Related Work on Dot-Product Design and DSE}",
+    "b2_b5_change_ids": [
+      "C05"
+    ],
+    "b2_b5_status": "applied",
+    "b2_b5_source_line": "\\subsection{Related Work on Dot-Product Design and Design-Space Exploration}",
+    "pre_edit_status": "not_applied"
   },
   {
     "id": "S05",
@@ -152,8 +208,16 @@
     "basis": "R14；prompt.md B1；glossary prefill/GEMM",
     "query": null,
     "scope": "terminology presentation; not applied",
-    "status": "not_applied",
-    "current_source_line": "AI workloads, dot-product units,LLM inference, mixed-p≈recision arithmetic, multi-precision tensor core, throughput-ratio allocation"
+    "status": "applied",
+    "current_source_line": "AI workloads, dot-product units,LLM inference, mixed-p≈recision arithmetic, multi-precision tensor core, throughput-ratio allocation",
+    "b2_b5_change_ids": [
+      "C02",
+      "C06",
+      "C08"
+    ],
+    "b2_b5_status": "applied",
+    "b2_b5_source_line": "artificial intelligence workloads, dot-product units, large language model inference, mixed-precision arithmetic, multi-precision tensor core, throughput-ratio allocation",
+    "pre_edit_status": "not_applied"
   },
   {
     "id": "O01",
@@ -167,8 +231,12 @@
     "basis": "R18 的局部一致性原则；prompt.md B1 caption 检查",
     "query": null,
     "scope": "included table; read-only / author-only",
-    "status": "not_applied",
-    "current_source_line": "\\caption{Feature Comparison of Related Dot-Product Unit Designs}"
+    "status": "optional_pending_author_approval",
+    "current_source_line": "\\caption{Feature Comparison of Related Dot-Product Unit Designs}",
+    "b2_b5_change_ids": [],
+    "b2_b5_status": "optional_pending_author_approval",
+    "b2_b5_source_line": "\\caption{Feature Comparison of Related Dot-Product Unit Designs}",
+    "pre_edit_status": "not_applied"
   },
   {
     "id": "O02",
@@ -182,9 +250,13 @@
     "basis": "style-rules 用户目标/语料分离；R15",
     "query": "Q7",
     "scope": "protected quantity notation; author-only",
-    "status": "meaning_confirmed_format_unchanged",
+    "status": "optional_pending_author_approval",
     "author_resolution": "1K–1M 表示上下文长度，且 1M = 1024K。",
-    "current_source_line": "\\item \\textbf{Workload-driven ratio selection:} Five current and prospective precision scenarios for DeepSeek-V4.1-Flash, evaluated over 1K--1M contexts, connect workload migration to estimated GEMM compute latency. Under matched area and power budgets, \\mbox{$1:2:8$} achieves the best aggregate modeled speedup of $1.13\\times$ over \\mbox{$1:2:4$}. Moderate expansion thus balances remaining high-precision demand with future low-precision workloads."
+    "current_source_line": "\\item \\textbf{Workload-driven ratio selection:} Five current and prospective precision scenarios for DeepSeek-V4.1-Flash, evaluated over 1K--1M contexts, connect workload migration to estimated GEMM compute latency. Under matched area and power budgets, \\mbox{$1:2:8$} achieves the best aggregate modeled speedup of $1.13\\times$ over \\mbox{$1:2:4$}. Moderate expansion thus balances remaining high-precision demand with future low-precision workloads.",
+    "b2_b5_change_ids": [],
+    "b2_b5_status": "optional_pending_author_approval",
+    "b2_b5_source_line": "\\item \\textbf{Workload-driven ratio selection:} Five current and prospective precision scenarios for DeepSeek-V4.1-Flash, evaluated over 1K--1M contexts, connect workload migration to estimated GEMM compute latency. Under matched area and power budgets, \\mbox{$1:2:8$} achieves the best aggregate modeled speedup of $1.13\\times$ over \\mbox{$1:2:4$}. Moderate expansion thus balances remaining high-precision demand with future low-precision workloads.",
+    "pre_edit_status": "meaning_confirmed_format_unchanged"
   },
   {
     "id": "O03",
@@ -198,7 +270,11 @@
     "basis": "R09；R16；prompt.md B1 caption 检查",
     "query": null,
     "scope": "caption language candidate; not applied",
-    "status": "not_applied",
-    "current_source_line": "\\caption{Fixed-budget comparison ($\\alpha=0.327$, $\\beta=1$). (a) Core counts under area-only (gray) and joint (blue) budgets. (b) Ideal GEMM compute speedups: A--E each aggregate 11 contexts; All aggregates 55 combinations with equal request weights. Outlines mark column maxima.}"
+    "status": "optional_pending_author_approval",
+    "current_source_line": "\\caption{Fixed-budget comparison ($\\alpha=0.327$, $\\beta=1$). (a) Core counts under area-only (gray) and joint (blue) budgets. (b) Ideal GEMM compute speedups: A--E each aggregate 11 contexts; All aggregates 55 combinations with equal request weights. Outlines mark column maxima.}",
+    "b2_b5_change_ids": [],
+    "b2_b5_status": "optional_pending_author_approval",
+    "b2_b5_source_line": "\\caption{Fixed-budget comparison ($\\alpha=0.327$, $\\beta=1$). (a) Core counts under area-only (gray) and joint (blue) budgets. (b) Ideal GEMM compute speedups: A--E each aggregate 11 contexts; All aggregates 55 combinations with equal request weights. Outlines mark column maxima.}",
+    "pre_edit_status": "not_applied"
   }
 ]
