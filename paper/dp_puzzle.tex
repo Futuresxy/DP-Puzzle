@@ -198,36 +198,41 @@ Fig.~\ref{fig:ratio4_costs} shows the area and power of the nine configurations.
 % END REVIEW PAIR: 04_evaluation.tex
 
 % BEGIN REVIEW PAIR: 05_dse.tex
-\section{Case Study}
+\section{Case Study: Throughput Ratios for LLM Prefill}
 \label{sec:workload}
+
+\subsection{Installed Cores and Active Cores}
+We use the single-DP costs in Fig.~\ref{fig:ratio4_costs} to compare chips with the same total core area. The $1:2:4$ baseline has $N_0=36$ cores, each with four 64-DP arrays ($D=256$ DPs per core) clocked at $f=1$\,GHz. Let $\alpha$ denote the fraction of baseline core area occupied by the DP arrays and $r_j$ the single-DP area of design $j$ relative to baseline. Holding per-core storage and control area fixed gives $N_j=\lfloor N_0/[1+\alpha(r_j-1)]\rfloor$ installed cores. We use $\alpha=0.327$ as a reference, following the reported 32.7\% Cube-cluster share of Ascend AI Core area~\cite{luo2024hifloat8area}.
+
+Power limits how many installed cores can execute a GEMM at precision $p$. Let $P_{j,p}$ be the workload-driven total power per active DP and $I_j$ its idle power, approximated by the largest leakage estimate across its three modes. The chip-wide DP-array budget $B=\beta N_0D\max_p P_{0,p}$ is 147.47\,W at $\beta=1$. We activate the largest integer $n_{j,p}\le N_j$ satisfying
+\begin{equation}
+D\big[n_{j,p}P_{j,p}+(N_j-n_{j,p})I_j\big]\le B .
+\label{eq:active_core_budget}
+\end{equation}
+With a native dot-product length of $K_{j,p}$ and one dot product per DP per cycle, the available throughput is $C_{j,p}=2fD K_{j,p}n_{j,p}$ FLOP/s. For example, at the reference area and power budgets, $1:4:8$ fits 29 cores and can activate 29 in BF16, 19 in MXFP8, and 28 in MXFP4.
+
+\subsection{Precision Migration and Request Lengths}
+We model batch-one cold prefill for the dominant GEMMs in DeepSeek-V4.1-Flash~\cite{deepseekv41source}. Table~\ref{tab:five_stage_migrations} gives five cumulative precision assignments. In A, routed experts use FP4 weights and FP8 activations and execute at the FP8 rate. Scenarios B--E explore lower-precision expert and attention computation, motivated by W4A4 routed experts and low-precision attention~\cite{nvidiav41routed2026,flashattention3,sageattention3}.
+\input{tables/five_stage_migrations}
+
+We take input lengths from the first LLM request of each agent session in the Aug.~30--Sept.~5, 2026 FreeInference trace partition~\cite{nixon2026requests}. Among 2,047 requests, the median is 28,991 tokens. Of the 11 doubling bins with upper bounds from 1K to 1M tokens, $(16\mathrm{K},32\mathrm{K}]$ is the most frequent (33.56\%), while 22.72\% of requests exceed 128K. At each observed length, we sum GEMM FLOPs divided by $C_{j,p}$ across precisions, assuming full utilization of the active arrays and sufficient operand bandwidth. We average these compute times by observed request frequency and give each migration scenario equal weight. Speedup is the baseline mean time divided by the candidate mean time under the same budgets.
+
+\subsection{Budget Sensitivity and Stage-Specific Choices}
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{data/new_chip_ds_model/budget_study/budget_sweep.pdf}
+\caption{Trace-weighted prefill. (a) Color identifies the ratio with the lowest mean GEMM time over the largest fraction of each budget cell. (b) At $\alpha=0.327$ (dashed line), shading gives the corresponding winner in each power band. Dots compare band-averaged times with $1:2:4$, and bars span the winner's speedup range.}
+\label{fig:first_request_budget_sweep}
+\end{figure}
+Fig.~\ref{fig:first_request_budget_sweep} groups exact core-count transitions into cells of width $\Delta\alpha=0.01$ and $\Delta\beta=0.1$ over $\alpha\in[0.25,0.50]$ and $\beta\in[1,2]$. At $\alpha=0.327$ and baseline power, $1:4:8$ gives the highest modeled speedup ($1.14\times$). It leads over the largest fraction of each power band below $\beta=1.2$, followed by $1:6:12$ in the next two bands. The $[1.1,1.2)$ band illustrates the sensitivity to area. Here $1:4:8$ leads over 50.22\% of the fixed-area slice, while $1:6:12$ leads over 51.64\% of the surrounding $[0.32,0.33)$ area cell. From $\beta=1.4$ onward, $1:8:16$ leads throughout all six remaining bands, with band speedup rising from $1.44\times$ to $1.62\times$.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=\columnwidth]{v41_case_panels_overlay.pdf}
-\caption{Fixed-budget comparison ($\alpha=0.327$, $\beta=1$). (a) Core counts under area-only (gray) and joint (blue) budgets. (b) Ideal GEMM compute speedups: A--E each aggregate 11 contexts; All aggregates 55 combinations with equal request weights. Outlines mark column maxima.}
-\label{fig:fixed_budget_compact}
+\includegraphics[width=\columnwidth]{data/new_chip_ds_model/budget_study/case_32k.pdf}
+\caption{32K-token prefill at $\alpha=0.327$ and $\beta=1$. (a) Bars show installed cores. Circles, squares, and triangles mark active cores in BF16, MXFP8, and MXFP4. (b) Modeled GEMM speedup over $1:2:4$. All compares five-stage mean times. Outlines mark column maxima before rounding.}
+\label{fig:first_request_case_32k}
 \end{figure}
-Using the dominant GEMMs in DeepSeek-V4.1-Flash, we construct five successive precision-migration scenarios to examine which throughput ratio balances current workloads and future low-precision demand under fixed area and power budgets.
-
-\subsection{Deployment Scale Under Joint Budgets}
-The $1:2:4$ baseline has $N_0=36$ cores with $D=256$ DPs per core at $f=1$\,GHz and one request per DP per cycle. We fix the per-core peripheral area and set the baseline DP-array area fraction to $\alpha=0.327$, using the reported 32.7\% Cube-cluster share of AI Core area~\cite{luo2024hifloat8area} as a reference. The budgets are the baseline total core area and $\beta$ times its DP-array power ($\beta=1$). For candidate $j$, $r_j=a_j/a_0$ and $\rho_j=P_j^{\max}/P_0^{\max}$ compare synthesized single-DP area and maximum estimated single-DP power across BF16, MXFP8, and MXFP4 with the baseline. Deployment and peak throughput follow as
-\begin{equation}
-\begin{aligned}
-n_j &= \min\!\left\{\left\lfloor\frac{N_0}{1+\alpha(r_j-1)}\right\rfloor,
-        \left\lfloor\frac{\beta N_0}{\rho_j}\right\rfloor\right\},\\
-C_{j,p} &= 2fDn_jK_{j,p}.
-\end{aligned}
-\label{eq:core_area_budget}
-\end{equation}
-Here, $K_{j,p}$ is the native dot-product length in mode $p$, with two FLOPs per multiply-accumulate. Fig.~\ref{fig:fixed_budget_compact}(a) compares the area-only and joint core counts. The joint count $n_j$ is fixed across modes and workloads.
-
-\subsection{Ratio Selection Across Precision Migrations}
-We evaluate cold-start prefill at batch=1 over 11 doubling contexts from 1K to 1M tokens~\cite{deepseekv41source}. Table~\ref{tab:five_stage_migrations} progressively lowers major GEMM precisions through scenarios A--E; other operators retain their original precision. Routed-expert W4A4 deployment~\cite{nvidiav41routed2026} and FP8/FP4 attention~\cite{flashattention3,sageattention3} motivate these future migration assumptions. We sum each precision's operation count divided by its chip-level peak throughput to estimate GEMM compute time under sufficient data supply and full array utilization. All 55 scenario--context combinations receive equal request weight. Aggregate speedup is the baseline's mean compute time divided by the candidate's mean; longer contexts contribute according to their operation counts.
-\input{tables/five_stage_migrations}
-
-
-
-Aggressive low-precision expansion does not yield the best aggregate performance under these budgets (Fig.~\ref{fig:fixed_budget_compact}(b)). The moderate FP4 expansion of $1:2:8$ achieves the highest aggregate benefit, with an ideal GEMM compute speedup of $1.13\times$ over $1:2:4$. Within the same budgets, $1:2:8$ retains relatively high deployment density and high-precision throughput, balancing low-precision gains against the remaining mixed-precision workload.
+At 32K tokens and baseline power, the preferred ratio depends on which operators migrate (Fig.~\ref{fig:first_request_case_32k}). The FP8-heavy baseline workload (A) favors $1:4:4$ ($1.06\times$). Moving the routed experts to FP4 in B favors $1:2:6$ ($1.04\times$). Moving main attention and grouped O-down to FP8 favors $1:8:16$ in C and D. Once these operators move to FP4 in E, FP4 accounts for 94.06\% of modeled FLOPs, and $1:2:16$ leads at $1.77\times$. Across all five stages, however, $1:4:8$ gives the shortest mean time ($1.12\times$), despite leading in no individual stage. Joint FP8/FP4 expansion therefore serves the mixed workload, while FP4-only expansion yields its largest benefit when attention joins the experts in FP4.
 % END REVIEW PAIR: 05_dse.tex
 
 % BEGIN REVIEW PAIR: 06_conclusion.tex
