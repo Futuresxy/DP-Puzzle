@@ -1,0 +1,79 @@
+{
+  "status": "analytical_uncalibrated",
+  "coverage": {
+    "agent_calls": {
+      "total": 190544,
+      "modeled": 190542,
+      "minimum": 1490,
+      "maximum": 1397924,
+      "below_1k": 0,
+      "above_128k": 115593,
+      "above_256k": 59999,
+      "above_1m": 2
+    },
+    "agent_first": {
+      "total": 2047,
+      "modeled": 2047,
+      "minimum": 1490,
+      "maximum": 983470,
+      "below_1k": 0,
+      "above_128k": 465,
+      "above_256k": 234,
+      "above_1m": 0
+    },
+    "azure_chat": {
+      "total": 514840,
+      "modeled": 514840,
+      "minimum": 2,
+      "maximum": 7999,
+      "below_1k": 262701,
+      "above_128k": 0,
+      "above_256k": 0,
+      "above_1m": 0
+    },
+    "uniform_grid": {
+      "total": 11,
+      "modeled": 11,
+      "minimum": 1024,
+      "maximum": 1048576,
+      "below_1k": 0,
+      "above_128k": 3,
+      "above_256k": 2,
+      "above_1m": 0
+    }
+  },
+  "alpha": "0.327",
+  "beta": "1",
+  "dp_per_core": 256,
+  "baseline_cores": 36,
+  "scenario_weights": {
+    "A": 0.2,
+    "B": 0.2,
+    "C": 0.2,
+    "D": 0.2,
+    "E": 0.2
+  },
+  "outputs": {
+    "hardware.csv": "7008cc4dd2ccb36a0a02ec24efc3d59b1e4b3a152b4e7dd7ad7b2a2101247881",
+    "context_weights.csv": "22c74a30320162dd1dd2e34b135bd3bbcebee877365fbf291c399fc79c6d0e2d",
+    "workload.csv": "57ba6192609cd54bef04abee1224e80c6c7a61a9ad3f6967c749c8a797f66d7a",
+    "scores.csv": "70b676ce78d073205cbf6e7273205dfdf9484e75509d39a640bdf5656414c7f0",
+    "length_cap_sensitivity.csv": "38b874b51b9c8a80ea47b9b23e4cca93d0b93d0ade82ea2abadc2fc5f0e97ec9"
+  },
+  "inputs": {
+    "data/inputs/v41_five_stage.json": "32f44cc1a942db4a78264e28df2a0643e59fe9a0cbe40a4d36784db1ea0ffc29",
+    "data/inputs/models/DeepSeek-V4.1-Flash/inference/config.json": "2e84f45cf1dac8c7fcbb200e96667d4b913275690668ed496f24c7747207a809",
+    "data/evidence/v41_five_stage_20261117/cases.csv": "8129e9713ea6f5ea43f319a2d18b6688bd71293fc132baedaee427bcfccc76a1",
+    "data/DP_area_power/dp11_area_power_fixed_20261116.sources.json": "857d923b381bee14b424f6f4667e0487b67915efeaf9d28f1c3422ac8648a707",
+    "data/DP_area_power/dp11_area_power_fixed_20261116.csv": "56e04ca93c9dd4b27edf9e90d35fe346339bac8dace5554bd6232908061770fd",
+    "data/DP_area_power/dp11_area_power_source_20261112.csv": "f8ca1f225055086db60a0b1a568ebb5c702c41259c198a4efb53adeb647d6006",
+    "scripts/deepseek_v41.py": "ad6257b601b0b89a56a1570caf243ae7d13d1a2e85b0d9ae7d54af2e5563d031",
+    "scripts/v41_core.py": "7c31493e0d6c24e6354f5bc42b730d76b65aa3bb5b189b1f9d8e7d4bf1b104ae",
+    "scripts/hardware_cost.py": "88950a398a82706d875fc06f212c71071aca27287e7ae31bac5c303e2339db68",
+    "data/new_chip_ds_model/evaluate.py": "d1773326b847cadb9dc1d9c095a757aa0ebb0c4dce0b99256f8f2fd690ef9c66",
+    "data/new_chip_ds_model/traces/agent_calls_histogram.csv": "397c32e188abac929a7c683e1197ae258d415f3b2baac4ebb3dcd0d4b7c5c671",
+    "data/new_chip_ds_model/traces/agent_first_histogram.csv": "a563f3ca6007ea6e7c2dac7069907852a4353fdf3639455c9c1ae0a69926f4cc",
+    "data/new_chip_ds_model/traces/azure_chat_histogram.csv": "f8a59a40191e9abd4d5df14bd532cb3c8d96a3db9b35bb33c7f72326de1a7dfe"
+  },
+  "validation": "All 55 grid cases reproduce the previous ledger. All 27 mode counts are maximal feasible integers."
+}
