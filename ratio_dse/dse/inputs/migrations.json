@@ -1,0 +1,69 @@
+{
+  "groups": {
+    "routed": [
+      "moe.routed.gate",
+      "moe.routed.up",
+      "moe.routed.down"
+    ],
+    "shared": [
+      "moe.shared.gate",
+      "moe.shared.up",
+      "moe.shared.down"
+    ],
+    "projections": [
+      "q_up",
+      "o_final"
+    ],
+    "attention": [
+      "swa.qk",
+      "swa.pv",
+      "global.qk",
+      "global.pv"
+    ],
+    "output": [
+      "o_group"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "A",
+      "description": "Native operators; W4A8 routed experts use FP8 capacity.",
+      "changes": {}
+    },
+    {
+      "id": "B",
+      "parent": "A",
+      "description": "Routed experts use FP4.",
+      "changes": {
+        "routed": "FP4"
+      }
+    },
+    {
+      "id": "C",
+      "parent": "B",
+      "description": "Main attention and grouped O-down use FP8.",
+      "changes": {
+        "attention": "FP8",
+        "output": "FP8"
+      }
+    },
+    {
+      "id": "D",
+      "parent": "C",
+      "description": "Shared experts and Q-up/O-up use FP4.",
+      "changes": {
+        "shared": "FP4",
+        "projections": "FP4"
+      }
+    },
+    {
+      "id": "E",
+      "parent": "D",
+      "description": "Main attention and grouped O-down use FP4.",
+      "changes": {
+        "attention": "FP4",
+        "output": "FP4"
+      }
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "hardware": "inputs/dp9_area_power.csv",
+  "model": "inputs/deepseek_v41_flash.json",
+  "migrations": "inputs/migrations.json",
+  "trace": "inputs/agent_first_histogram.csv",
+  "contexts": [
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    131072,
+    262144,
+    524288,
+    1048576
+  ],
+  "scenarios": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
+  ],
+  "baseline": "1:2:4",
+  "baseline_cores": 36,
+  "dp_per_core": 256,
+  "alpha": "0.327",
+  "beta": "1",
+  "sweep": {
+    "alpha": [
+      "0.25",
+      "0.50",
+      "0.01"
+    ],
+    "beta": [
+      "1",
+      "2",
+      "0.1"
+    ]
+  },
+  "sweep_lengths": "upper_edge",
+  "fixed_lengths": "upper_edge"
+}

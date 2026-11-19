@@ -1,0 +1,242 @@
+{
+  "repository_revision": "8ec5abaf8f4df8376980479e48787c19a05c1a98",
+  "sources_sha256": {
+    "paper/data/inputs/models/DeepSeek-V4.1-Flash/inference/config.json": "2e84f45cf1dac8c7fcbb200e96667d4b913275690668ed496f24c7747207a809",
+    "paper/data/inputs/models/DeepSeek-V4.1-Flash/LICENSE": "f2c6c602815669d292889e5be8c802f2ed950653b77999b1584e8e6aed25d040",
+    "paper/data/new_chip_ds_model/traces/agent_first_histogram.csv": "a563f3ca6007ea6e7c2dac7069907852a4353fdf3639455c9c1ae0a69926f4cc",
+    "paper/data/new_chip_ds_model/traces/trace_manifest.json": "4dd8e9e0c1a7d9f790f451ec9b125e9ca21429f38d959e93b00548ca07ce470a",
+    "paper/data/DP_area_power/dp11_area_power_fixed_20261116.csv": "56e04ca93c9dd4b27edf9e90d35fe346339bac8dace5554bd6232908061770fd",
+    "paper/data/DP_area_power/dp11_area_power_source_20261112.csv": "f8ca1f225055086db60a0b1a568ebb5c702c41259c198a4efb53adeb647d6006",
+    "paper/data/DP_area_power/dp11_area_power_fixed_20261116.sources.json": "857d923b381bee14b424f6f4667e0487b67915efeaf9d28f1c3422ac8648a707",
+    "paper/data/evidence/v41_five_stage_20261117/operators.csv": "642b17323832cef2e82cbab498e5f686edc3cfb3683a9fd93450c96744755850",
+    "paper/data/evidence/v41_five_stage_20261117/cases.csv": "8129e9713ea6f5ea43f319a2d18b6688bd71293fc132baedaee427bcfccc76a1",
+    "paper/data/new_chip_ds_model/budget_study/trace_case_preview/upper_edge_lengths.csv": "93080965eae6cb8cf32fcac93c01dc85e19ab8bab40857cae479eeb410274ee6",
+    "paper/data/new_chip_ds_model/budget_study/upper_edge_weights.csv": "3343604ee5607de0ae3429cc788a560fd4fbd71c823324ad30ab9fdef801cc90",
+    "paper/data/new_chip_ds_model/budget_study/reference_bands.csv": "b7d011c37773ed7ef09d5624031dbfd746919f9feba1060117c7c557bcc713f3",
+    "paper/data/new_chip_ds_model/budget_study/domain_scores.csv": "4bbee26738952fd71ef91df98c731ead601ec82efc648d981a55598ca584841f",
+    "paper/data/new_chip_ds_model/budget_study/budget_bands.csv": "0b692d72c3d66b30a49a132ef7cb5c18ad6b076f2d1d8762225eef985a4be32c",
+    "paper/scripts/deepseek_v41.py": "ad6257b601b0b89a56a1570caf243ae7d13d1a2e85b0d9ae7d54af2e5563d031",
+    "dp-puzzle_dac2027/scripts/figure_style.py": "e680cff71ab3e9695b186fa84d20dcafc2ae07f0755e2b646912b330139ab1fe",
+    "paper/scripts/v41_core.py": "7c31493e0d6c24e6354f5bc42b730d76b65aa3bb5b189b1f9d8e7d4bf1b104ae",
+    "paper/data/new_chip_ds_model/budget_study/figures.py": "e87689c636a17234fd987cfb9597dc2c32cd164e07af31a36fd81ba42e0da295",
+    "paper/data/new_chip_ds_model/budget_study/run.py": "415dc5ccdcdcbdf79875e52a3333d1e0c548f302828488a9386b75924cdb52e0",
+    "paper/data/new_chip_ds_model/budget_study/bin_budgets.py": "d223b095e0a71569c750cb844cb49a4693612964750a38671e38f6ec7c38ad1c",
+    "paper/data/new_chip_ds_model/budget_study/plot_trace_case.py": "6761c1f6780aec4695f17f01d84fc58bfb72811c54690ea7e84e726c8fda95bd",
+    "paper/data/inputs/v41_five_stage.json": "32f44cc1a942db4a78264e28df2a0643e59fe9a0cbe40a4d36784db1ea0ffc29",
+    "paper/data/new_chip_ds_model/budget_study/manifest.json": "5bdacc1cfdfd1ebad23215953bc361e1b2a2d95521dffd4da725c557da6f912c",
+    "paper/data/new_chip_ds_model/budget_study/bands_manifest.json": "5bf044ac5888b43a5ffbc4eddccc41ea3b00568b63ce66f0c9bbd968a8da4c06",
+    "dp-puzzle_dac2027/figures/five_scenarios_compare.pdf": "7a600d9a223cdc86981d051d1da30a02f85c8bfd927e88250c1dce1f4307c89a",
+    "dp-puzzle_dac2027/figures/budget_sweep.pdf": "59f705528fb1e89b44bf1e06e2249bcc51570d71f2e250ae44682fcae80904b5",
+    "paper/data/new_chip_ds_model/results/scores.csv": "70b676ce78d073205cbf6e7273205dfdf9484e75509d39a640bdf5656414c7f0",
+    "paper/data/new_chip_ds_model/results/hardware.csv": "7008cc4dd2ccb36a0a02ec24efc3d59b1e4b3a152b4e7dd7ad7b2a2101247881"
+  },
+  "conditions": {
+    "process": "TSMC CLN12FFCLL",
+    "corner": "TT",
+    "voltage_v": 0.7,
+    "temperature_c": 85,
+    "frequency_hz": 1000000000,
+    "clock_gating": true,
+    "latency_cycles": 8,
+    "initiation_interval_cycles": 1,
+    "saif_window_ns": 512,
+    "workload_transactions": 1024,
+    "workload": "Qwen3-8B layer 0 MLP down_proj, native K per design and precision",
+    "scope": "Post-synthesis zero-delay gate activity, pre-CTS and pre-route"
+  },
+  "measurement_records": {
+    "1:2:4": {
+      "bf16": {
+        "dc_run_id": "dc_dp_top_11092301",
+        "power_run_id": "power_baseline_v18_repaired_1109",
+        "export_id": "DP_verilog_d7c8c865ebf856be"
+      },
+      "mxfp8_e4m3": {
+        "dc_run_id": "dc_dp_top_11092301",
+        "power_run_id": "power_baseline_v18_repaired_1109",
+        "export_id": "DP_verilog_d7c8c865ebf856be"
+      },
+      "mxfp4_e2m1": {
+        "dc_run_id": "dc_dp_top_11092301",
+        "power_run_id": "power_baseline_v18_repaired_1109",
+        "export_id": "DP_verilog_d7c8c865ebf856be"
+      }
+    },
+    "1:2:6": {
+      "bf16": {
+        "dc_run_id": "dc_dp_top_t8h16q32e96_11092351",
+        "power_run_id": "power_v19_t8h16q32e96_1110",
+        "export_id": "DP_verilog_t8h16q32e96_8954fff85bd0a51a"
+      },
+      "mxfp8_e4m3": {
+        "dc_run_id": "dc_dp_top_t8h16q32e96_11092351",
+        "power_run_id": "power_v19_t8h16q32e96_1110",
+        "export_id": "DP_verilog_t8h16q32e96_8954fff85bd0a51a"
+      },
+      "mxfp4_e2m1": {
+        "dc_run_id": "dc_dp_top_t8h16q32e96_11092351",
+        "power_run_id": "power_v19_t8h16q32e96_1110",
+        "export_id": "DP_verilog_t8h16q32e96_8954fff85bd0a51a"
+      }
+    },
+    "1:2:8": {
+      "bf16": {
+        "dc_run_id": "dc_dp_top_t8h16q32e128_11092351",
+        "power_run_id": "power_v19_t8h16q32e128_1110",
+        "export_id": "DP_verilog_t8h16q32e128_4a6980b07b36ba7d"
+      },
+      "mxfp8_e4m3": {
+        "dc_run_id": "dc_dp_top_t8h16q32e128_11092351",
+        "power_run_id": "power_v19_t8h16q32e128_1110",
+        "export_id": "DP_verilog_t8h16q32e128_4a6980b07b36ba7d"
+      },
+      "mxfp4_e2m1": {
+        "dc_run_id": "dc_dp_top_t8h16q32e128_11092351",
+        "power_run_id": "power_v19_t8h16q32e128_1110",
+        "export_id": "DP_verilog_t8h16q32e128_4a6980b07b36ba7d"
+      }
+    },
+    "1:4:8": {
+      "bf16": {
+        "dc_run_id": "dc_dp_top_t8h16q64e128_opt_11092351",
+        "power_run_id": "power_v19_t8h16q64e128_opt_1110",
+        "export_id": "DP_verilog_t8h16q64e128_opt_337f9288b9f6ee50"
+      },
+      "mxfp8_e4m3": {
+        "dc_run_id": "dc_dp_top_t8h16q64e128_opt_11092351",
+        "power_run_id": "power_v19_t8h16q64e128_opt_1110",
+        "export_id": "DP_verilog_t8h16q64e128_opt_337f9288b9f6ee50"
+      },
+      "mxfp4_e2m1": {
+        "dc_run_id": "dc_dp_top_t8h16q64e128_opt_11092351",
+        "power_run_id": "power_v19_t8h16q64e128_opt_1110",
+        "export_id": "DP_verilog_t8h16q64e128_opt_337f9288b9f6ee50"
+      }
+    },
+    "1:4:4": {
+      "bf16": {
+        "dc_run_id": "dc_dp_top_t8h16q64e64_11121920",
+        "power_run_id": "power_q64e64_1112",
+        "export_id": "DP_verilog_t8h16q64e64_044cfe1be3f22a8d"
+      },
+      "mxfp8_e4m3": {
+        "dc_run_id": "dc_dp_top_t8h16q64e64_11121920",
+        "power_run_id": "power_q64e64_1112",
+        "export_id": "DP_verilog_t8h16q64e64_044cfe1be3f22a8d"
+      },
+      "mxfp4_e2m1": {
+        "dc_run_id": "dc_dp_top_t8h16q64e64_11121920",
+        "power_run_id": "power_q64e64_1112",
+        "export_id": "DP_verilog_t8h16q64e64_044cfe1be3f22a8d"
+      }
+    },
+    "1:2:12": {
+      "bf16": {
+        "dc_run_id": "dc_dp_top_t8h16q32e192_11121924",
+        "power_run_id": "power_e192_1112",
+        "export_id": "DP_verilog_t8h16q32e192_b677d181f0a29c7f"
+      },
+      "mxfp8_e4m3": {
+        "dc_run_id": "dc_dp_top_t8h16q32e192_11121924",
+        "power_run_id": "power_e192_1112",
+        "export_id": "DP_verilog_t8h16q32e192_b677d181f0a29c7f"
+      },
+      "mxfp4_e2m1": {
+        "dc_run_id": "dc_dp_top_t8h16q32e192_11121924",
+        "power_run_id": "power_e192_1112",
+        "export_id": "DP_verilog_t8h16q32e192_b677d181f0a29c7f"
+      }
+    },
+    "1:2:16": {
+      "bf16": {
+        "dc_run_id": "dc_dp_top_t8h16q32e256_11122032",
+        "power_run_id": "power_t8h16q32e256_11122054",
+        "export_id": "DP_verilog_t8h16q32e256_87332acf0b331629"
+      },
+      "mxfp8_e4m3": {
+        "dc_run_id": "dc_dp_top_t8h16q32e256_11122032",
+        "power_run_id": "power_t8h16q32e256_11122054",
+        "export_id": "DP_verilog_t8h16q32e256_87332acf0b331629"
+      },
+      "mxfp4_e2m1": {
+        "dc_run_id": "dc_dp_top_t8h16q32e256_11122032",
+        "power_run_id": "power_t8h16q32e256_11122054",
+        "export_id": "DP_verilog_t8h16q32e256_87332acf0b331629"
+      }
+    },
+    "1:6:12": {
+      "bf16": {
+        "dc_run_id": "dc_dp_top_t8h16q96e192_11122038",
+        "power_run_id": "power_t8h16q96e192_v112_11122119",
+        "export_id": "DP_verilog_t8h16q96e192_1e63c2625d0dd101"
+      },
+      "mxfp8_e4m3": {
+        "dc_run_id": "dc_dp_top_t8h16q96e192_11122038",
+        "power_run_id": "power_t8h16q96e192_v112_11122119",
+        "export_id": "DP_verilog_t8h16q96e192_1e63c2625d0dd101"
+      },
+      "mxfp4_e2m1": {
+        "dc_run_id": "dc_dp_top_t8h16q96e192_11122038",
+        "power_run_id": "power_t8h16q96e192_v112_11122119",
+        "export_id": "DP_verilog_t8h16q96e192_1e63c2625d0dd101"
+      }
+    },
+    "1:8:16": {
+      "bf16": {
+        "dc_run_id": "dc_dp_top_t8h16q128e256_11122210",
+        "power_run_id": "power_t8h16q128e256_v112_11122214",
+        "export_id": "DP_verilog_t8h16q128e256_f8209095129aa89a"
+      },
+      "mxfp8_e4m3": {
+        "dc_run_id": "dc_dp_top_t8h16q128e256_11122210",
+        "power_run_id": "power_t8h16q128e256_v112_11122214",
+        "export_id": "DP_verilog_t8h16q128e256_f8209095129aa89a"
+      },
+      "mxfp4_e2m1": {
+        "dc_run_id": "dc_dp_top_t8h16q128e256_11122210",
+        "power_run_id": "power_t8h16q128e256_v112_11122214",
+        "export_id": "DP_verilog_t8h16q128e256_f8209095129aa89a"
+      }
+    }
+  },
+  "verification": {
+    "current_branch_points_compared": 24,
+    "compared_fields": [
+      "area_um2",
+      "dynamic_mw",
+      "static_mw",
+      "total_mw"
+    ],
+    "remaining_points": "6 QE expansion points preserved from the backup source",
+    "new_eda_runs": false,
+    "raw_artifacts_revalidated": false,
+    "limitation": "Source PASS and artifact checks describe the historical measurement. Raw DC, power audit and frozen RTL paths for the two QE expansions were not found locally during the 2026-11-16 check."
+  },
+  "trace": {
+    "trace_ids": [
+      "agent_calls",
+      "agent_first"
+    ],
+    "revision": "bb26cf72c9c20f2b05f765d88548156a74d3c253",
+    "url": "https://huggingface.co/datasets/harvardMadsys/freeinference_agentic_trace/resolve/bb26cf72c9c20f2b05f765d88548156a74d3c253/release/2026-08-30_2026-09-05/processed/requests.parquet",
+    "field": "prompt_tokens",
+    "subset": "agent_first selects step == 0; agent_calls uses every row",
+    "file_size_bytes": 1817646481,
+    "publisher_linked_etag_sha256": "e8f4f987f00442348ac09b1d6dc8865cf3dde299944423d54402f620244d3a6a",
+    "ordered_projection_sha256": "83413c374ba22a1082c413decfb21ad9cacd69e0828d0130c6b50eebc0e0110c"
+  },
+  "population": {
+    "file": "agent_first_histogram.csv",
+    "sha256": "a563f3ca6007ea6e7c2dac7069907852a4353fdf3639455c9c1ae0a69926f4cc",
+    "lengths": 1971,
+    "valid_requests": 2047,
+    "zero_or_missing": 0,
+    "minimum": 1490,
+    "maximum": 983470,
+    "requests_lt_1024": 0,
+    "requests_gt_131072": 465,
+    "requests_gt_262144": 234,
+    "requests_gt_1048576": 0
+  },
+  "model_source": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/dba1be0a40aa45a94ad051997016db3960a90277/inference/config.json"
+}
