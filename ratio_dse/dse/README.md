@@ -2,6 +2,8 @@
 
 给定一份实验 JSON 和一张单 DP 面积、功耗表，模型在相同预算下比较不同算力配比的芯片。**查看指定预算下的性能，读 `fixed_scores.csv`**。每个配比在每个迁移场景各有一行，另有一行 `All` 汇总所选场景。时间单位为秒，表示 batch=1 冷启动 prefill 中所建模 GEMM 的理想计算时间。运行所需的算子形状、精度映射、硬件数据和请求长度直方图都在本目录中。
 
+**调整核数、每核 DP 数、α 或 β 时，只改 `study.json` 即可。** 换单 DP 面积和功耗时改 `hardware` 指向的 CSV，换算子精度时改 `migrations` 指向的 JSON，换请求分布时改 `trace` 指向的直方图。默认五场景可以直接使用随包的 `inputs/`。
+
 ## 1. 跑通默认五场景
 
 从仓库根目录执行以下命令。如果当前位于 `paper/`，第一行用 `cd ../ratio_dse/dse`。后续示例均在 `ratio_dse/dse/` 下执行。运行环境为 Linux/macOS、Python 3.11+。
@@ -102,6 +104,35 @@ awk -F, 'NR==1 || $2=="All"' results-local/fixed_scores.csv
 
 ## 3. 定义迁移场景与权重
 
+### 从模型结构追到芯片时间
+
+[deepseek_v41.py](deepseek_v41.py) 是本目录内的模型拆解代码。`layer_schedule` 根据 [模型配置](inputs/deepseek_v41_flash.json) 展开 40 个主干层的计算模式及 KV/index 归属，`block_work` 列出该层的投影、注意力、MoE 和 indexer 等算子，`prefill_work` 将 encoder prefill、decoder cache build/replay 和首个输出 token 的 LM head 组合成一次请求。稠密 GEMM 使用 2 × M × N × K × 重复次数计算 FLOPs，变长注意力按实际可见位置对数计算。
+
+论文原始的[逐层算子明细](inputs/deepseek_v41_prefill_operators.csv)也随包提供，共 11 档上下文、8,294 行。一行表示某个输入长度下，一层在一个执行阶段的一个算子。文件保留原始层号、阶段、操作数格式、计算精度、形状、有效位置对数、公式和整数 FLOPs。仅修改预算或场景时可直接复用。
+
+例如，32K 请求在第 0 个 encoder 层的 `q_down` 使用 FP8，M=32,768、N=1,280、K=5,120，执行一次得到 429,496,729,600 FLOPs。跨层汇总时还会计入其他层各自的 `q_down` 调用。
+
+默认运行从模型形状生成同结构的 `results/layer_operators.csv`。[workload.py](workload.py) 将**同一批明细**按算子与原生精度汇总为 `operator_flops.csv`，按 `scenario_operators.csv` 的映射归入各场景的 `cases.csv`。最后使用各精度的可用芯片吞吐计算 `upper_edge_times.csv` 和 `fixed_scores.csv`。例如，以下命令可从 32K 的第 0 层逐项追到各场景时间。
+
+```bash
+# 查看 32K 上下文下第 0 层的所有算子、形状与 FLOPs
+awk -F, 'NR==1 || ($1==32768 && $4==0)' results/layer_operators.csv
+# 查看主滑窗注意力 QK 在各场景实际使用的精度
+awk -F, 'NR==1 || $2=="swa.qk"' results/scenario_operators.csv
+# 查看该长度下 1:4:8 芯片在五个场景各自的秒数及加速比
+awk -F, 'NR==1 || ($1==32768 && $5=="1:4:8")' results/upper_edge_times.csv
+```
+
+**直接从已有算子数据运行。** 若已手工整理计算量，可在实验 JSON 顶层加入下面的字段。此时各算子的原始精度和 FLOPs 取自 CSV，后续场景迁移、请求加权和预算扫描沿用同一套代码。去掉该字段则从模型形状重新计算，适用于改变模型维度或引入新的上下文长度。
+
+```json
+"operator_ledger": "inputs/deepseek_v41_prefill_operators.csv"
+```
+
+可先复制随包明细再编辑，并把配置指向副本。每个使用的长度都需提供完整请求的明细，同一上下文的行放在一起。必填列为 `context,phase,segment,layer_id,batch,kernel,precision,flops`，同一上下文内的 `segment,layer_id,kernel` 组合唯一。`phase` 填 `prefill`，`batch` 填 1，`precision` 填 BF16、FP8、FP4 或 FP32，`flops` 填非负整数。导入时直接使用 `flops` 列。随包 CSV 覆盖默认 `upper_edge` 的 11 个上界。按实际 token 长度运行 `observed` 时，可使用默认的按形状计算模式。
+
+### 五个默认场景与自定义示例
+
 `inputs/deepseek_v41_flash.json` 给出模型参数，`deepseek_v41.py` 从各算子形状计算 prefill FLOPs，覆盖 encoder、decoder cache build/replay 和 indexer。`migrations-local.json` 只需描述哪些算子改用哪种计算精度。内置五个场景逐步继承，每一步沿用父场景中其余算子的精度。
 
 | 场景 | 父场景 | 本步变动 |
@@ -146,7 +177,7 @@ awk -F, 'NR==1 || $1=="1:4:8"' results-qdown/fixed_scores.csv
 | 每个配比在每个场景及整体的结果 | `fixed_scores.csv`。按 `ratio,scenario` 查 `mean_seconds,baseline_seconds,speedup,rank`。默认 9×(5+1)=54 行。 |
 | 每个具体上下文下的延时 | `upper_edge_times.csv`。按 `ratio,scenario,context` 查 `seconds,baseline_seconds,speedup` 和该档请求数、权重。默认 9×5×11=495 行。 |
 | 实际使用了多少核、多少算力 | `hardware.csv`。按 `ratio,mode` 查 `physical,active,tflops` 及 `array_power_w,array_budget_w`。 |
-| 模型算了什么、精度是否迁移成功 | `operator_flops.csv` 为各长度的原生逐算子 FLOPs，`scenario_operators.csv` 对照 `native_precision,compute_precision`，`cases.csv` 汇总每个场景各长度的 H/Q/E FLOPs 和单列的 FP32 FLOPs。 |
+| 模型算了什么、精度是否迁移成功 | `layer_operators.csv` 为各上下文上界的逐层逐算子原始明细，`operator_flops.csv` 为跨层汇总，`scenario_operators.csv` 对照 `native_precision,compute_precision`，`cases.csv` 汇总每个场景各长度的 H/Q/E FLOPs 和单列的 FP32 FLOPs。 |
 | 实际权重 | `context_weights.csv` 列出各长度档的请求数与权重，`weighted_work.csv` 列出各场景按请求加权的工作量。`manifest.json` 保存生效配置、归一化场景权重和文件校验值。 |
 | 预算变化时选哪个配比 | `reference_bands.csv` 为固定 α 下各 β 档的优势配比及收益，`budget_bands.csv` 为显示格和切片的各设计获胜份额，`budget_cells.csv` 为精确分片加速比，`domain_scores.csv` 为整个预算域内各设计的综合结果。`sweep_reference_scores.csv` 是采用扫描长度口径的固定点结果。 |
 | 两张实验图 | `five_scenarios_compare.pdf` 展示固定预算的核数和逐场景/整体加速比。`budget_sweep.pdf` 展示扫描优势区域和固定 α 切片。 |

@@ -52,6 +52,12 @@ def main():
     compare(args.run,'hardware','hardware.csv','ratio mode',
             'physical active area_budget_mm2 dp_idle_mw dp_active_mw array_power_w array_budget_w tflops')
     compare(args.run,'context_weights','context_weights.csv','upper_tokens','requests weight')
+    if 'layer_operators.csv' in manifest['outputs']:
+        source = 'paper/data/evidence/v41_five_stage_20261117/operators.csv'
+        provenance = json.loads((HERE/'inputs/provenance.json').read_text())
+        if manifest['outputs']['layer_operators.csv'] != provenance['sources_sha256'][source]:
+            raise ValueError('layer_operators.csv differs from the original five-stage operator ledger')
+        print('layer_operators: exact match to original five-stage operator ledger')
     compare(args.run,'operator_flops','operator_flops.csv','context kernel native_precision','flops')
     compare(args.run,'cases','cases.csv','context scenario','H_flops Q_flops E_flops excluded_fp32_flops')
     ref_scores = 'fixed_scores.csv' if cfg['fixed_lengths']=='upper_edge' else 'observed_scores.csv'

@@ -2,6 +2,7 @@
 from bisect import bisect_left
 from collections import Counter
 import csv
+from itertools import groupby
 import json
 
 import numpy as np
@@ -39,11 +40,43 @@ def migration_maps(path, selected):
     return owners, {s: resolved[s] for s in selected}
 
 
-def ledger(length, model):
-    counts = Counter()
-    for row in prefill_work(length, config=model):
-        counts[row['kernel'],row['precision']] += row['flops']
-    return counts
+def read_operator_ledger(path, lengths):
+    """Replay one complete batch-1 prefill per requested length, one block at a time."""
+    seen = set()
+    with path.open(newline='') as stream:
+        reader = csv.DictReader(stream)
+        required = {'context', 'phase', 'segment', 'layer_id', 'batch', 'kernel', 'precision', 'flops'}
+        missing = required.difference(reader.fieldnames or ())
+        if missing:
+            raise ValueError(f'Operator ledger missing columns: {sorted(missing)}')
+        for length, block in groupby(reader, key=lambda row: positive_integer(row['context'])):
+            if length not in lengths:
+                continue
+            if length in seen:
+                raise ValueError(f'Keep operator ledger rows for context {length} together')
+            seen.add(length)
+            operators = []
+            keys = set()
+            for row in block:
+                key = (row['segment'], int(row['layer_id']), row['kernel'])
+                if not key[0] or not key[2]:
+                    raise ValueError(f'Missing segment or kernel at context {length}')
+                if key in keys:
+                    raise ValueError(f'Duplicate operator at context {length}: {key}')
+                keys.add(key)
+                if row['phase'] != 'prefill' or positive_integer(row['batch']) != 1:
+                    raise ValueError(f'Expected batch-1 prefill at context {length}: {key}')
+                row['flops'] = int(row['flops'])
+                if row['flops'] < 0 or row['precision'] not in PRECISIONS:
+                    raise ValueError(f'Invalid FLOPs or native precision at context {length}: {key}')
+                del row['context']
+                operators.append(row)
+            yield length, operators
+    missing_lengths = sorted(lengths - seen)
+    if missing_lengths:
+        raise ValueError(f'Operator ledger lacks {len(missing_lengths)} requested lengths '
+                         f'(first: {missing_lengths[0]}). Supply these rows or omit operator_ledger '
+                         'to calculate them from the model.')
 
 
 def mapped(counts, mapping):
@@ -80,10 +113,17 @@ def work_inputs(config, paths, methods):
     lengths = set(contexts)
     if 'observed' in sums:
         lengths.update(histogram)
-    operators, cases, assignments = [], [], set()
-    for n in sorted(lengths):
-        counts = ledger(n, model)
+    if 'operator_ledger' in paths:
+        batches = read_operator_ledger(paths['operator_ledger'], lengths)
+    else:
+        batches = ((n, prefill_work(n, config=model)) for n in sorted(lengths))
+    layer_operators, operators, cases, assignments = [], [], [], set()
+    for n, rows in batches:
+        counts = Counter()
+        for row in rows:
+            counts[row['kernel'], row['precision']] += row['flops']
         if n in bins:
+            layer_operators.extend({'context': n, **row} for row in rows)
             for (op, native), flops in sorted(counts.items()):
                 operators.append(dict(context=n,kernel=op,native_precision=native,flops=flops))
                 for stage,mapping in stages.items():
@@ -111,6 +151,7 @@ def work_inputs(config, paths, methods):
                                excluded_fp32_mean_flops=excluded/total))
         work[method] = np.array(result)
     columns = ('scenario','kernel','native_precision','migration_group','compute_precision')
-    return work, {'context_weights':weights, 'operator_flops':operators, 'cases':cases,
+    return work, {'context_weights':weights, 'layer_operators':layer_operators,
+                  'operator_flops':operators, 'cases':cases,
                   'scenario_operators':[dict(zip(columns,r)) for r in sorted(assignments)],
                   'weighted_work':demand}

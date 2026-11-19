@@ -107,6 +107,8 @@ def main():
     if any(m not in METHODS for m in methods):
         parser.error('Length method must be observed or upper_edge')
     paths = {k:(args.config.parent/cfg[k]).resolve() for k in ('hardware','model','migrations','trace')}
+    if 'operator_ledger' in cfg:
+        paths['operator_ledger'] = (args.config.parent / cfg['operator_ledger']).resolve()
     if args.hardware:
         paths['hardware'] = args.hardware.resolve()
     out = args.output.resolve()
