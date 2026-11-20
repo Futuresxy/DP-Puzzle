@@ -1,0 +1,21 @@
+% !TeX root = ../dp-puzzle_zh.tex
+\section{引言}
+\label{sec:introduction}
+%%下面的文字内容，仅支持小范围的文本描述修改优化，不允许大范围重写
+大模型参数规模与计算需求持续增长，采用更低精度的数值格式已成为常用的优化手段~\cite{deepseekv3}。通用矩阵乘法（GEMM）是大模型的主要计算负载，其计算所用的数值格式也由单精度浮点（FP32）逐步向低精度迁移，典型代表包括 TensorFloat-32（TF32）、半精度浮点（FP16）与 BF16。随着量化技术的发展，FP8、INT8、FP6、FP4 以及引入共享缩放因子（scaling factor）的微缩放（Microscaling）格式~\cite{ocpmx2023}，也已成为推理优化的重要选项。以 DeepSeek-V4.1-Flash~\cite{deepseekv41source} 为例，其 GEMM 采用混合精度策略：混合专家（MoE）计算与多数注意力投影采用 FP8，稀疏注意力索引器的 QK 路径采用 MXFP4，主注意力的 QK/PV 计算采用 BF16。可见，当前大语言模型推理已呈现多精度并存的需求，对承载推理的硬件提出了更高要求。
+
+在硬件设计中，相同输入位宽下低精度格式可并行传入更多元素，形成 BF16:MXFP8:MXFP4 为 $1:2:4$ 的峰值算力配比。然而，近期工业界 AI 芯片正打破这一模式：或定向提升 FP4 算力，或同时增强 FP8 与 FP4 的峰值算力，以提升产品竞争力~\ref{tab:vendor_ratios}。但模型演进节奏与芯片设计制造周期差异显著，按当前模型需求定制的芯片难以适配未来变化。因此芯片设计须为未来负载变化预留余量。作为 AI 芯片的主要算力来源，张量计算单元（tensor core）除支持多种精度外，还需在不同精度之间取舍相对算力，以兼顾当前与未来的模型需求，并权衡由此带来的硬件成本与收益。
+
+结合模型负载变化选择合适的多精度算力配比具有明确的现实意义和工程价值。我们据此提出 DP-Puzzle，将算力配比选择的硬件成本与模型负载收益联系起来。张量计算单元通常由点积单元配合脉动~\cite{jouppi2017tpu}或广播数据流构成二维计算阵列，因此本文以点积单元为研究对象：使其支持多种数据格式、可单独调节低精度算力，并在 12\,nm、1\,GHz 下通过 Synopsys 综合与功耗分析获得面积与功耗成本。在统一的面积与功耗约束下，我们建立芯片级算力模型，并通过五种精度迁移场景评估九种配比的理想 GEMM 计算收益。
+
+% BEGIN INLINE TABLE: related_features
+\input{tables/zh/related_features}
+% END INLINE TABLE: related_features
+本文的主要贡献如下：
+\begin{enumerate}
+\item \textbf{可组合的多精度点积微架构。} 我们提出 DP-Puzzle，采用 Lane、Group 和点积单元三级架构，支持 TF32、FP16/BF16、INT8、MXFP8/6/4、NVFP4 和 HiF4。设计在不同精度间复用乘法、对齐与规约资源，并通过增配专用 Group 独立扩展低精度吞吐。
+\item \textbf{九种算力配比的实现与评估。} 我们实现九种 BF16:MXFP8:MXFP4 峰值算力配比，覆盖基线、三种产业配比及五种扩展配置，并基于 12\,nm 逻辑综合与负载驱动功耗分析量化其实现成本。相较于 \mbox{$1:2:4$}，\mbox{$1:2:8$} 将 MXFP4 吞吐翻倍，面积增加 33.60\%，MXFP4 面效和能效分别提高 49.70\% 和 27.27\%。
+\item \textbf{联合预算下的配比选择。} 我们在相同总核心面积和点积阵列功耗预算下，估算各配比的可部署核心数与分精度峰值算力。在 DeepSeek-V4.1-Flash prefill 的五种精度迁移场景和 11 个上下文长度的综合评估中，\mbox{$1:2:8$} 在九种配比中表现最佳，相对 \mbox{$1:2:4$} 取得 $1.13\times$ 的理想 GEMM 计算加速。
+\end{enumerate}
+
+本文其余部分安排如下：第~\ref{sec:background}~节介绍背景与动机；第~\ref{sec:architecture}~节阐述组合式点积微架构与配比构造；第~\ref{sec:evaluation}~节给出评估方法及面积、功耗结果；第~\ref{sec:workload}~节分析面积、功耗约束与精度负载迁移下的配比选择；第~\ref{sec:conclusion}~节总结全文。

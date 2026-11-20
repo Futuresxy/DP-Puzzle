@@ -1,7 +1,0 @@
-{
-  "intro_prose_verbatim": true,
-  "evaluation_before_comparison_verbatim": true,
-  "intro_source_sha256": "93992b55c92632a09b43ea61f2725f4d40a3b3f5cf00aa5164b70258a91ce710",
-  "evaluation_source_sha256": "f9d102b6f2bbb1297ebe5c0028054f8852f922f75aa6acbe4f42a2e9461072c7",
-  "scope": "main_temp.tex snapshots; official shared files unchanged"
-}

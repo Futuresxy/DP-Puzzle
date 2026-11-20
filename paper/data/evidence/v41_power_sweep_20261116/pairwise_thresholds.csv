@@ -1,9 +1,0 @@
-first,second,deployment,residual_h_fraction,crossover_e_fraction
-1:2:8,1:2:16,integer_beta1,0.0,0.9454545454545455
-1:2:8,1:2:16,integer_beta1,1.0,0.97196261682243
-1:2:8,1:2:16,continuous_power_only,0.0,0.9419855953819131
-1:2:8,1:2:16,continuous_power_only,1.0,0.9701262435951912
-1:2:12,1:2:16,integer_beta1,0.0,0.967741935483871
-1:2:12,1:2:16,integer_beta1,1.0,0.9836065573770492
-1:2:12,1:2:16,continuous_power_only,0.0,0.9613769757404301
-1:2:12,1:2:16,continuous_power_only,1.0,0.9803082096214627

@@ -1,0 +1,2 @@
+ratio,capacity,top,h_native,q_native,e_native,area_um2,bf16_total_mw,mxfp8_e4m3_total_mw,mxfp4_e2m1_total_mw
+0:2:4,T0H0Q32E64,dp_top_q32e64,0,32,64,9762.99,,12.236951,9.189959

@@ -1,8 +1,0 @@
-{
-  "source_outputs_unchanged": true,
-  "only_chapter_v_changed_in_review_draft": true,
-  "prose_counts_and_gains_checked": true,
-  "compile": "Passed; no undefined references or overfull boxes",
-  "visual_review": "Vector figure and compiled page 6 inspected; 18 count labels and 54 heatmap values visible",
-  "pdf_pages_including_references": 7
-}

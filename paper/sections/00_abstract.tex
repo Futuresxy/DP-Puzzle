@@ -1,7 +1,0 @@
-% !TeX root = ../main.tex
-\begin{abstract}
-A tensor core’s throughput ratio specifies its relative peak compute rates for BF16, MXFP8, and MXFP4. As models shift toward lower precision, fixed hardware ratios can become mismatched to workload demand. DP-Puzzle combines shared datapaths with precision-specific groups to implement nine ratios. Synthesis and workload-driven power analysis show that expanding MXFP4 throughput costs less area and power than expanding MXFP8 throughput. Under matched area and power budgets, $1:2:8$ ranks first, delivering a modeled $1.13times$ aggregate GEMM compute speedup over $1:2:4$ for DeepSeek-V4.1-Flash prefill across five precision-migration scenarios and 11 context lengths.
-\end{abstract}
-\begin{IEEEkeywords}
-AI workloads, dot-product units,LLM inference, mixed-precision arithmetic, multi-precision tensor core, throughput-ratio allocation
-\end{IEEEkeywords}
