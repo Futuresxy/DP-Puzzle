@@ -1,72 +1,29 @@
-# SN 完整规范的 DP 移植记录
+# SN 与 Vortex TCU 规范融合及演进记录
 
-用户要求以 superscalarNPU 的 `.claude/skills/sn-rtl-code-style/SKILL.md` 为主体，尽量保留内容，再按 DP 设计微调。本轮从原文件重新移植，取代上一版摘要式重写；原先放宽 assign、按位运算、显式 MUX 和逐项自检的建议已撤回。
+## 1. 演进背景
 
-参考读取日期：2026-11-06；参考仓库 HEAD：`995090913411aa354bd3785316abe848c329009d`；原 SKILL.md SHA-256：`e00771702ce091c34ff7f3b86ba59b05263fcdd34f4c778ddd1df6a218d85db4`。内容 hash 标识实际读取文本，不假定参考工作区干净。正文保留并适配原规范文字/示例；模板按 DP 接口实现，不依赖参考仓库的本机路径。
+DP-Puzzel 的 Verilog RTL 编码规范历经两个阶段凝练：
 
-## 原文内容保留对应
+1. **第一阶段（2026-11-06，SN 基础移植）**：
+   - 引入显式 `dp_lib_DFF*` 基础单元例化（功能层禁写 `always @(posedge clock)`）、控制/数据复位分离（同步低有效 `rst_n`）、组合逻辑 `assign`、按位运算符（`&` `|` `~` `^`）、显式 MUX、单行单变量声明与基础自检清单。
+2. **第二阶段（2026-11-27，Vortex `hw/rtl/tcu/` 工业级风格与验证体系融合）**：
+   - 参考 `/home/songxy/workspace/vortex`（特别是 `docs/coding_guidelines_verilog.md`、`.agents/skills/rtl-review/SKILL.md`、`hw/rtl/tcu/tfr/VX_tcu_fedp_tfr.sv`、`VX_tcu_tfr_mul_*.sv`、`VX_tcu_tfr_align.sv`、`hw/unittest/tcu_fedp/`），解决此前 RTL 代码中存在的两大痛点：
+     - **痛点 1：满篇 `// verilog_format: off` / `// verilog_format: on` 污染源码**。
+       - **改进**：全面移除并禁止 `verilog_format: off/on` 注释，直接定义模块参数、端口、内部信号、子模块例化、DFF 紧凑两行和三目运算符的原生垂直对齐规范。
+     - **痛点 2：变量注释过度碎片化（每个自解释 `wire` 上方都写一行冗余注释）**。
+       - **改进**：全面采用 Vortex `hw/rtl/tcu` 的**功能/相关性分组注释法**——按流水级或计算步骤将相关信号聚成一组，组顶写 1–2 行简明功能或硬件不变量注释（Why），组内保持紧凑列对齐，不再为每个自解释变量单独写注释。
 
-原文硬性规则的小节编号有重复，移植版顺序编号为 1–16，内容主题全部保留：
+---
 
-| 原文主题 | DP 主体位置及微调 |
+## 2. 从 Vortex 提炼的核心工程规范映射表
+
+| Vortex 规范与 TCU 实践 | DP-Puzzel Verilog-2005 落地规范 |
 | --- | --- |
-| 仿真收尾 | 保留；调用 DP 已有两次普通运行保留规则和公共清理入口 |
-| 核心理念 | 保留控制/数据分离、DFF 显式实例及使能设计；修正综合效果保证措辞 |
-| 禁止魔鬼数字 | 第 1 条，保留正反例，明确派生 localparam |
-| 宏只在头文件 | 第 2 条，前缀 DP_、include guard |
-| 组合逻辑 assign | 第 3 条，保留 FSM 次态例外；已有复杂组合块后续等价迁移 |
-| 按位运算风格 | 第 4 条，保留禁止功能网逻辑运算符的要求和规则表，修正语言解释 |
-| 显式 MUX | 第 5 条，保留结构/例子；静态 generate 索引不误判为动态选择 |
-| DFF 实例化 | 第 6 条，功能层禁止散写时序块，基础实现内部除外 |
-| 每行一个信号 | 第 7 条，保留 DFF 端口紧凑例外，声明不例外；增加 localparam 分行例子 |
-| 寄存器类型选择 | 第 8 条，保留表格；控制型计数器仍复位 |
-| 命名规范 | 第 9 条，dp_/DP_/ff_，补阶段、in_/out_、d/q |
-| 使能与 ICG | 第 10 条，保留多 bit 使能要求，ICG 需后端配置与证据 |
-| 代码目录结构 | 第 11 条，使用 DP 已有 src/test/hw 分工 |
-| 禁止 localparam 纯别名 | 第 12 条，保留公式派生参数例子 |
-| 功能命名 | 第 13 条，保留正反例和跨模块命名思路 |
-| 接口打包 | 第 14 条，保留独立字段、内部 pack/立即 unpack 和结构化向量例子 |
-| bit-field 定义 | 第 15 条，固定共享布局用 .vh，参数化布局用派生公式 |
-| 自检 | 第 16 条，保留 15 项逐项报告；允许有理由的 N/A，未测不能写通过 |
-| 基础单元库 | 第二章，保留六种 DFF、决策树、三个组合单元及选择指南 |
-| 典型示例 | 第三章，保留四种示例；完整模块替换为可运行 DP 级间保存示例 |
-| 审查指南 | 第四章，保留违规模式表、定位方法和输出要求，修正重复编号 |
-
-## 必要的 DP 微调
-
-- 保持已确认的**同步低有效 rst_n**；R/S 类型分别在上升沿清零/置全一，优先于 enable。clock 名不改成 clk。六个库类型保留 DFFU/DFFE/DFFRU/DFFRE/DFFSU/DFFSE 名称后缀，项目名前缀换为 dp_lib_。
-- 六个 wrapper 复用 `dp_dff_en` / `dp_dff_sync_reset` 两种行为原语，避免复制时序实现。模板仍只在 skill assets 中，生产库尚未接入。
-- 源文 MUX 的 SV unpacked array 端口改为 Verilog-2005 扁平总线，保持每路固定切片；补零选、多选、非法编码合同。
-- 修正原文中会误导实现的示例：FSM 默认分支、完整示例的输出多驱动、参数作 literal 位宽、全一不等于 one-hot 无效态。
-- 保留按位运算风格，但不声称合法 `&&` 会被综合成仅 bit 0 的与；保留 DFF/enable 要求，但不保证 ICG 或最优面积/功耗。
-- DP 额外保留 K/LOCAL_W/GLOBAL_W 推导、逐精度 S/I/F、S1–S8 保存边界、valid 气泡和复位取消合同。冻结 SV 与历史导出不改。
-
-## 本轮模板验证
-
-2026-11-06，Icarus Verilog 14.0 devel `35a809d`，严格 `iverilog -g2005 -Wall` + `vvp`：
-
-- 六种 DFF wrapper、任意 RESET_VALUE 原语和流水示例：WIDTH=1/28，每配置 40 个边沿，逐边沿检查同步复位（沿间无异步变化）、复位优先、使能保持、数据无复位、气泡和连续输入，PASS。
-- MUX/编码/译码：N=1/3/8、数据宽度 1/5/8，枚举选择掩码和输入索引，覆盖零选、单选、多选的定义行为、非二次幂路数及越界译码为零，PASS。多选行为测试不将多热编码宣称为合法请求。
-- 临时 TB/仿真产物检查后清理；这些检查不是生产 DP 回归、时序或功耗证据。配置非法值由未来生产配置/导出入口拒绝，本轮没有宣称模板内含运行时参数门禁。
-
-## 本轮模板自检（不含生产 RTL）
-
-| # | 检查项 | 结果 | 说明 |
-| --- | --- | --- | --- |
-| 1 | 无魔鬼数字 | 通过 | 位宽/项数参数化，复位 0/1 和使能常量语义明确 |
-| 2 | define 只在 .vh | N/A | 本次模板未定义宏 |
-| 3 | 组合逻辑用 assign | 通过 | MUX/编码/使能/拆包均 assign，DFF 内部为时序例外 |
-| 4 | 功能网按位运算 | 通过 | 单 bit 控制按位组合，编码使用比较/归约 |
-| 5 | 动态选择显式组织 | 通过 | generate 常量展开，未使用动态数组读取 |
-| 6 | 功能层实例化 DFF | 通过 | 六个 wrapper 和边界示例使用共用 DFF 实现 |
-| 7 | 每行一个信号 | 通过 | 声明逐行，参数块/端口清晰 |
-| 8 | 寄存器类型 | 通过 | R/S 同步低有效且复位优先，数据原语无复位 |
-| 9 | 命名规范 | 通过 | dp_/ff_、明确的 DFF 类型后缀、级间实例名 |
-| 10 | 多 bit 数据使能 | 通过 | payload 用 DFFE；DFFU 仅表达每拍更新合同 |
-| 11 | 目录 | 通过 | skill assets，未混入生产清单 |
-| 12 | 无纯宏别名 | 通过 | ENTRY_VALUE 明确将 generate 索引转换为目标位宽 |
-| 13 | 功能命名 | 通过 | valid、magnitude、sign 和选择/编码端口含义明确 |
-| 14 | pack 后无裸 slice | 通过 | 级间立即命名解包，MUX 使用参数化索引 |
-| 15 | 固定字段布局定义 | N/A | 无新增跨模块固定多字段格式；示例内部拼接可直接解包 |
-
-补充检查：严格 Verilog-2005 和上述行为仿真通过；未执行生产 DP 回归/DC/功耗，未检查或宣称全仓库已符合新风格。
+| **接口与寄存器所有权**（`coding_guidelines_verilog.md` §4）：驱动方在自身输出边界完成寄存，下游与父层禁止二次打拍 | 组合子模块不暗藏流水寄存器；各级 DFF 由对应 stage owner 持有并就地放置（`ff_sN_sM_*`），父模块路由已寄存信号不重复打拍 |
+| **垂直列对齐**（`coding_guidelines_verilog.md` §12）：参数 `=` 对齐、端口类型/位宽/名称列对齐、例化 `.port (sig)` 左括号 `(` 对齐 | 全面采纳；DFF 基础单元保留紧凑两行例化，不加 `verilog_format` 屏蔽注释 |
+| **分组与意图注释**（`coding_guidelines_verilog.md` §9 & `hw/rtl/tcu/tfr/`）：注释解释 Why 与分组职责，禁写逐变量废话与 PR/bug 过程记录 | 模块头保留简明架构/S-I-F 契约；内部信号按流水级/相关性分组注释；复杂阶段用 `// ==== Stage N ====` 横幅与 `// 1. ...` 子步骤组织 |
+| **强制 `begin`/`end`**（`coding_guidelines_verilog.md` §3）：所有分支与循环必须带 `begin/end`，禁止单语句省略 | 全面强制适用于所有 `if/else/for/while`（含 `generate` 与 Testbench） |
+| **避免 `UNOPTFLAT` 伪组合环**（`coding_guidelines_verilog.md` §5）：禁止把组合输入与寄存级拼入同一向量 | 废弃 `valid_q[0:N]` 混合数组，统一按级独立命名 `in_valid`、`r1_valid` .. `r8_valid` |
+| **分通道掩码流水寄存器与消零**（`VX_tcu_tfr_pipe_register.sv` & `VX_tcu_tfr_shared_mul.sv`） | 多精度寄存器写使能用源级 `r{N-1}_datatype` 门控，读取端用目的级 `r{N}_datatype` 恢复结构零 |
+| **静态与运行时断言**（`VX_platform.vh` `STATIC_ASSERT` / `RUNTIME_ASSERT`） | 模块末尾 `synthesis translate_off` 块内编写参数合法性静态检查与 `rst_n & rN_valid` 门控的运行时断言 |
+| **特征激励单元测试与 SimX-as-Oracle 轨迹差分**（`hw/unittest/tcu_fedp/` & `docs/debugging.md`） | 建立模块级特征+随机+气泡/切换/复位压力 Unit TB，以及顶层 `CUTPOINTS` 逐级轨迹与 CModel diff 流程 |

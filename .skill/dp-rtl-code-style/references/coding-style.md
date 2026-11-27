@@ -1,90 +1,150 @@
-# 声明、数值与工具细则
+# 代码格式、分组注释与数值编码细则
 
-## 单变量声明
+本文件详细规定 DP-Puzzel 项目 Verilog-2005 代码的排版格式、分组注释准则（参考 Vortex `hw/rtl/tcu/`）、头文件组织与多精度数值表达。
 
-端口列表保留语法所需逗号，每行重复完整声明：
+---
 
-```verilog
-input wire clock,
-input wire rst_n,
-input wire in_a_valid,
-input wire in_b_valid,
-input wire in_c_valid,
-input wire [K_FP16*`DP_HALF_W-1:0] in_a,
-input wire [K_FP16*`DP_HALF_W-1:0] in_b,
-output wire out_valid
-```
+## 1. 原生排版与对齐规范（禁用 `verilog_format: off/on`）
 
-局部参数逐条以分号结束，不能写 `localparam integer A = ..., B = ...;`：
+代码中**严禁出现 `// verilog_format: off` 或 `// verilog_format: on`**。所有代码在编写时直接按以下规则对齐：
+
+### 1.1 模块参数与端口列对齐
+- 每个 `parameter` 和端口独占一行。
+- 参数区的 `parameter integer` 后参数名左对齐，`=` 纵向对齐；仅非显见配置开关在行尾加 `// ...` 简短说明。
+- 端口区按功能分组（组间空行 + 一行分组注释），`input wire` / `output wire`、位宽 `[W-1:0]`、端口名三列纵向对齐：
 
 ```verilog
-localparam integer GROUP_W = LOCAL_W + 1 + $clog2(`DP_Q_LANES) + $clog2(`DP_LANES);
-localparam integer GROUP_MAG_W = GROUP_W - 1;
-localparam integer GLOBAL_MAG_W = GLOBAL_W - 1;
-localparam integer N = GROUPS + 1;
+module dp_lane_align #(
+  parameter integer LOCAL_W       = `DP_DEFAULT_LOCAL_W,
+  parameter integer LEAF_W        = LOCAL_W + 1,
+  parameter integer QE_ONLY       = 0,                   // 1: prune T/H/INT8 decode paths
+  parameter integer E_FIXED_COORD = 0,                   // 1: E pair bypasses wide shifter
+  parameter integer PRODUCT_W     = `DP_PRODUCT_W,
+  parameter integer EXPONENT_W    = `DP_PRODUCT_EXP_W
+) (
+  input  wire                               in_valid,
+  input  wire [`DP_TYPE_W-1:0]              in_datatype,
 
-wire [GROUP_W-1:0] group_sum_d;
-wire [GROUP_W-1:0] group_sum_q;
+  // S2 registered product magnitudes, signs, activity and exponents
+  input  wire [`DP_E_LANES*PRODUCT_W-1:0]   in_products,
+  input  wire [`DP_E_LANES-1:0]             in_negative,
+  input  wire [`DP_E_LANES-1:0]             in_active,
+  input  wire [EXPONENT_W-1:0]              in_anchor,
+  input  wire [`DP_E_LANES*EXPONENT_W-1:0]  in_exponents,
+
+  // S3 aligned signed leaves to lane reduction tree
+  output wire [`DP_Q_LANES*LEAF_W-1:0]      out_leaves
+);
 ```
 
-模块参数列表每行写 `parameter integer NAME = ...`，项之间仍用逗号。内部变量、函数形参和数组同样不共享声明。初始化表达式/拼接中的逗号不属于多变量声明，不用简单“禁止逗号”的正则检查。
+### 1.2 内部变量与 `localparam` 的分组声明
+- 保持**每行声明一个变量**（不使用逗号并列声明，以便清晰审阅位宽和 git diff），但**绝不逐个变量写注释**。
+- 将同一流水级或同一逻辑功能的 `localparam` / `wire` 聚为一组，在组顶写 **1 行简明功能或数学关系注释**，组内按位宽列与名称列对齐：
 
-DFF 例化采用紧凑两行：模块类型/参数一行，实例名与全部端口一行；该端口行豁免 100 列。连续 DFF 区块用成对 `verilog_format: off/on` 保护，避免格式化后重新展开。普通实例仍逐行连接。
+```verilog
+  // S5 scale multiplication and container padding widths
+  localparam integer COEFF_W         = 2 * `DP_SCALE_M;
+  localparam integer SCALE_MAG_W     = `DP_SCALE_SOP_W - 1;
+  localparam integer STRUCTURAL_DROP = GROUP_W - `DP_SCALE_SOP_W;
+  localparam integer SCALE_PRODUCT_W = SCALE_MAG_W + COEFF_W;
+  localparam integer SCALE_LOW_PAD   = MAG_W - SCALE_PRODUCT_W;
 
-## 命名与文件组织
+  // S1 -> S2 scale unpack and pre-multiply signals
+  wire [`DP_SCALE_M-1:0] scale_a_magnitude_d;
+  wire [`DP_SCALE_M-1:0] scale_b_magnitude_d;
+  wire [`DP_EXP_W-1:0]   scale_a_exponent_d;
+  wire [`DP_EXP_W-1:0]   scale_b_exponent_d;
+  wire                   scale_a_nan_d;
+  wire                   scale_b_nan_d;
+  wire [`DP_SCALE_M-1:0] r1_scale_a_magnitude;
+  wire [`DP_SCALE_M-1:0] r1_scale_b_magnitude;
+  wire [`DP_EXP_W-1:0]   r1_scale_a_exponent;
+  wire [`DP_EXP_W-1:0]   r1_scale_b_exponent;
+  wire                   r1_scale_nan;
+```
 
-详细规则与允许的缩写/例外见 [dp-naming-convention](../../dp-naming-convention/SKILL.md)，此处只保留编码时的速查。
+### 1.3 子模块例化、DFF 例化与 `assign` 对齐
+- **普通模块例化**：参数和端口逐行连接，名称与左括号 `(` 之间留空格，使所有 `(` 纵向成列。
+- **DFF 基础单元例化**：统一采用紧凑两行写法（第一行模块与参数，第二行 `ff_sN_sM_*` 与全部端口），紧跟在本级组合计算之后。
+- **`assign` 与多分支三目表达式**：同组 `assign` 的 `=` 对齐；多分支三目表达式每行一个分支，`?` 与 `:` 对齐。
 
-| 对象 | 规则 | 示例 |
-| --- | --- | --- |
-| 模块/文件 | `dp_` 前缀，同名；DFF 库类型后缀保留大写 | `dp_lib_DFFE.v` / `dp_lib_DFFE` |
-| 普通实例 | `u_` 前缀加功能；已有实例无关改动不强制改名 | `u_lane_sum` |
-| DFF 实例 | `ff_` 加源/目标阶段与内容 | `ff_s2_s3_payload`、`ff_s2_s3_valid` |
-| generate | `g_` 加功能 | `g_group`、`g_lane` |
-| 数据/控制信号 | 功能 + 阶段 + `_d/_q` | `group_magnitude_s5_q`、`valid_s3_d` |
-| 父层互联线 | driver_receiver_function，必要时标实例索引和阶段 | `lane_group_sum_s4` |
-| 使能/复位 | `_en` / `_n` | `payload_s3_en`、`rst_n` |
-| 配置/派生参数 | 大写下划线 | `LOCAL_W`、`GROUP_MAG_W` |
-| 头文件宏 | `DP_` 前缀 | `` `DP_HALF_W`` |
+---
 
-循环索引用 `lane_index/element_index/bit_index` 等，不用无含义 i/j 或 index1/index2；局部数值禁止 e/f/a 等，例外见命名 skill。
+## 2. 注释编写准则（借鉴 Vortex `hw/rtl/tcu/`）
 
-`_d/_q` 表示状态角色，不能替代功能名；避免 `tmp1`、只叫 `sram_d` 或无含义的 `bus0`。`in_a/in_b/in_c` 是已定义的操作数角色，可以保留。`*_s3_d` 是即将存入 S3 的组合结果，`*_s3_q` 是 S3 寄存输出；实例 `ff_s2_s3_*` 明确其 S2→S3 边界。
+1. **只写分组注释与 Why 注释，不写逐变量废话注释**：
+   - 自解释的信号名（如 `r1_valid`、`r2_datatype`、`product_negative_d`）已经说明了信号是什么，**不要**再在上方写 `// S1 valid signal`。
+   - 注释应放在**功能块/信号组开头**，用 1–2 句话说明该块的职责、时序边界或非显见的硬件设计原因（例如：为什么某指数比较排除零乘积、为什么减法反向并行计算能省去取反进位链、为什么无效槽位仍需计算 `0 * Inf` 异常）。
+2. **分阶段横幅与编号子步骤**：
+   - 多级流水模块在每个阶段起点使用横幅：
+     ```verilog
+     // ======================================================================
+     // Stage 3: Local Magnitude Alignment & Two's-Complement Restoration
+     // ======================================================================
+     ```
+   - 阶段内部或复杂组合模块使用 `// 1. ...`、`// 2. ...` 标记数据流步骤（如同 `VX_tcu_tfr_align.sv`）。
+3. **禁止过程性噪音**：
+   - 严禁在代码中出现任务号、PR 号、“修复某某问题”、“此前旧写法”等历史流水账。
 
-保持 `src/verilog/{top,group,lane,unpack,arithmetic,parameter}`；共享 DFF 后续落实到 `src/verilog/common/`，不复制 SN 的 box 目录。每个模块先写功能/协议和 SIF 注释、参数/端口与所需声明，然后按流水级重复“本级组合计算 → 本级 DFF 捕获 → 下一级使用”。valid/类型/符号等旁带随对应级放置，不把所有 DFF 按字段集中到文件末尾。
+---
 
-## 常量、接口打包与选择逻辑
+## 3. 头文件（`.vh`）标准化组织
 
-- 有架构意义的数值必须命名：编码、精度宽度、容量、字段边界等。跨模块固定常量放 `.vh`，局部推导用 `localparam`。0/1、显式位宽的复位值和有解释的算法常数无需为命名而增加间接层；不将所有 localparam 改成全局宏。
-- `.v` 不定义新宏；`.vh` 使用 include guard 和 `DP_` 前缀。已有宏不建立同义别名，类型/宽度转换需明确转换目的，不算纯同义别名。
-- 独立字段优先独立端口。既有参数化扁平向量接口可保留，使用具名宽度、偏移或 `base +: FIELD_W`；固定共享布局定义在 `.vh`，参数化布局用公式，禁止用全局宏冻结可变位宽。
-- DFF 内部可临时打包同使能/复位语义的字段；紧邻实例用命名 wire 解包，保持拼接顺序一致。不同使能不能合并，valid 与 payload 默认分开；见级间模板。
-- 按主体规范，新功能组合逻辑用 `assign` 与显式模块/generate，功能层仅 FSM 次态允许 `always @*`。已有复杂组合块后续逐模块等价迁移；不为凑形式制造串行三目链。
-- 按主体规范，功能条件显式归约/比较为单 bit 后使用 `&/|/~`。这是项目风格选择，不表示逻辑运算语言无效；迁移不得机械替换多位表达式，需保留四态语义。
-- 常量索引/generate 切片允许。动态选择按主体规范显式组织 MUX/选择树，写明路数、宽度、越界行为；one-hot 保证或检查互斥，不能用 OR 合并掩盖多选错误。
+### 3.1 `dp_defs.vh` 宏定义规范
+- 顶部使用 `` `ifndef DP_DEFS_VH `` / `` `define DP_DEFS_VH `` 保护。
+- 按逻辑主题分块，每块用分隔注释标题说明用途，宏名与值纵向对齐：
 
-## 数值和边界
+```verilog
+`ifndef DP_DEFS_VH
+`define DP_DEFS_VH
 
-- 总线通常用 `[W-1:0]`，端序和打包布局写在合同中。运算前显式零扩展/符号扩展，运算后明确保留位。
-- 区分 TC 二补码与 SM 符号/幅值；取绝对值考虑最小负值及容器宽度。区分逻辑右移与算术右移，验证移位超过宽度的情况。
-- S/I/F 中 S 不计入 I；无符号幅值 S=0，sign 单独传递。高位扩展不增加 F，低位补零增加 F；不能仅靠总线宽度推断最终精度。各节点格式表必须来自该节点实际数值合同。
-- elaboration 参数选择与运行时 datatype 选择分开；不固定 valid/datatype 等功能输入简化电路。
-- 全部网络显式声明。若采用 `` `default_nettype none``，文件末恢复默认，验证全清单，不无验证地改变全库编译语义。
+// ----------------------------------------------------------------------
+// Datatype, Scale Type & Accumulator Format Encodings
+// ----------------------------------------------------------------------
+`define DP_TYPE_W                (4)
+`define DP_SCALE_TYPE_W          (2)
+`define DP_C_TYPE_W              (1)
 
-## 工具边界
+`define DP_DT_TF32               4'd0
+`define DP_DT_FP16               4'd1
+`define DP_DT_BF16               4'd2
+`define DP_DT_MX8_E4M3           4'd3
+`define DP_DT_MX8_E5M2           4'd4
+`define DP_DT_MX6_E3M2           4'd5
+`define DP_DT_MX6_E2M3           4'd6
+`define DP_DT_MXFP4              4'd7
+`define DP_DT_NVFP4              4'd8
+`define DP_DT_HIF4               4'd9
+`define DP_DT_INT8               4'd10
 
-Verible 用于排版及部分风格检查，Verilator/严格 Verilog-2005 编译用于硬件诊断，testbench 用于数值和周期验收。
+// ----------------------------------------------------------------------
+// S1 Decoded Number Token Layout (23b):
+//   [22] sign | [21:11] magnitude(11b) | [10:3] exp(8b) | [2:1] class(2b) | [0] signaling
+// ----------------------------------------------------------------------
+`define DP_NUM_W                 (1 + `DP_MANT_W + `DP_EXP_W + 2 + 1)
+`define DP_NUM_SIGNAL            (0)
+`define DP_NUM_CLASS_LO          (1)
+`define DP_NUM_CLASS_W           (2)
+`define DP_NUM_EXP_LO            (`DP_NUM_CLASS_LO + `DP_NUM_CLASS_W)
+`define DP_NUM_MAG_LO            (`DP_NUM_EXP_LO + `DP_EXP_W)
+`define DP_NUM_SIGN              (`DP_NUM_W - 1)
 
-已检查本地 Verible `v0.0-4298-g085eef05` 的 `--help_rules=all`：没有可直接替代本项目“单声明单对象”审查的专用规则；`dff-name-style` 只检查命名，不验证 DFF module 使用。不要宣称 formatter 已完成这两项门禁。
+`endif // DP_DEFS_VH
+```
 
-接入 Verible lint 时，关闭要求 `always_comb` 的 `always-comb`，参数命名接受 `UPPER_SNAKE_CASE`，不启用与 `in_` / `out_` 冲突的 `_i` / `_o` 强制后缀。其他规则先核对工具版本与 Verilog-2005 兼容性，再决定是否作为门禁。
+### 3.2 `dp_functions.vh` 纯函数规范
+- 所有辅助函数声明为 `function automatic`，并包含完整 `begin ... end`。
+- **禁止零参数函数**（Vortex `VX_tcu_pkg.sv` 实测教训：零参数函数在嵌套 generate 作用域中易被综合/转换工具错误展开为非法层次调用）。
+- 运行时信号（如 `in_datatype`）严禁直接传入 `$clog2(...)`；必须通过 `case (datatype)` 映射到基于常量宏的表达式，确保 Design Compiler 综合通过。
 
-## 来源与项目选择
+---
 
-查阅日期：2026-11-06。以下为之前查阅的补充资料；当前规则主体以移植后的 SN 规范为准，差异见 [移植记录](sn-adaptation.md)。
+## 4. 多精度数值、位宽与告警边界
 
-- [lowRISC 风格指南](https://github.com/lowRISC/style-guides/blob/master/VerilogCodingStyle.md)：参考具名连接、显式类型和组合/时序赋值分离。该指南主要面向 SV，采用异步低有效复位；本项目选择 Verilog-2005 和同步低有效复位，不照搬其语法和复位示例。
-- [Verible lint](https://chipsalliance.github.io/verible/lint.html)：核对规则实际检查范围，命名检查不证明结构、数值或时序正确。
-- [OpenTitan primitives](https://opentitan.org/book/hw/ip/prim/index.html)：参考参数化基础模块及通用/工艺实现分离；不构成本项目所有流水寄存器必须模块化的依据。
-
-单变量声明、同步低有效 `rst_n`、流水寄存器统一 DFF 模块均为用户明确选择的项目规则。行为级时序块本身可推断 DFF，显式模块化是工程选择，不是 Verilog 语言强制要求。
+- **显式符号与位宽扩展**：
+  - 区分无符号幅值（`SM`，`S=0`，符号位独立传递）与二补码（`TC`，`S=1`）。
+  - 算术运算前显式写出零扩展 `{{(OUT_W-IN_W){1'b0}}, in_val}` 或符号扩展 `{{(OUT_W-IN_W){in_val[IN_W-1]}}, in_val}`，避免隐式位宽截断或有符号/无符号混算告警。
+- **右移向零截断（RTZ） vs 算术右移**：
+  - 在共享对齐阶段，对无符号幅值做逻辑右移（丢弃低位即向零截断 RTZ），移位完成后再根据独立符号位恢复二补码（`sign ? -$signed({1'b0, shifted}) : $signed({1'b0, shifted})`），不得直接对负二补码做算术右移代替 RTZ。
+- **零告警要求**：
+  - 通过显式切片与参数校验消除 `WIDTH`、`LATCH`、`UNOPTFLAT`、`MULTIDRIVEN` 告警，禁止在 `.v` 中使用大段 `/* verilator lint_off */`。

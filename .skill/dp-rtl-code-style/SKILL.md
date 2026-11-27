@@ -1,780 +1,306 @@
 ---
 name: dp-rtl-code-style
 description: >
-  DP-Puzzel 项目 Verilog RTL 编码规范与 DFF 基础单元库。当用户编写、修改、审查 Verilog RTL 代码，
-  询问编码规范或代码风格，需要例化 DFF 基础单元，创建新的 RTL 模块，或处理以 dp_ 开头的
-  Verilog 模块时必须使用此 skill。触发词包括：verilog、RTL、编码规范、DFF、dp_、例化寄存器、
-  打拍、代码review、module声明等。
+  DP-Puzzel 项目 Verilog-2005 RTL 与 Testbench 标准化编码规范及基础单元库。
+  当编写、修改、重构或审查 Verilog RTL 代码（src/verilog/）与测试平台（test/rtl_tb/），
+  定义参数/宏头文件（.vh）、例化 DFF/MUX 基础单元、实现多精度寄存器门控或构建单元测试时必须使用此 skill。
+  触发词：verilog、RTL、编码规范、代码风格、DFF、dp_、参数注释、testbench、打拍、代码审查。
 ---
 
-# DP-Puzzel 项目 Verilog RTL 编码规范与 DFF 基础单元库
+# DP-Puzzel 项目 Verilog RTL 与 Testbench 标准化编码规范
 
-## 适用范围与移植状态
+## 适用范围与设计基线
 
-本文件以用户指定的 SN 原始 SKILL.md 为主体移植，保留详细规范、解释、正反例、DFF 选择树、单元列表、模块模板和逐项自检。来源指纹及必要差异见 [移植记录](references/sn-adaptation.md)。本文件是当前完整规范，参考文档仅补充 DP 特有合同。
+本规范面向 **DP-Puzzel 多精度点积单元（Dot-Product Unit）微架构设计与算力配比探索**，汲取 **Vortex GPGPU（`hw/rtl/tcu/` 及 `docs/coding_guidelines_verilog.md`）** 的简洁工业级 RTL 风格与测试方法论，结合本项目纯 Verilog-2005 + 显式 DFF 基础单元架构凝练而成：
 
-适用于维护中的 `src/verilog/` 多精度/E 前端和共享模块；冻结的 `systemverilog/` 不迁移，Chisel 默认端口不在此规则范围。纯 Verilog-2005、两空格、UTF-8、LF、100 列目标宽度。现用生产 RTL 已在 v1.6 迁移为同步低有效 rst_n 与公共 DFF；实际模块读取 src/verilog/common/。验证见 test/results/dp-style-v1.6.md；旧 PPA 不授予新快照。
-
-## 仿真收尾
-
-RTL 仿真、复核或失败定位结束后，按根目录 AGENTS.md 和 [运行保留入口](../../scripts/README.md#运行产物保留) 预览清理。各流程滚动保留最近两次已结束且无引用的普通运行；重要结果遵守用户确认及引用保护规则。
-归档必要证据，确认没有剩余消费者后释放临时编译中间文件、二进制、生成 C++ 和波形，不因 `--keep-build` 无限积压。
-清理使用精确路径清单和 Git/进程检查，不按目录前缀批删，不删除原始源码、在用快照或仍需分析的证据。
-
-## 核心理念
-
-本规范的核心目的是**让寄存器语义和计算结构明确，支持面积、时序和功耗优化**。所有规范服务于这个目标：
-
-- **功能模块禁止手写 `always @(posedge clock)`**，通过 DFF 基础单元明确带/不带复位、带/不带使能的状态保存。DFF 实现内部仍使用行为级时序块并由综合工具映射；封装不能保证某个物理单元或最优 PPA。
-- **控制信号用复位寄存器、有效位屏蔽的数据信号用无复位寄存器**。控制需确定初始状态，payload 不必全量复位；计数器若控制请求、地址或循环，仍属于需要初始化的控制状态。
-- **多 bit 数据用带使能寄存器**，无效时保持，避免不必要的更新。这提供后端 ICG 优化机会，但须明确启用、配置及验证门控流程；enable 本身不保证 ICG，也不保证上游组合逻辑停止切换。
-- **DP 复位保持用户确认的同步低有效 `rst_n`**，优先于使能。所有流水边界以 DFF 实例保存；valid 每拍推进以传播气泡，payload 按有效事件使能，不增加 L8 的流水级数。
+1. **适用范围**：维护中的 `src/verilog/`（多精度基线、E/Q/QE 专用及混合配比顶层、算术/解包/公共库）与 `test/rtl_tb/`。冻结的历史 `src/verilog/systemverilog/` 与已归档快照不回溯修改。
+2. **语言与排版基线**：
+   - 纯 **Verilog-2005**（可综合 RTL 使用 `wire`/`reg`、`assign`、`generate`、显式位宽扩展，不使用 SV 特有的 `logic`、`always_ff`、`always_comb`、`package`、`struct`、`interface`）。
+   - **2 空格缩进**、UTF-8、LF 换行、100 列目标宽度。
+   - **严禁在代码中添加 `// verilog_format: off` 或 `// verilog_format: on` 等格式化工具屏蔽注释**——直接通过清晰的原生排版规则保证代码整洁可读。
 
 ---
 
-命名细节同时遵循 [dp-naming-convention](../dp-naming-convention/SKILL.md)：文件、实例、变量的功能词、互联方向、阶段和术语映射以该规范为准。本文保留的通用算术正反例用于解释对应规则，实际新增代码不能据此继续使用 a/e/f 等不明局部名称。
+## 核心设计理念
 
-## 一、RTL 编码规范（硬性要求）
+1. **接口与寄存器所有权唯一（Vortex Ownership Rule）**：
+   - 谁包含产生某级信号的组合逻辑，谁拥有该级输出边界寄存器。
+   - 纯组合子模块（如 `dp_operand_unpack`、`dp_mantissa_bank`、`dp_lane_align`、`dp_global_align`、`dp_final_csa_sum`、`dp_fp32_round`）**绝不暗藏流水寄存器**；父模块或下游消费者路由已寄存接口时**绝不二次打拍**。
+2. **控制与数据寄存器严格分离**：
+   - 控制信号（`rN_valid`、`rN_last`、`rN_extension`、FSM 状态）使用带**同步低有效复位 `rst_n`** 的 DFF（`dp_lib_DFFRU` / `dp_lib_DFFRE`），确保初始与复位状态确定。
+   - 由有效位屏蔽的数据通路 payload 使用**无复位、带使能**的 DFF（`dp_lib_DFFE`），节省复位树资源，并在气泡/未激活期间保持数据以支持后端 ICG 与低翻转功耗。
+3. **多精度写门控与读端结构零恢复（Write-Gating & Read-Zero-Restoration）**：
+   - 逐拍动态切换精度（`II=1`）时，寄存器写使能使用**源级**类型（`rst_n & r{N-1}_valid & r{N-1}_slot_active`）关闭未用通道/高位；下游消费端使用**目的级**类型（`r{N}_slot_active ? r{N}_data : {W{1'b0}}`）显式恢复结构零，严防历史旧值泄漏。
+4. **分组精炼注释，解释 Why 而非重复 What（Vortex TCU Comment Style）**：
+   - 命名良好的信号自体表达 *What*；注释只解释**功能分组、非显见硬件不变量、位宽/偏置推导（Why）与 S/I/F 定点坐标契约**。
+   - **禁止逐个变量/端口机械添加冗余注释**；按功能或流水级相关性分组，每组上方写 1–2 行简明注释即可。禁止在代码注释中写入 PR/任务编号、版本演进流水账或“修复某 bug”等过程噪音。
 
-### 1. 禁止魔鬼数字
+---
 
-具有设计含义的数字常量必须使用 `parameter`、派生 `localparam` 或 `define 宏定义，禁止在计算/比较/布局中散布魔鬼数字（0、1 等初始化值、声明中的常量定义及示例配置值除外）。数据常量明确宽度；局部计算不必变成全局宏。
+## 一、标准化代码格式与注释规范（Vortex TCU 风格适配）
+
+### 1.1 模块头部注释与 S/I/F 坐标表
+
+每个 `.v` 文件顶部在 `` `include "dp_defs.vh"`` 之后、``module`` 之前，编写简明头部注释：
+- **2–4 行架构职责与契约概述**：说明模块功能、流水级范围、延迟/吞吐（如 `L=8, II=1`）与同步低有效 `rst_n` 行为。
+- **S/I/F 定点坐标表（仅数值变换/对齐/规约模块需要）**：简明列出各精度关键节点的符号 `S`、整数位 `I`（不含 `S`）、小数位 `F` 及表示法（`SM` 符号幅值分离 vs `TC` 二补码）。纯控制或透传封装模块无需冗长表格。
 
 ```verilog
-// ❌ 错误
-assign overflow = (count == 4'd15);
+`include "dp_defs.vh"
 
-// ✅ 正确
-localparam [3:0] MAX_COUNT = 4'd15;
-assign overflow = (count == MAX_COUNT);
+// Multi-precision T1H2Q4E8 lane (S1 unpack -> S2 multiply -> S3 align -> S4 sum tree).
+// Fixed 4-stage pipeline (II=1, no backpressure); rst_n clears valid only, payload holds.
+// Fixed-point coordinates (P = LOCAL_W - 2, I excludes S):
+//   Precision              | S3 Leaf (TC)   | S4 Lane SOP (TC)
+//   ---------------------- | -------------- | ----------------
+//   TF32                   | S1 I2  F(P)    | S1 I2  F(P+2)
+//   FP16 / BF16            | S1 I2  F(P)    | S1 I3  F(P+1)
+//   MXFP8 / MXFP6          | S1 I2  F(P)    | S1 I4  F(P)
+//   MXFP4 / NVFP4 / HiF4   | S1 I9  F(P-7)  | S1 I9  F(P-5)
+//   INT8                   | S1 I15 F(P-13) | S1 I17 F(P-13)
 ```
 
-### 2. `define 宏只允许在 .vh 头文件中定义
+### 1.2 模块参数与端口声明格式（分组注释 + 垂直列对齐）
 
-`.v` RTL 源文件中**禁止使用 `` `define`` 定义宏**。所有宏定义必须集中在 `.vh` 头文件中，`.v` 文件通过 `` `include`` 引用。
-
-**为什么要这样？**
-
-- `` `define`` 是**全局命名空间**——不同 `.v` 文件中的同名宏会互相覆盖，调试极其困难
-- 把宏集中在 `.vh` 中，所有模块看到同一份定义，保证一致性
-- 集中定义减少编译顺序、重定义和配置漂移问题；头文件使用 include guard
-- 这是本项目要求，不把风格约束描述成 Verilog 语言禁止在 .v 中定义宏
+借鉴 Vortex `hw/rtl/tcu/` 的模块头格式：
+- **参数列表 `#(...)`**：每行一个 `parameter integer`，等号 `=` 纵向对齐；仅在非显见配置开关或派生参数右侧附简短行尾注释 `// ...`，无需每个参数上方都写独立注释行。
+- **端口列表 `(...)`**：
+  - 每行一个端口，写全 `input wire` / `output wire`、`signed`（如有）和位宽 `[W-1:0]`。
+  - **按接口功能或流水级相关性分组**（如全局时钟复位、输入操作数与元数据、跨模块协同接口、输出结果），组间空一行或加一行简短分组注释（`// S2 group exponent MAX sideband`）。
+  - 方向/类型、位宽、端口名三列纵向对齐，**不对自解释端口逐行写注释**。
 
 ```verilog
-// ❌ 错误 — .v 文件中直接 `define
-// 文件: dp_fifo.v
-`define DP_FIFO_DEPTH 16
-module dp_fifo (...);
+module dp_lane #(
+  parameter integer LOCAL_W      = `DP_DEFAULT_LOCAL_W,
+  parameter integer BASELINE_V18 = 0,                   // 1: E fixed-coordinate bypass
+  parameter integer LEAF_W       = LOCAL_W + 1,         // derived: S3 signed leaf width
+  parameter integer LANE_SOP_W   = LEAF_W + $clog2(`DP_Q_LANES)
+) (
+  input  wire                          clock,
+  input  wire                          rst_n,
 
-// ✅ 正确 — .vh 头文件中定义, .v 文件 include
-// 文件: dp_fifo_params.vh
-`define DP_FIFO_DEPTH 16
+  // S0 input request and packed operands
+  input  wire                          in_valid,
+  input  wire [`DP_TYPE_W-1:0]         in_datatype,
+  input  wire [`DP_LANE_W-1:0]         in_a,
+  input  wire [`DP_LANE_W-1:0]         in_b,
+  input  wire [1:0]                    in_e1_a,
+  input  wire [1:0]                    in_e1_b,
+  input  wire                          in_e2_a,
+  input  wire                          in_e2_b,
 
-// 文件: dp_fifo.v
-`include "dp_fifo_params.vh"
-module dp_fifo (...);
-```
+  // S2 combinational group-MAX sideband
+  output wire [`DP_PRODUCT_EXP_W-1:0] out_candidate,
+  output wire                          out_candidate_active,
+  input  wire [`DP_PRODUCT_EXP_W-1:0] in_group_max,
 
-### 3. 组合逻辑使用 assign
-
-新编写或迁移的功能组合逻辑必须使用 `assign`，通过具名连线、generate、明确的算术/MUX 模块表达结构。**功能层唯一例外是状态机次态逻辑**，可用完整赋值的 `always @(*)`；DFF 原语内部时序块和 TB 不受此组合规则限制。
-
-DP 已有函数和复杂译码/LZD/舍入组合块目前仍存在。迁移时逐模块等价改写并验证，不能仅因这份新规范全库机械替换，不能为凑 assign 形式引入串行优先级链。
-
-```verilog
-// ✅ 组合逻辑：用 assign
-assign sum = a + b;
-assign valid = (state == IDLE) & req;
-
-// ✅ 状态机次态逻辑：允许 always @(*)
-always @(*) begin
-  next_state = IDLE;
-  case (state)
-  IDLE: next_state = req ? PROC : IDLE;
-  PROC: next_state = done ? IDLE : PROC;
-  default: next_state = IDLE;
-  endcase
-end
-```
-
-### 4. 禁止布尔运算符，必须使用按位运算符
-
-Verilog 中 `&&` `||` `!` 是**布尔（逻辑）运算符**，`&` `|` `~` 是**按位（bitwise）运算符**。RTL 编码中**必须使用按位运算符**。
-
-**为什么要区分？**
-
-- `&&` / `||` 将整个操作数解释为真假，输出 1 bit；`&` / `|` 逐位处理，向量结果保留对应位。
-- 本项目沿用参考规范的**按位运算风格要求**：条件先显式比较/归约为 1 bit，再用 `&`、`|`、`~` 组合。这样可以在代码中看出归约和门级控制关系。
-- 这不是语言正确性禁令。合法的逻辑运算按其语义综合，并不天然导致仿真/综合不一致；多位 `a && b` 不会被正确综合器解释为 `a[0] & b[0]`。迁移必须保留原来的真值/四态语义，禁止直接将多位 `!a` 替换为 `~a`。
-
-**典型错误场景**：
-
-```verilog
-// ❌ 错误：用 && 连接两个 8-bit 信号
-wire [7:0] a;
-wire [7:0] b;
-assign flag = a && b;   // 语言合法，但不符合本项目显式归约风格
-
-// ✅ 正确：用 & 做按位与
-assign flag = (a != 8'd0) & (b != 8'd0);  // 先归约为 1-bit，再做按位与
-// 或者如果要逐位与：
-assign and_result = a & b;   // 8-bit 输出，每位独立 AND
-```
-
-**条件表达式中的归约**：
-
-```verilog
-// ❌ 错误
-assign valid = (a == b) && (c == d);   // 布尔 &&
-
-// ✅ 正确
-assign valid = (a == b) & (c == d);    // 位与：== 的结果本身就是 1-bit，& 和 && 结果相同但 & 是电路语义
-```
-
-**复位信号注意**：
-
-```verilog
-// ❌ 错误 — 虽然是手写时序逻辑（本身就禁止），但即使用 DFF 例化外围逻辑也应避免
-always @(posedge clock) begin
-  if (!rst_n) ...  // 布尔 !
-end
-
-// ✅ 正确 — 在组合逻辑/assign 中反相
-assign rst_active = ~rst_n;       // 按位取反
-assign en_gated   = en & rst_n;  // 按位与
-```
-
-**规则表**：
-
-| 运算符 | 类型 | RTL 允许？ | 替代方案 |
-|--------|------|-----------|---------|
-| `&&` | 布尔与 | ❌ | `&`（单 bit 归约后用 &） |
-| `\|\|` | 布尔或 | ❌ | `\|`（单 bit 归约后用 \|） |
-| `!` | 布尔非 | ❌ | `~`（按位取反） |
-| `&` | 按位与 | ✅ | — |
-| `\|` | 按位或 | ✅ | — |
-| `~` | 按位取反 | ✅ | — |
-| `^` | 按位异或 | ✅ | — |
-
-> 状态机条件也按此风格显式归约后使用 `&` / `|` / `~`。普通 `case` 按四态精确匹配，`==` 与 `===` 的未知值语义不同，不可混用；可综合功能逻辑不用 `casex` 掩盖未知值。TB 和参数合法性检查中的逻辑判断不属于功能控制网风格检查。
-
-### 5. 禁止多维数组直接索引 — 必须显式例化 MUX
-
-动态数组读取/变量选择（例如 `regfile[rd_addr]`、`mem[rd_addr][byte_sel]`）必须显式组织 MUX 模块或 generate 选择树，体现选择路数、数据宽度和预期层级。
-
-**为什么要显式？**
-
-- 便于审查 MUX 规模、选择优先级、广播扇出及关键路径。
-- 显式结构仍可能被综合优化，最终层级/面积必须查看报告，不能仅由 RTL 外形保证。
-- 常量索引、generate 常量展开、参数化固定切片允许；一维数组声明本身不是违规。真正的存储宏按专用接口合同处理，不强制展开为 DFF+MUX。
-- one-hot 选择必须定义零选、多选、越界行为并检查互斥；二进制选择也可使用平衡二选一树，不要求一律转成 one-hot。
-
-```verilog
-// ❌ 错误 — 多维索引隐藏了 MUX 结构
-wire [63:0] regfile [0:127];   // 128-entry register file
-assign rd_data = regfile[rd_addr];  // 综合工具推断 128:1 MUX, 你不知道长什么样
-
-wire [1023:0] bank_mem [0:7][0:255];  // 3D array
-assign cell = bank_mem[bank][row];     // 两层索引, MUX 结构完全隐藏
-
-// ✅ 正确 — 显式例化 MUX, 电路结构一目了然
-// 128:1 MUX, 7 级 (每级 2:1 树形展开)
-wire [63:0] regfile_q [0:127];  // DFF 输出数组
-wire [63:0] mux_l0 [0:63];      // 第一级: 128→64
-
-genvar i;
-generate
-  for (i = 0; i < 64; i = i + 1) begin : gen_mux_l0
-    assign mux_l0[i] = rd_addr[0] ? regfile_q[2*i+1] : regfile_q[2*i];
-  end
-  // ... L1: 64→32, L2: 32→16, ... L6: 2→1
-endgenerate
-
-// 也可实例化下文的 dp_lib_bin2onehot + dp_lib_onehot_mux。
-// Verilog-2005 的跨模块数据端口用扁平 [N*W-1:0]，不用 unpacked 数组端口。
-```
-
-**简化方案**（推荐）：对于较小的一维选择网络，可以使用 generate-for 展开每个 entry 的 "compare + AND + OR" 结构，相当于显式表达 1-hot MUX：
-
-```verilog
-// ✅ 显式 1-hot MUX: 每个 entry 一个 AND gate + 全 OR reduce
-wire [63:0] rd_data;
-genvar i;
-wire [63:0] entry_masked [0:127];
-generate
-  for (i = 0; i < 128; i = i + 1) begin : gen_mux_1hot
-    assign entry_masked[i] = (rd_addr == i) ? regfile_q[i] : 64'd0;
-  end
-endgenerate
-// 示意：实际用逐 bit OR 归约或平衡 OR 树连接全部 entry_masked。
-// 注: OR 树也可用 generate 逐级展开
-```
-
-> **实际工程权衡**：对深度 ≤ 16 的数组，显式 MUX 开销可控。对深度 ≥ 64 的大数组（如 PRF 128×64b），建议在 **module 头部注释中标注 MUX 结构和预期级数**，然后用 generate 模板展开，避免逐个手写。
-
-### 6. 时序逻辑必须例化 DFF 基础单元
-
-**功能模块禁止手写 `always @(posedge clock)`。** 所有普通流水寄存器通过例化本 skill 的 DFF 基础单元保存，DFF 实现内部是例外。存储宏/CDC/ICG 按专用合同，不能强行替换。（DFF 基础单元的 Verilog 代码见 `assets/lib/` 目录。）
-
-```verilog
-// ❌ 禁止
-always @(posedge clock) begin
-  if (!rst_n)  cnt <= 0;
-  else         cnt <= cnt + 1;
-end
-
-// ✅ 正确：例化 DFF 基础单元（DFF 端口可同行）
-dp_lib_DFFRU #(.WIDTH(8))
-ff_cnt (.clock(clock), .rst_n(rst_n), .in_d(cnt_next), .out_q(cnt));
-```
-
-### 7. 每行一个信号（DFF 例化例外）
-
-信号声明、assign 赋值、普通模块例化的端口连接，都必须每行一个信号。端口每行重复完整方向/类型/位宽；`wire/reg/integer/genvar/parameter/localparam` 不用逗号共享声明。
-
-```verilog
-localparam integer GROUP_W = LOCAL_W + 1 + $clog2(`DP_Q_LANES) + $clog2(`DP_LANES);
-localparam integer GROUP_MAG_W = GROUP_W - 1;
-localparam integer GLOBAL_MAG_W = GLOBAL_W - 1;
-localparam integer N = GROUPS + 1;
-```
-
-**DFF 基础单元例化统一采用紧凑两行格式**：第一行是模块类型和 `#(...)` 参数，第二行是 `ff_*` 实例名与全部固定端口，末尾 `);`。DFF 端口行豁免 100 列目标，不因行宽把 clock/rst_n/in_en/in_d/out_q 再拆开；复杂输入表达式优先在外部以具名连线表达。每个变量声明仍须单独一行。
-
-连续 DFF 区块用 `// verilog_format: off` 与 `// verilog_format: on` 成对保护，避免 Verible 将固定端口展开；默认保护 DFF 区块；对已手工对齐的声明或完整语义表达式，也可局部保护，不能为省事关闭整份文件的排版。
-
-**按流水级就地放置 DFF**：每级采用“组合计算 → 本级 DFF 捕获 → 下一级使用”的源码顺序，valid/类型/符号等旁带放在对应级。禁止把各级寄存器按字段全部集中到文件末尾；纯延迟路径也按 S1、S2…分别标注。解包子模块拥有的寄存器保留原所有权，不在父层重复打拍。
-
-```verilog
-// ❌ 错误：信号声明挤在一行
-input wire clock, rst_n, in_en;
-// ❌ 错误：普通模块例化端口挤在一行
-dp_fifo u_fifo (.clock(clock), .rst_n(rst_n), .in_data(din), .out_data(dout));
-
-// ✅ 正确：信号声明每行一个
-input wire clock;
-input wire rst_n;
-input wire in_en;
-
-// ✅ 正确：普通模块例化每行一个端口
-dp_fifo u_fifo (
-  .clock   (clock),
-  .rst_n (rst_n),
-  .in_data(din),
-  .out_data(dout)
+  // S4 registered lane output
+  output wire                          out_valid,
+  output wire signed [LANE_SOP_W-1:0]  out_sop,
+  output wire [`DP_PRODUCT_EXP_W-1:0] out_anchor,
+  output wire [`DP_SPECIAL_W-1:0]      out_special,
+  output wire                          out_all_negative
 );
-
-// ✅ 正确：DFF 例化例外 — 端口同行，参数单独一行
-dp_lib_DFFU #(.WIDTH(8))
-ff_data (.clock(clock), .in_d(d), .out_q(q));
-
-// ✅ 带复位/使能的 DFF 同样保持固定端口同行
-dp_lib_DFFRE #(.WIDTH(8))
-ff_data (.clock(clock), .rst_n(rst_n), .in_en(en), .in_d(d), .out_q(q));
 ```
 
-### 7a. dp_lane 可读性示范与新优先要求
+### 1.3 内部常量与变量声明（按相关性分组注释，拒绝逐行注水）
 
-- 寄存值按 `rN_<功能>` 命名，例如 `r1_valid/r2_datatype`；本轮只迁移 dp_lane，其余模块按任务范围逐步采用。
-- 参数、端口、变量在首次声明前解释作用、阶段/接口归属和必要的位宽语义；模块间的输入输出信号按功能分组，组之间留空行。
-- 同组 assign 按等号对齐；声明的变量名和模块具名连接对齐。普通模块端口仍逐行，DFF 保持紧凑两行。
-- 按完整条件、分支结果、算术项换行，不把 `elements(r1_datatype)`、`$clog2(DP_Q_LANES)` 或一个完整移位表达式拆成多行。完整表达式可超过 100 列目标，不为满足列宽破坏逻辑阅读顺序。
-- Verible 可使用 assignment_statement_alignment/named_port_alignment/named_parameter_alignment=align 辅助；仍需人工检查。若工具重新拆开已整理的表达式，以局部 verilog_format: off/on 保留手工语义换行。
-
-### 8. 寄存器类型选择原则
-
-| 信号类型 | 推荐 DFF | 原因 |
-|----------|---------|------|
-| 控制信号（FSM 状态、valid/ready、使能等） | DFFRE / DFFRU / DFFSE / DFFSU | 需要确定初始状态 |
-| 数据信号（由 valid 屏蔽的 payload 等） | DFFU / DFFE | 无需复位，节省面积 |
-| 多 bit 数据通路（≥3 bit） | DFFE（带 en） | 保持无效数据，提供 ICG 优化机会 |
-
-**为什么控制信号用复位、数据信号不用？**
-复位树（reset tree）在物理设计中占用可观的布线和 buffer 资源。数据通路寄存器的初始值通常不关心（数据有效由 valid 信号指示），省去复位连接可显著减小面积。但控制信号必须有确定初始状态，否则芯片上电后行为不可预测。
-
-### 9. 命名规范
-
-| 对象 | 规范 | 示例 |
-|------|------|------|
-| 模块名 | 以 `dp_` 开头，小写；库 DFF 后缀保留 DFFU/DFFE 等类型名 | `dp_fifo_ctrl`, `dp_data_path` |
-| 宏定义 | 以 `DP_` 开头，全部大写 | `` `DP_DATA_WIDTH ``, `` `DP_FIFO_DEPTH `` |
-| DFF 例化名 | 以 `ff_` 开头 | `ff_state`, `ff_data_0` |
-| 信号名 | 小写字母+数字+下划线，表达功能 | `data_valid`, `addr_inc` |
-| DP 流水 | 阶段 + d/q；DFF 实例标出两侧阶段 | `sum_s7_q`、`ff_s6_s7_sum` |
-| DP 端口 | 时钟 clock、复位 rst_n、输入 in_、输出 out_ | `in_valid`、`out_data` |
-
-### 10. 使能信号与 ICG 优化
-
-多 bit 寄存器（≥3 bit）原则上使用带使能的 DFF（如 `dp_lib_DFFE`）；更窄的有效数据也按相同语义使用使能，不能因位数小而丢失保持要求。后端在正确启用和配置门控流程时可将共享使能提取为 ICG，否则可能映射为反馈 MUX 或带使能单元。检查网表与门控报告，不手写组合门控时钟。
+- **单行单变量，按组注释**：每个 `localparam`、`wire`、`genvar` 独占一行（不写逗号并列声明，确保位宽与 diff 清晰），但**把同属一个流水级或同一个计算子步骤的变量聚成一组**，在组上方写 **1 行简明功能/不变量注释**，组内不再穿插单行注释！
+- **列对齐**：同组 `localparam` 的 `=` 对齐；同组 `wire` 的位宽与变量名对齐。
+- **仅对非显见公式加注释**：当某个 `localparam` 涉及偏置抵消、结构零裁剪或容器余量推导时，在组上方用 1–2 行写清数学公式（如 `// A_raw offset = (MAG_W - 1) - F - 2*bias`）。
 
 ```verilog
-// ✅ 32bit 数据打拍，用 DFFE，为后端 ICG 优化提供条件
-// 是否生成 ICG 由后端配置和映射验证
-dp_lib_DFFE #(.WIDTH(32))
-ff_data (.clock(clock), .in_en(data_valid), .in_d(data_in), .out_q(data_out));
+  // ❌ 反例：过度细节化，每个自解释变量都写一行废话注释，且到处是 verilog_format 注释
+  // verilog_format: off
+  // S1 解包数据有效标志。
+  wire r1_valid;
+  // S2 乘积及指数旁带有效标志。
+  wire r2_valid;
+  // S3 对齐叶子有效标志。
+  wire r3_valid;
+  // verilog_format: on
+
+  // ✅ 正例（Vortex TCU 风格）：按功能/流水级相关性分组，一组一行简明注释，列对齐
+  // Pipeline stage valid and datatype tracking (S1..S4)
+  wire                    r1_valid;
+  wire                    r2_valid;
+  wire                    r3_valid;
+  wire                    r4_valid;
+  wire [`DP_TYPE_W-1:0]   r1_datatype;
+  wire [`DP_TYPE_W-1:0]   r2_datatype;
+  wire [`DP_TYPE_W-1:0]   r3_datatype;
+
+  // S1 compact unpack outputs to S2 arithmetic banks (two M16/E10/S4 atoms per lane)
+  wire [`DP_UNPACK_MANT_W-1:0] unpack_mantissa_mul_a_mantissas;
+  wire [`DP_UNPACK_MANT_W-1:0] unpack_mantissa_mul_b_mantissas;
+  wire [`DP_UNPACK_EXP_W-1:0]  unpack_exponent_add_a_exponents;
+  wire [`DP_UNPACK_EXP_W-1:0]  unpack_exponent_add_b_exponents;
+  wire [`DP_UNPACK_SIGN_W-1:0] unpack_lane_a_signs;
+  wire [`DP_UNPACK_SIGN_W-1:0] unpack_lane_b_signs;
 ```
 
-### 11. 代码目录结构
+### 1.4 流水级分段横幅与就地组织（Stage Banners & In-Place Layout）
 
-每个功能层级独立组织，共享基础单元只有一份生产实现。保留 DP 已有目录：
+参照 `VX_tcu_fedp_tfr.sv` 与 `VX_tcu_tfr_align.sv`：
+- **多级流水模块**使用清晰的阶段分隔横幅，将每级的**局部信号声明 → 组合逻辑/子模块例化 → 本级边界 DFF 实例**就地组织在一起，严禁把所有 DFF 堆到文件末尾：
+  ```verilog
+  // ========================================================================
+  // Stage 2: Mantissa Multiplication, Exponent Sum & Group MAX
+  // ========================================================================
+  ```
+- **复杂组合模块**内部采用编号子步骤注释划分逻辑层次：
+  ```verilog
+  // 1. E-format signed pair formation
+  ...
+  // 2. Shared alignment window placement and low-bit zero padding
+  ...
+  // 3. Exponent delta and RTZ right shift
+  ...
+  // 4. Two's-complement leaf restoration
+  ```
+
+### 1.5 子模块例化、DFF 例化与表达式排版
+
+1. **普通子模块例化**：每个参数和端口占一行，参数/端口名后留空格使左括号 `(` 垂直对齐：
+   ```verilog
+   dp_max_tree #(
+     .N (`DP_E_LANES),
+     .W (`DP_PRODUCT_EXP_W + 1)
+   ) u_lane_exponent_max (
+     .in_values  (product_exponent_candidates),
+     .in_active  (exponent_max_active),
+     .out_max    (lane_max_exponent),
+     .out_active (out_candidate_active)
+   );
+   ```
+2. **DFF 基础单元例化**：紧随本级计算放置，采用紧凑两行格式（第一行模块与 `#(.WIDTH(...))`，第二行 `ff_sN_sM_*` 与全部端口），**不加 `verilog_format: off/on`**：
+   ```verilog
+   // S1 -> S2 pipeline registers
+   dp_lib_DFFRU #(.WIDTH(1))
+   ff_s1_s2_valid (.clock(clock), .rst_n(rst_n), .in_d(r1_valid), .out_q(r2_valid));
+   dp_lib_DFFE #(.WIDTH(`DP_TYPE_W))
+   ff_s1_s2_datatype (.clock(clock), .in_en(rst_n & r1_valid), .in_d(r1_datatype), .out_q(r2_datatype));
+   ```
+3. **同组 `assign` 与多分支三目表达式 `?:`**：
+   - 相关性强的连续 `assign` 语句按 `=` 垂直对齐。
+   - 多分支 `?:` 每行一个 `条件 ? 结果 :`，`?` 与 `:` 纵向对齐，保持完整算术项或函数调用在同一行。
+
+### 1.6 头文件（`.vh`）参数与函数注释格式
+
+- **`dp_defs.vh`**：按主题分块（如 `// ---- Datatype & Scale Encodings ----`、`// ---- Format Field Widths & Biases ----`、`// ---- Compact Unpack Atom Layout ----`），块头用 1–2 行说明编码规律或打包位域（如 `// Number token (23b): [22] sign | [21:11] mag | [10:3] exp | [2:1] class | [0] sig`），宏名与值分列对齐，**无需为每个自解释宏单独写一行注释**。
+- **`dp_functions.vh`**：每个 `function automatic` 上方用 1–2 行说明函数用途及综合约束（如运行时 `datatype` 通过 `case` 返回常量位宽以兼容 DC，禁止定义零参数函数）。
+
+---
+
+## 二、RTL 核心编码铁律（18 条硬性规范）
+
+1. **禁止魔鬼数字**：具有格式、容量或位域含义的常数必须定义为 `.vh` 宏或模块内派生 `localparam`；常量字面量显式带位宽（如 `4'd15`、`32'd0`）。
+2. **`` `define `` 宏仅在 `.vh` 头文件中定义**：`.v` 源文件内严禁定义 `` `define `` 宏；头文件必须包含 `` `ifndef / `define / `endif `` 保护。
+3. **功能组合逻辑使用 `assign`**：可综合功能模块组合逻辑统一用 `assign` + 具名 `wire` + `generate` + 子模块表达；仅 FSM 次态逻辑允许完整赋值的 `always @(*)`（须有默认初值与 `default` 分支）。
+4. **按位逻辑运算（禁止布尔 `&&` `||` `!`）**：可综合通路中，多 bit 信号先经显式比较（`==`、`!=`、`<`、`>=`）或归约（`|vec`、`&vec`）转为 1-bit，再用按位 `&`、`|`、`~`、`^` 组合。
+5. **动态选择显式例化 MUX**：编译期 `generate` 常量切片允许；运行时变量索引的多路选择必须显式例化 `dp_lib_bin2onehot` + `dp_lib_onehot_mux` 或平衡选择树。
+6. **功能层禁止手写 `always @(posedge clock)`**：所有寄存器必须例化 `dp_lib_DFF*` 基础单元（仅 `dp_dff_en.v` 与 `dp_dff_sync_reset.v` 两个底层原语内部包含时序块）。
+7. **单行单声明与端口对齐**：`parameter`、`localparam`、端口、`wire`、`reg`、`genvar` 每行只声明一个标识符；普通模块例化每行一个端口且左括号 `(` 对齐，DFF 例化采用紧凑两行。
+8. **控制复位与数据无复位分离**：`rN_valid` 等控制信号用 `dp_lib_DFFRU`/`DFFRE`（同步低有效 `rst_n` 优先于 `in_en`）；valid 屏蔽的 payload 用无复位 `dp_lib_DFFE`。
+9. **统一命名与 `rN_` 流水级前缀**：遵循 [dp-naming-convention](../dp-naming-convention/SKILL.md)，第 `N` 级寄存输出命名为 `rN_<function>`，待捕获组合输入命名为 `<function>_d`；禁止把组合输入 `in_valid` 与寄存输出 `r1..rN_valid` 拼入同一数组（防止 Verilator `UNOPTFLAT` 伪组合环告警）。
+10. **多精度写门控与目的级读清零**：多精度分段/分槽寄存器用源级 `r{N-1}_datatype` 控制 `in_en`，在目的级消费端必须用 `r{N}_datatype` 将未用位段/槽位掩码恢复为 `0`；共享算术单元输入在非激活模式置零隔离。
+11. **目录职责与编译清单单一来源**：遵守 `src/verilog/{common,parameter,unpack,arithmetic,lane,group,top}` 结构，显式维护 `files*.f`，不混编 skill 模板与生产原语。
+12. **禁止 `localparam` 纯宏别名**：不创建无计算的 `localparam X = `DP_X;`，仅保留有算术推导或位宽转换的派生 `localparam`。
+13. **信号名表达硬件功能与数值语义**：禁止裸 `a/b/c/d/e/f/m/n/t/x/y` 或 `tmp/val`；严格区分 `exponent_field`、`exponent_field_width`、`unbiased_exponent`、`anchor`、`compare_exp`、`fraction_field`、`fractional_bits`、`magnitude` 与 `signed_sum`。
+14. **接口不盲目打包单总线**：跨模块不同语义信号分端口声明；模块内部若为合并同使能 DFF 临时拼接，必须在 DFF 下一行紧邻解包为具名 `wire`。
+15. **位域切片符号化**：使用 `.vh` 位域宏或 `[index*W +: W]` 参数化切片，严禁在业务代码中写裸数字切片 `[49:2]`。
+16. **接口与寄存器所有权边界**：组合子模块不暗藏流水寄存器，父模块与消费者不二次打拍已寄存接口；严禁使用 `// verilog_format: off/on` 污染源码。
+17. **强制 `begin`/`end` 与零告警卫生**：所有 `if/else/for/while` 必须带 `begin/end`（禁止单语句省略括号）；严禁大范围 `/* verilator lint_off */` 掩盖位宽或锁存器错误。
+18. **Elaboration 静态参数断言与有效位门控运行时断言**：模块末尾在 `// synthesis translate_off` 块内检查参数合法性（非法立即 `$display("FAIL ...")` + `$finish`），运行时断言必须以 `rst_n & rN_valid` 门控。
+
+---
+
+## 三、基础单元库（`src/verilog/common/` 与 `assets/lib/`）
+
+### 3.1 DFF 选择决策树
 
 ```text
-src/verilog/
-├── common/                 DFF/MUX/编码基础单元（生产实现）
-├── parameter/              dp_defs.vh / dp_functions.vh / 字段布局
-├── unpack/                 解包
-├── arithmetic/             算术共享模块
-├── lane/                   多精度与 E lane
-├── group/                  多精度与 E group
-├── top/                    dp_top.v / dp_top_e.v
-├── files.f                 主实现显式源清单
-└── files_e.f               E 实现显式源清单
-```
-
-skill 的 `assets/lib/` 为可验证模板；生产实现已转入 `src/verilog/common/` 并加入清单，避免同名模块重复编译。旧快照不覆盖。维护对象为 Verilog-2005，不导入参考库中的 SV 数组端口、logic 或隐式语言扩展。
-
-### 12. 禁止 `localparam` 纯别名
-
-如果 `.vh` 中已经用 `` `define `` 定义了某个宏，模块内**禁止**再创建一个同义 `localparam` 别名：
-
-```verilog
-// ❌ 错误 — 纯别名，多一层无意义间接引用
-`include "dp_xxx_define.vh"
-localparam FIFO_DEPTH = `DP_FIFO_DEPTH;
-
-// ✅ 正确 — 直接使用 define
-`include "dp_xxx_define.vh"
-// 代码中直接写 `DP_FIFO_DEPTH
-```
-
-**仅允许**保留有计算公式的派生参数：
-
-```verilog
-// ✅ 正确 — 有公式计算的派生参数可以保留
-localparam ENTRY_W    = 1 + `DP_IBTB_TAG_W + `DP_IBTB_TARGET_W;
-localparam ROW_W      = `DP_IBTB_WAYS * ENTRY_W;
-```
-
-### 13. 信号命名必须表达功能，而非来源
-
-信号名要描述**这个信号是什么、做什么**，而非仅仅描述**它从哪来、到哪去**。
-
-```verilog
-// ❌ 错误 — 只表达了是 SRAM 的输入输出，没表达含义
-wire [239:0] sram_d;    // "SRAM 的 d 端口"  — 不知所云
-wire [239:0] sram_q;    // "SRAM 的 q 端口"
-wire [9:0]   sram_a;    // "SRAM 的 a 端口"
-
-// ✅ 正确 — 名字表达功能
-wire [239:0] sram_wdata;  // SRAM 写入数据
-wire [239:0] sram_rdata;  // SRAM 读出数据
-wire [9:0]   sram_addr;   // SRAM 读写地址
-```
-
-注意：内部变量用功能名，不重复整段模块路径；父模块中的互联线使用 `{driver}_{receiver}_{function}`。可复用模块端口继续使用 `in_{function}` / `out_{function}`，时钟和复位保留 `clock/rst_n`。局部量不用 e/f/a 等不明简称，区分 exponent_field、fraction_field、fractional_bits 和 magnitude；详见命名 skill。
-
-### 14. 模块 interface 禁止 pack 独立信号为单 bus
-
-核心原则是**不能为了 pack 而引入魔鬼数字**。判断标准：pack 之后，下游使用方是否需要写裸 slice（如 `[49:2]`）才能提取信号？
-
-**❌ 不可接受**：pack 成对外 output port，下游被迫写 slice 提取：
-```verilog
-output wire [64:0] b2_b3_mbtb_pred_o;
-// 下游调用者被迫写魔鬼数字：
-assign hit    = b3_mbtb_pred[0];
-assign target = b3_mbtb_pred[49:2];
-```
-
-**✅ 可以接受**：模块内部 pipeline DFF 中临时 pack 以节省例化行数，但下游代码立即解包为命名 wire，且解包位置紧邻 DFF 例化：
-```verilog
-// 内部 pipeline: pack 进一条 DFF，紧跟着解包为命名 wire
-wire [205:0] b2_b3_d;
-wire [205:0] b2_b3_q;
-assign b2_b3_d = {b2_pc, b2_tid, b2_valid,
-                  mbtb_hit, mbtb_taken, mbtb_target, mbtb_brtype, ...};
-dp_lib_DFFU #(.WIDTH(206))
-ff_b2_b3 (.clock(clock), .in_d(b2_b3_d), .out_q(b2_b3_q));
-// 立刻解包 — 下游代码只用命名 wire，无魔鬼数字
-assign {b3_pc, b3_tid, b3_valid,
-    b3_mbtb_hit, b3_mbtb_taken, b3_mbtb_target, b3_mbtb_brtype, ...} = b2_b3_q;
-```
-
-**✅ 也可以接受**：多个同类信号做结构化 pack，且访问方式自描述（如输入总线中包含多个相同结构的 lane，用 `[ENTRY_W-1:0]` 而非裸数字 slice）。
-
-**判断标准一句话**：下游代码中如果出现 `[49:2]`、`[52:50]` 这类无注释的裸 slice → 不可接受。如果解包后下游只用命名 wire → 可以接受。
-
-### 15. 打包结构必须用 `define 定义 bit-field 布局
-
-当固定的共享信号包含多个字段（如 token 中的 sign/anchor/magnitude），必须在 `.vh` 用 `` `define `` 定义字段位置。对于随 K/LOCAL_W/GLOBAL_W 变化的布局，用具名派生 `localparam` 计算宽度/偏移，不能用固定宏冻结参数化布局。模块代码中**禁止**出现裸数字 slice。
-
-```verilog
-// ❌ 错误 — 裸 slice 无文档，修改 entry 格式时需全局搜索替换
-assign way_valid[0] = way_data[0][59];
-assign way_tag[0]   = way_data[0][58:48];
-assign way_target[0] = way_data[0][47:0];
-
-// ✅ 正确 — define 定义所有 bit 位置
-// 在 .vh 中：
-`define DP_IBTB_ENTRY_W          60
-`define DP_IBTB_VALID_BIT        59
-`define DP_IBTB_TAG_MSB          58
-`define DP_IBTB_TAG_LSB          48
-`define DP_IBTB_TARGET_MSB       47
-`define DP_IBTB_TARGET_LSB       0
-
-// 在 .v 中：
-assign way_valid[0]  = way_data[0][`DP_IBTB_VALID_BIT];
-assign way_tag[0]    = way_data[0][`DP_IBTB_TAG_MSB:`DP_IBTB_TAG_LSB];
-assign way_target[0] = way_data[0][`DP_IBTB_TARGET_MSB:`DP_IBTB_TARGET_LSB];
-```
-
-**要求**：每个包含多字段的固定共享结构，在 `.vh` 中必须有对应的 entry layout define 块，并按如下顺序组织：
-
-```
-// {结构名} entry layout ({总宽度}b):  field1(w1) + field2(w2) + ...
-`define DP_{STRUCT}_ENTRY_W     {总宽度}
-`define DP_{STRUCT}_FIELD1_MSB  {最高位}
-`define DP_{STRUCT}_FIELD1_LSB  {最低位}
-`define DP_{STRUCT}_FIELD2_MSB  {最高位}
-`define DP_{STRUCT}_FIELD2_LSB  {最低位}
-...
-```
-
-### 16. 写完后强制自检
-
-**每次编写或修改 RTL 代码后，必须逐条自检以下 15 项，并在回复中输出自检结果。** 这是硬性要求，不允许跳过。
-
-自检输出格式（必须逐条标注通过/不通过）：
-
-```
-## RTL 自检报告
-
-| # | 检查项 | 结果 | 说明 |
-|---|--------|------|------|
-| 1 | 无魔鬼数字 | ✅ / ❌ | ... |
-| 2 | `define 只在.vh中定义 | ✅ / ❌ | ... |
-| 3 | 组合逻辑用 assign | ✅ / ❌ | ... |
-| 4 | 禁止布尔运算符 `&&` `\|\|` `!` | ✅ / ❌ | ... |
-| 5 | 禁止多维数组直接索引 | ✅ / ❌ | ... |
-| 6 | 时序逻辑例化 DFF | ✅ / ❌ | ... |
-| 7 | 每行一个信号（DFF例化除外） | ✅ / ❌ | ... |
-| 8 | 寄存器类型选择正确 | ✅ / ❌ | ... |
-| 9 | 命名规范 | ✅ / ❌ | ... |
-| 10 | 多bit数据用带en的DFF | ✅ / ❌ | ... |
-| 11 | 目录结构正确 | ✅ / ❌ | ... |
-| 12 | 无 localparam 纯别名 | ✅ / ❌ | ... |
-| 13 | 信号名表达功能（非来源） | ✅ / ❌ | ... |
-| 14 | pack 后无裸 slice 解包 | ✅ / ❌ | ... |
-| 15 | bit-field slice 用 define | ✅ / ❌ | ... |
-
-总结：15/15 通过 或 ❌ 项需修复：xxx
-```
-
-本次修改涉及的项目必须修复后重新自检；不涉及的项目写 N/A 并说明，未运行的检查写“未检查”，不能虚报全部通过。既有未迁移模块注明范围，不借风格审查擅自改动用户代码。另检查 DP 的同步复位、valid/payload 对齐、参数化 S/I/F、L8/II=1 和验证回执。
-
----
-
-## 二、基础单元库
-
-本 skill 的基础单元模板位于 `assets/lib/` 目录，分为 **DFF 时序单元** 和 **组合逻辑单元** 两类。
-
-> **工程说明**：六种 DFF wrapper 共用 `dp_dff_en.v` / `dp_dff_sync_reset.v` 两个行为级实现，编译时包含对应依赖；任意控制复位常量可直接参数化后者。唯一生产实现已在 `src/verilog/common/`，源清单与验证同步维护；不要同时编译模板与同名生产模块。基础单元是行为级 RTL，不是 PDK 单元。
-
-### DFF 选择决策树
-
-```
 需要寄存器？
-├── 是控制信号？(FSM状态/valid/ready/handshake)
-│   ├── 需要enable？ → dp_lib_DFFRE（复位）/ dp_lib_DFFSE（置位）
-│   └── 不需要enable → dp_lib_DFFRU（复位）/ dp_lib_DFFSU（置位）
+├── 控制信号（valid / last / extension / FSM 状态 / 控制计数器）
+│   ├── 每拍推进（如 rN_valid 传递气泡） → dp_lib_DFFRU（~rst_n 同步清 0）
+│   ├── 条件更新且复位清 0（如 rN_c_datatype） → dp_lib_DFFRE（~rst_n 优先于 in_en）
+│   └── 合同明确要求复位为全 1 → dp_lib_DFFSU / dp_lib_DFFSE
 │
-├── 是数据信号？(valid 屏蔽的 payload/data_path)
-│   ├── 需要enable且≥3bit？ → dp_lib_DFFE（使能保持/ICG候选）
-│   ├── 需要enable但<3bit？ → dp_lib_DFFE（仍保留使能语义）
-│   └── 不需要enable → dp_lib_DFFU
-│
-└── 纯打拍延迟（无功能逻辑）
-    ├── 带使能条件 → dp_lib_DFFE
-    └── 每拍都有效 → dp_lib_DFFU
+└── 数据通路信号（由 rN_valid 屏蔽的 payload：幅值、指数、符号、分类、rN_datatype）
+    ├── 有效事件门控（in_en = rst_n & r{N-1}_valid [& slot_en]） → dp_lib_DFFE（无复位，带使能）
+    └── 特殊合同要求每拍无条件更新的无复位数据 → dp_lib_DFFU
 ```
 
-### 单元列表
+### 3.2 六种 DFF 与三种组合选择单元速查
 
-#### dp_lib_DFFU — 基础 D 触发器（无复位、无使能）
+| 模块名 | 参数 | 紧凑两行例化 / 端口列表 | 功能说明 |
+| --- | --- | --- | --- |
+| `dp_lib_DFFU` | `WIDTH` | `.clock(clock), .in_d(d), .out_q(q)` | 无复位、无使能 DFF |
+| `dp_lib_DFFE` | `WIDTH` | `.clock(clock), .in_en(en), .in_d(d), .out_q(q)` | 无复位、带使能 DFF（数据通路主力） |
+| `dp_lib_DFFRU` | `WIDTH` | `.clock(clock), .rst_n(rst_n), .in_d(d), .out_q(q)` | 同步低有效复位清 0、无使能 DFF（`rN_valid` 主力） |
+| `dp_lib_DFFRE` | `WIDTH` | `.clock(clock), .rst_n(rst_n), .in_en(en), .in_d(d), .out_q(q)` | 同步低有效复位清 0 + 使能 DFF |
+| `dp_lib_DFFSU` | `WIDTH` | `.clock(clock), .rst_n(rst_n), .in_d(d), .out_q(q)` | 同步低有效置全 1、无使能 DFF |
+| `dp_lib_DFFSE` | `WIDTH` | `.clock(clock), .rst_n(rst_n), .in_en(en), .in_d(d), .out_q(q)` | 同步低有效置全 1 + 使能 DFF |
+| `dp_lib_onehot_mux` | `N`, `W` | `.in_select(sel), .in_data(flat_data), .out_data(out)` | `N` 路 `W`-bit 1-hot MUX（零选输出 0） |
+| `dp_lib_bin2onehot` | `BIN_W`, `ONEHOT_W` | `.in_binary(idx), .out_onehot(oh)` | 二进制转 1-hot 译码器（支持非二次幂路数） |
+| `dp_lib_onehot2bin` | `BIN_W`, `ONEHOT_W` | `.in_onehot(oh), .out_binary(idx)` | 互斥 1-hot 转二进制编码器 |
 
-- **文件**: `assets/lib/dp_lib_DFFU.v`
-- **用途**: 纯数据打拍，不需要复位和使能的场景
-- **参数**: `WIDTH = 8`
-- **端口**: `clock`, `in_d[WIDTH-1:0]`, `out_q[WIDTH-1:0]`
+---
 
-```verilog
-// 例化模板（DFF 端口同行，参数单独一行）
-dp_lib_DFFU #(.WIDTH(<width>))
-ff_<name> (.clock(<clock>), .in_d(<data_in>), .out_q(<data_out>));
-```
+## 四、可真实实践的 Testbench 与验证流程规范
 
-#### dp_lib_DFFE — 带使能 D 触发器（无复位）
+完整模板与实施细节见 [Testbench 与验证规范](references/testbench-standard.md)。借鉴 Vortex `hw/unittest/tcu_fedp/` 与 `SimX-as-Oracle` 调试法则：
 
-- **文件**: `assets/lib/dp_lib_DFFE.v`
-- **用途**: 数据通路打拍，≥3bit 推荐使用（使能保持/ICG 候选）
-- **参数**: `WIDTH = 8`
-- **端口**: `clock`, `in_en`, `in_d[WIDTH-1:0]`, `out_q[WIDTH-1:0]`
+1. **双层验证体系**：
+   - **模块级自检 Unit Testbench**：内置 Golden 参考函数与固定 seed 伪随机发生器，按特征集（`zeros`、`normals`、`subnormals`、`infinities`、`nans`、`scales/e1/e2`、`integers`）+ 动态协议压力（`II=1` 满吞吐、随机气泡 `in_valid=0`、逐拍 `in_datatype` 切换检验门控零恢复、在途 `rst_n=0` 同步复位取消）全自动比对。
+   - **顶层流水线与 CModel-as-Oracle 断点差分 Testbench**：读取 `DP_INPUTS_V1`、`GOLDEN`、`SCHEDULE`，当顶层结果不匹配时，通过 `+CUTPOINTS` 导出 `S1..S7` 逐级有效寄存器轨迹并与 CModel trace 自动 diff，直接定位首个分歧的流水级与请求 ID。
+2. **边沿时序与排空守恒定律**：
+   - `@(negedge clock)` 驱动输入与复位；`@(posedge clock)`（NBA 更新前）检查 `out_*_ready`、`out_valid` 与输出数据，推进 `pending_req_id[0:L-1]` 记分牌。
+   - 测试结束必须满足守恒式 **`accepted_count == checked_count + cancelled_count`**（且 `checked_count > 0`），输出 `PASS cycles=%0d accepted=%0d checked=%0d cancelled=%0d`；任何失配立即打印上下文与 `FAIL` 并 `$finish`。
+3. **Testbench 代码风格**：同样遵循单行单声明、按功能分组简明注释、强制 `begin/end`、DUT 端口对齐，不使用 `verilog_format: off/on`。
 
-```verilog
-// 例化模板（DFF 端口同行，参数单独一行）
-dp_lib_DFFE #(.WIDTH(<width>))
-ff_<name> (.clock(<clock>), .in_en(<enable>), .in_d(<data_in>), .out_q(<data_out>));
-```
+---
 
-#### dp_lib_DFFRU — 带同步复位 D 触发器（复位值 = 0）
+## 五、强制 18 项自检报告模板
 
-- **文件**: `assets/lib/dp_lib_DFFRU.v`
-- **用途**: 控制信号打拍，需要复位到 0
-- **参数**: `WIDTH = 8`
-- **端口**: `clock`, `rst_n`, `in_d[WIDTH-1:0]`, `out_q[WIDTH-1:0]`
+每次编写、修改或审查 Verilog RTL 与 Testbench 后，必须逐项核查并在回复中输出以下表格：
 
-```verilog
-// 例化模板（DFF 端口同行，参数单独一行）
-dp_lib_DFFRU #(.WIDTH(<width>))
-ff_<name> (.clock(<clock>), .rst_n(<reset_n>), .in_d(<data_in>), .out_q(<data_out>));
-```
+```markdown
+## RTL 与 Testbench 规范自检报告
 
-#### dp_lib_DFFRE — 带同步复位 + 使能 D 触发器（复位值 = 0）
+| # | 检查项 | 结果 | 说明（文件与行号） |
+|---|--------|------|--------------------|
+| 1 | 无魔鬼数字（具名宏或派生 localparam，显式位宽） | ✅ / ❌ / N/A | ... |
+| 2 | `define 仅在 .vh 头文件（带 include guard 与分块注释） | ✅ / ❌ / N/A | ... |
+| 3 | 功能组合逻辑用 assign（仅 FSM 次态用 always @*） | ✅ / ❌ / N/A | ... |
+| 4 | 禁止布尔运算符 `&&` `\|\|` `!`（归约后用 `&` `\|` `~`） | ✅ / ❌ / N/A | ... |
+| 5 | 禁止多维数组动态索引（显式例化 MUX 或选择树） | ✅ / ❌ / N/A | ... |
+| 6 | 功能层时序逻辑 100% 例化 `dp_lib_DFF*`（紧凑两行） | ✅ / ❌ / N/A | ... |
+| 7 | 单行单变量声明（无逗号并列声明） | ✅ / ❌ / N/A | ... |
+| 8 | 寄存器选型正确（控制用 DFFRU/RE，数据用无复位 DFFE） | ✅ / ❌ / N/A | ... |
+| 9 | 命名规范（`dp_`/`DP_`/`u_`/`ff_sN_sM_`/`g_`/`rN_`/`_d`） | ✅ / ❌ / N/A | ... |
+| 10 | 多精度寄存器写门控 + 目的级结构零恢复 + 操作数隔离 | ✅ / ❌ / N/A | ... |
+| 11 | 目录职责与 `files*.f` 清单一致 | ✅ / ❌ / N/A | ... |
+| 12 | 无 `localparam` 纯宏别名 | ✅ / ❌ / N/A | ... |
+| 13 | 信号名表达功能与数值语义（无裸 a/e/f/tmp） | ✅ / ❌ / N/A | ... |
+| 14 | 端口不盲目打包单总线（内部拼接紧邻 DFF 立即解包） | ✅ / ❌ / N/A | ... |
+| 15 | 位域切片使用宏或 `base +: W`（无裸数字切片） | ✅ / ❌ / N/A | ... |
+| 16 | 按功能/相关性分组简明注释（无逐变量冗余注释，无 verilog_format 注释） | ✅ / ❌ / N/A | ... |
+| 17 | 垂直列对齐（`=`、端口列、例化 `(`）+ 强制 `begin/end` + 阶段就地布局 | ✅ / ❌ / N/A | ... |
+| 18 | 末尾 `synthesis translate_off` 静态断言与 TB 守恒自检 | ✅ / ❌ / N/A | ... |
 
-- **文件**: `assets/lib/dp_lib_DFFRE.v`
-- **用途**: 控制信号打拍，需要复位且带使能条件
-- **参数**: `WIDTH = 8`
-- **端口**: `clock`, `rst_n`, `in_en`, `in_d[WIDTH-1:0]`, `out_q[WIDTH-1:0]`
-
-```verilog
-// 例化模板（DFF 端口同行，参数单独一行）
-dp_lib_DFFRE #(.WIDTH(<width>))
-ff_<name> (.clock(<clock>), .rst_n(<reset_n>), .in_en(<enable>), .in_d(<data_in>), .out_q(<data_out>));
-```
-
-#### dp_lib_DFFSU — 带同步置位 D 触发器（置位值 = 全 1）
-
-- **文件**: `assets/lib/dp_lib_DFFSU.v`
-- **用途**: 控制信号打拍，需要复位到全 1（仅用于合同明确需要全 1 的状态；one-hot 状态不能默认全 1）
-- **参数**: `WIDTH = 8`
-- **端口**: `clock`, `rst_n`, `in_d[WIDTH-1:0]`, `out_q[WIDTH-1:0]`
-
-```verilog
-// 例化模板（DFF 端口同行，参数单独一行）
-dp_lib_DFFSU #(.WIDTH(<width>))
-ff_<name> (.clock(<clock>), .rst_n(<set_n>), .in_d(<data_in>), .out_q(<data_out>));
-```
-
-#### dp_lib_DFFSE — 带同步置位 + 使能 D 触发器（置位值 = 全 1）
-
-- **文件**: `assets/lib/dp_lib_DFFSE.v`
-- **用途**: 控制信号打拍，需要置位且带使能条件
-- **参数**: `WIDTH = 8`
-- **端口**: `clock`, `rst_n`, `in_en`, `in_d[WIDTH-1:0]`, `out_q[WIDTH-1:0]`
-
-```verilog
-// 例化模板（DFF 端口同行，参数单独一行）
-dp_lib_DFFSE #(.WIDTH(<width>))
-ff_<name> (.clock(<clock>), .rst_n(<set_n>), .in_en(<enable>), .in_d(<data_in>), .out_q(<data_out>));
+总结：18/18 通过（或列出需修复项）
 ```
 
 ---
 
-### 组合逻辑单元
+## 六、参考文档与模板资产
 
-以下为组合基础模块，用于显式表达动态选择和编码。MUX 的零选输出为零，多选会按位 OR，调用方必须保证 one-hot-or-zero；编码器的零输入输出零，需另外传递 valid；多热编码是非法请求，不表示优先级。正整数宽度和路数由配置/导出检查，超出编码空间的配置必须拒绝。
-
-#### dp_lib_onehot_mux — One-Hot 多路选择器
-
-- **文件**: `assets/lib/dp_lib_onehot_mux.v`
-- **用途**: 将 `N` 路输入按 1-hot 选择信号选出一路输出。**替代 `array[idx]` 隐式 MUX**
-- **参数**: `N` = 输入路数, `W` = 数据宽度
-- **端口**: `out_data[W-1:0]`、`in_select[N-1:0]`、`in_data[N*W-1:0]`（第 i 路占 `[i*W +: W]`）
-
-```verilog
-// 例化模板: 128-entry 寄存器文件读口, 64-bit
-dp_lib_onehot_mux #(.N(128), .W(64)) u_rf_rd (
-  .in_select(rd_onehot),
-  .in_data(regfile_flat_q),
-  .out_data(rd_data)
-);
-```
-
-#### dp_lib_bin2onehot — 二进制 → 1-hot 译码器
-
-- **文件**: `assets/lib/dp_lib_bin2onehot.v`
-- **用途**: 将二进制地址译码为 1-hot 选择信号。常用于寄存器文件写使能、仲裁器选择
-- **参数**: `BIN_W` = 二进制位宽, `ONEHOT_W` = 1-hot 位宽（1 到 2^BIN_W，支持非二次幂路数）
-- **端口**: `out_onehot[ONEHOT_W-1:0]`、`in_binary[BIN_W-1:0]`
-
-```verilog
-// 例化模板: 7-bit 地址 → 128-bit 1-hot
-dp_lib_bin2onehot #(.BIN_W(7), .ONEHOT_W(128)) u_dec (
-  .in_binary(wr_addr),
-  .out_onehot(wr_onehot)
-);
-```
-
-#### dp_lib_onehot2bin — 1-hot → 二进制编码器
-
-- **文件**: `assets/lib/dp_lib_onehot2bin.v`
-- **用途**: 将 1-hot 信号编码为二进制索引。常用于已经互斥的仲裁器 grant → 索引，不包含优先级决策
-- **参数**: `BIN_W` = 二进制位宽, `ONEHOT_W` = 1-hot 位宽
-- **端口**: `out_binary[BIN_W-1:0]`、`in_onehot[ONEHOT_W-1:0]`
-
-```verilog
-// 例化模板: 128-bit 1-hot → 7-bit 二进制索引
-dp_lib_onehot2bin #(.BIN_W(7), .ONEHOT_W(128)) u_enc (
-  .in_onehot(gnt_onehot),
-  .out_binary(gnt_idx)
-);
-```
-
-### 组合逻辑单元选择指南
-
-```
-需要选择电路？
-├── 多选一（MUX）
-│   ├── 选择信号已是 1-hot → dp_lib_onehot_mux
-│   └── 选择信号是二进制 → dp_lib_bin2onehot + dp_lib_onehot_mux
-│
-├── 需要译码（二进制→1-hot）→ dp_lib_bin2onehot
-│   （写使能生成、bank选择、per-entry控制）
-│
-├── 需要编码（1-hot→二进制）→ dp_lib_onehot2bin
-│   （仲裁结果编码、优先级编码）
-│
-└── 复杂优先级 → 专用优先级选择模块 + dp_lib_onehot2bin（优先级模块按需求实现，模板库未提供）
-    （先做优先级屏蔽，再编码）
-```
-
-> **设计原则**：动态数组选择必须显式组织；可用 `dp_lib_bin2onehot` + `dp_lib_onehot_mux` 或平衡二选一树。标明规模和预期层级，综合后再验证真实关键路径。
-
----
-
-## 三、典型代码示例
-
-本节及前面的正反例中，带 `...` / `<width>` 等标记的是结构片段，需替换后使用；示例 4 与 assets 中同名完整模块一致，已实际编译仿真。
-
-### 示例 1：带使能的数据通路打拍（数据信号）
-
-```verilog
-// 32bit 数据寄存器，带使能，无复位
-// 无效拍保持；是否映射 ICG 由后端流程验证
-dp_lib_DFFE #(.WIDTH(32))
-ff_data_out (.clock(clock), .in_en(data_valid), .in_d(data_in), .out_q(data_out));
-```
-
-### 示例 2：FSM 状态寄存器（控制信号）
-
-```verilog
-// FSM 状态机，需要复位到 IDLE(=0)
-localparam [2:0] IDLE = 3'd0;
-localparam [2:0] PROC = 3'd1;
-localparam [2:0] DONE = 3'd2;
-
-assign state_next = ...;  // 组合逻辑生成次态
-
-dp_lib_DFFRU #(.WIDTH(3))
-ff_state (.clock(clock), .rst_n(rst_n), .in_d(state_next), .out_q(state));
-```
-
-### 示例 3：带使能条件更新的计数器
-
-```verilog
-parameter integer CNT_WIDTH = 8;
-
-localparam [CNT_WIDTH-1:0] CNT_ONE = {{(CNT_WIDTH-1){1'b0}}, 1'b1};
-assign cnt_next = cnt + CNT_ONE;
-
-dp_lib_DFFRE #(.WIDTH(CNT_WIDTH))
-ff_cnt (.clock(clock), .rst_n(rst_n), .in_en(inc_en), .in_d(cnt_next), .out_q(cnt));
-```
-
-### 示例 4：完整模块模板
-
-```verilog
-// Structural example only, not an implementation of the DP S3 arithmetic.
-// Store an opaque magnitude and its separate sign at the S2 -> S3 boundary.
-// Magnitude S=0, I+F=DATA_W; the caller defines the binary-point coordinate.
-// One edge of latency, II=1, no backpressure; reset cancels valid synchronously.
-module dp_pipeline_boundary_example #(
-  parameter integer DATA_W = 28
-) (
-  input wire clock,
-  input wire rst_n,
-  input wire in_valid,
-  input wire [DATA_W-1:0] in_magnitude,
-  input wire in_sign,
-  output wire out_valid,
-  output wire [DATA_W-1:0] out_magnitude,
-  output wire out_sign
-);
-
-  localparam integer SIGN_W = 1;
-  localparam integer PAYLOAD_W = SIGN_W + DATA_W;
-
-  wire valid_s3_d;
-  wire valid_s3_q;
-  wire payload_s3_en;
-  wire [PAYLOAD_W-1:0] payload_s3_d;
-  wire [PAYLOAD_W-1:0] payload_s3_q;
-  wire [DATA_W-1:0] magnitude_s3_q;
-  wire sign_s3_q;
-
-  assign valid_s3_d = in_valid;
-  assign payload_s3_en = rst_n & in_valid;
-  assign payload_s3_d = {in_sign, in_magnitude};
-
-  // S2 -> S3 control: advance every edge, including bubbles; reset to invalid.
-  dp_lib_DFFRU #(.WIDTH(1))
-  ff_s2_s3_valid (.clock(clock), .rst_n(rst_n), .in_d(valid_s3_d), .out_q(valid_s3_q));
-
-  // S2 -> S3 payload: save only a valid item, hold during reset and bubbles.
-  dp_lib_DFFE #(.WIDTH(PAYLOAD_W))
-  ff_s2_s3_payload (.clock(clock), .in_en(payload_s3_en), .in_d(payload_s3_d), .out_q(payload_s3_q));
-  assign {sign_s3_q, magnitude_s3_q} = payload_s3_q;
-
-  assign out_valid = valid_s3_q;
-  assign out_magnitude = magnitude_s3_q;
-  assign out_sign = sign_s3_q;
-
-endmodule
-```
-
----
-
-## 四、代码审查指南
-
-### 审查他人代码时
-
-逐项对照规范检查，同时关注以下常见违规模式：
-
-| # | 常见违规 | 识别方法 |
-|---|---------|---------|
-| 1 | 裸数字出现在比较/赋值中 | 搜索常量后区分命名定义与散布的设计数值 |
-| 2 | `.v` 文件中使用 `` `define`` | 搜索 `` `define`` 出现在 `.v` 文件中 — 应移到 `.vh` |
-| 3 | 手写 `always @(posedge clock)` | 搜索功能模块中的 `always @(posedge`，DFF 原语除外 |
-| 4 | 使用布尔运算符 `&&` `\|\|` `!` | 搜索 `&&` `\|\|` `! ` — 先验证宽度/真值，再显式归约并改为按位组合 |
-| 5 | 多维数组直接索引 `arr[a][b]` | 区分静态索引与动态读取；动态读取改为显式选择结构 |
-| 6 | 多个信号挤在一行（DFF例化除外） | 搜索逗号分隔的 input/output/wire 声明，以及非DFF模块例化的逗号端口连接 |
-| 7 | 数据信号用了带复位的 DFF | 检查数据通路 DFF 例化类型 |
-| 8 | 模块名未用 dp_ 前缀 | 搜索 `module ` |
-| 9 | 多 bit 数据未用 en | 检查 payload DFF 是否连接 .in_en，或有每拍更新的合同依据 |
-| 10 | `localparam` 纯别名 | 搜索 `localparam \w+ = \`  → 删除别名，直接用 define |
-| 11 | 信号名只描述来源 | 检查 `sram_d`、`tag_q` 类命名 → 应改为 `sram_wdata`、`pipelined_tag` |
-| 12 | 独立信号 pack 后下游裸 slice | 搜索 `\[\d+:\d+\]` 在解包逻辑中 → 应拆为独立 port 或在 pack 处紧邻解包为命名 wire |
-| 13 | 裸数字 bit slice | 搜索 `\[\d+:\d+\]` 在 way_data/sram_rdata 等结构访问中 → 应改用 define |
-
-### 审查输出格式
-
-使用与自检相同的表格格式（参见“写完后强制自检”），逐项标注 ✅/❌ 并给出具体行号和修复建议。
-
-## 五、DP 特有合同与迁移验证
-
-- 头文件、派生位宽、signed/unsigned、移位/截断/舍入必须显式；各计算节点及树/乘法器输入输出按精度逐行列 S/I/F 表，SM 符号单独传递，TC 与 SM 不能混用。见 [DP 数值细则](references/coding-style.md)。
-- 默认 K16/LOCAL_W28/GLOBAL_W40，容量 T8H16Q32E64；E64 前端共用后端。实际参数支持范围以 spec 为准；宽度随参数推导，非法配置拒绝，不能将 40-bit 总宽等同于 40-bit 数值精度。
-- 功能层 DFF 实例明确保存边界；每个阶段 valid 每拍更新，payload 使能为 `rst_n & valid_previous`，气泡不重复输出，复位取消在途。详见 [寄存器合同](references/registers.md)。
-- 文档/模板移植不修改生产 RTL；迁移时同步主/E 接口、TB、断点层级、导出 manifest 和 DC/功耗入口，分别完整回归，保持 L8/II=1。禁止改旧快照或借旧 PPA 结论证明新版本。
-- Verible 只处理排版及部分风格，不能自动证明本规范全通过。保留 Verilog-2005，不为 lint 引入 SV；lint、数值/周期测试和 STA 分别给出证据。
-- 开发在当前 feat/dp-verilog-v14；保留用户改动，遵从 AGENTS.md 的提交、分支、清理和工艺保密规则。
+- **代码格式、分组注释与数值细则**：[references/coding-style.md](references/coding-style.md)
+- **同步复位、寄存器所有权与多精度门控合同**：[references/registers.md](references/registers.md)
+- **Testbench 架构、CModel 断点差分与验证流程标准**：[references/testbench-standard.md](references/testbench-standard.md)
+- **SN 与 Vortex TCU 规范融合记录**：[references/sn-adaptation.md](references/sn-adaptation.md)
+- **全局命名规范与术语词典**：[../dp-naming-convention/SKILL.md](../dp-naming-convention/SKILL.md)
+- **标准化 RTL 示例模块**：[assets/examples/dp_pipeline_boundary_example.v](assets/examples/dp_pipeline_boundary_example.v)
+- **标准化自检 Testbench 示例**：[assets/examples/dp_pipeline_boundary_example_tb.v](assets/examples/dp_pipeline_boundary_example_tb.v)
+- **基础单元库模板**：`assets/lib/dp_lib_DFF*.v`、`assets/lib/dp_lib_*onehot*.v`

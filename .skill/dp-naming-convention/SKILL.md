@@ -1,338 +1,173 @@
 ---
 name: dp-naming-convention
 description: >
-  DP-Puzzel 文件、目录、模块、实例、接口、内部变量和文档命名规范。
-  新增或重命名 DP 设计文件、模块、端口、互联信号、流水变量、参数、函数或接口文档，
-  以及审查 e/f/a 等含义不明的缩写时使用。与 dp-rtl-code-style 配合，
-  保留现有 src/test/hw 布局和冻结 SV 范围，不自动批量改名或改变接口协议。
+  DP-Puzzel 项目全局文件、目录、模块、宏、参数、端口、父层互联、流水级变量、算术术语及 Testbench 命名规范。
+  当新增、重构或审查 Verilog RTL 代码（src/verilog/）、头文件（.vh）、测试平台（test/rtl_tb/）或微架构接口文档，
+  以及消除 e/f/a/tmp 等含义不明缩写与 valid_q[] 跨级打包数组时必须使用此 skill。
+  触发词：命名规范、变量名、模块名、端口命名、rN_、信号命名、dp_、代码审查。
 ---
 
-# DP 全局命名规范
+# DP-Puzzel 全局命名规范（Vortex TCU 风格适配版）
 
-以用户指定的 `sn-naming-convention` 为基础，保留命名维度表、模块层级表、新增模块清单、驱动方/接收方互联规则、各类接口示例、CSV 文档格式和审查清单，再补充 DP 数值和流水变量规则。来源及移植对应见 [移植与现有命名审查](references/adaptation-and-audit.md)。
+## 核心原则：以自解释命名承载 What，配合分组简明注释
 
-先读根目录 `AGENTS.md`、相关 spec 和 [dp-rtl-code-style](../dp-rtl-code-style/SKILL.md)。本 skill 管命名含义，code-style 管声明、组合/时序结构和 DFF 选型。新增/修改命名须遵守本规范；现有接口迁移须连同引用和验证一起完成。现用 CModel/Verilog 的 v1.6 迁移见 test/results/dp-style-v1.6.md；新增修改继续按本规范同步引用与验证。
+本规范与 [dp-rtl-code-style](../dp-rtl-code-style/SKILL.md) 紧密配合。参考 **Vortex GPGPU（`hw/rtl/tcu/`）** 的工程实践，代码中**不对每个变量逐行写冗余注释，也不使用 `// verilog_format: off/on`**；因此**标识符命名本身必须精准、自解释（Self-Documenting）**，让阅读者仅凭名字即可一眼识别：
+1. **信号所处的流水级或时序角色**（组合候选 `_d` vs 第 `N` 级寄存输出 `rN_` vs 使能 `_en`）；
+2. **信号在模块层级中的归属**（模块端口 `in_/out_` vs 父层子模块间互联 `{driver}_{receiver}_{function}` vs 模块内部局部变量）；
+3. **多精度算术中的精确数值语义**（原始编码位 vs 指数域 vs 指数域位宽 vs 去偏指数 vs 物理 MSB 坐标 `anchor` vs 归一化比较键 `compare_exp` vs 无符号幅值 `magnitude` vs 二补码有符号和 `signed_sum` / `sop`）。
 
-## 当前流水变量优先约定
+---
 
-按用户最新要求，明确流水级的寄存值使用 `rN_<功能>`，例如 `r1_valid`、`r1_datatype`、`r2_product_magnitudes`，不用 `valid_q[index]` 隐藏级号，也不在同一变量重复 `_q`。组合候选值继续用有意义的 `<功能>_d`。解包视图用 `a_decoded_data/b_decoded_data` 等名称，不能用 `a_q/b_q` 代替数据含义。固定的 DFF 库端口 `in_d/out_q` 和边界实例 `ff_sN_sM_*` 保持。
+## 一、流水级变量命名规范（`rN_` 与 `_d` 统一标准）
 
-本轮先应用于 `dp_lane.v`，其他模块及下文旧示例按各自任务范围迁移；不得据此改动冻结 SV。涉及内部观察点时同步 TB 的当前/历史映射。
+在所有新建与优化的 RTL 模块中，全面采用显式流水级前缀 `rN_`，废弃隐藏级号的 `valid_q[0:3]`、`type_q[0:3]`、`coeff_q[1:3]` 等跨级数组：
 
-## 一、`dp_` 前缀原则与文件组织
-
-### 1.1 命名维度对照表
-
-DP 设计模块、RTL 文件、项目共享宏采用统一前缀；不要为前缀规则搬动既有目录。固定工具入口、源清单和历史记录保留其合同名称。
-
-| 维度 | 规范 | 示例/当前适配 |
-| --- | --- | --- |
-| 根目录 | 按职责保留，不加 dp_ | `src/` 开发、`test/` 验证、`hw/` 综合/功耗 |
-| RTL 目录 | 按功能层级 | `src/verilog/lane/`、`group/`、`top/`、`unpack/`、`arithmetic/` |
-| RTL 文件名 | `dp_{function}[_{variant}].v` | `dp_lane.v`、`dp_lane_e.v`、`dp_scale_multiply.v` |
-| RTL 模块名 | 与文件主名完全一致 | `dp_lane_e`；每文件一个 module |
-| DFF 库模块 | 保留类型后缀，前缀 dp_lib_ | `dp_lib_DFFRE`，是小写模块规则的明确例外 |
-| 头文件 | `dp_{purpose}.vh`，宏 `DP_...` | `dp_defs.vh`、`dp_functions.vh` |
-| RTL TB | `dp_{scope}_tb[_{purpose}].v/.sv` | 现有 `test/rtl_tb/dp_tb.v` 保持；新增可用 `dp_lane_e_tb.v` |
-| TB 支持文件 | `dp_{scope}_{role}.vh/.v` | 现有 `dp_tb_e_trace.vh`；driver/monitor/checker 明确角色 |
-| 验证目录 | 沿用 test 的职责分工 | `test/rtl_tb/`、`test/reference/`、`test/results/` |
-| 编译清单 | 保留现有稳定入口 | `src/verilog/files.f`、`files_e.f`，不改为 SN 的 flist 树 |
-| 构建/运行入口 | 按职责命名，保留当前 CLI | `test/run_verilog.py --frontend e`；不引入不存在的 build.py target |
-| CModel 文件 | 功能可读，结合 dp namespace | 现有 `unpack.cpp`、`top/backend.cpp`；新增避免单字母文件名 |
-| CModel 类型/函数 | 遵循所在语言既有风格，词根含义与 spec/RTL 对齐 | 不把 Verilog 的 dp_ 和 `_q` 机械套到所有 C++ 对象 |
-| Chisel | 遵从 AGENTS.md 的 Scala 规则 | 类/Bundle UpperCamelCase，硬件信号 lower_snake_case；默认 clock/reset 不在此轮改名 |
-| 配置 | 用前端/容量/参数含义 | 现有 `src/configs/dp/e64.json`；不给临时配置取 final/new/test2 |
-| 微架构文档 | 保留 lane/group/dptop 层级 | 现有 `src/spec/dp/lane/dp_lane_E.md` 是已存在文件，不因大小写规则自动改名 |
-| 新接口 CSV | `dp_{scope}_interface.csv` | 如后续创建 `dp_lane_e_interface.csv`；不按命名任务自动创建一套 CSV |
-| 测试计划 | `dp_{scope}_testplan.md` | 存在需要时创建，遵守目标目录规范 |
-| 覆盖/评审报告 | `{scope}_{purpose}.md` | `dp_lane_e_coverage.md`、`dp_group_naming_review.md` |
-| 测试/EDA run 与快照 | 使用现有工具生成的 ID | `DP_verilog_<fingerprint>`、现有 run ID，不改为可变的 latest/final |
-
-容量是参数时不编码进通用模块名：`dp_top_e` 不改成 `dp_e64_k16_l28_g40`。测试配置和报告负责记录实际容量。标准格式名 FP16/FP32、MXFP4/NVFP4/HiF4 在标识符中写 `fp16/fp32/mxfp4/nvfp4/hif4`，文档保留标准拼写。
-
-### 1.2 DP 层级与短名对照表
-
-| 功能边界 | 稳定模块/路径 | 互联短名 | 说明 |
+| 信号角色 | 命名模板 | 标准示例 | 规范说明 |
 | --- | --- | --- | --- |
-| 单 DP | `dp_top`、`dp_top_e` | `top` | 当前单 DP 顶层，不表示计算阵列 |
-| 基本算术 group | `dp_group`、`dp_group_e` | `group` | DP 内两 lane 合并，区别于阵列层 DP-Group |
-| lane | `dp_lane`、`dp_lane_e` | `lane` | 当前前端计算层级 |
-| 元素/操作数解包 | `dp_operand_unpack`、`dp_lane_unpack`、`dp_lane_unpack_e` | `unpack` | 同域多份时用 `unpack_a`、`unpack_b` 区分 |
-| 尾数乘法 | `dp_mantissa_bank`、`dp_mul_unsigned` | `mantissa_mul` | 不用意义不明的 `m` |
-| 指数 MAX | `dp_max_tree` 的对应实例 | `exponent_max` | 模块可通用，实例短名体现具体用途 |
-| scale 乘法 | `dp_scale_multiply` | `scale_mul` | 与输入尾数乘法区分 |
-| 全局对齐 | `dp_global_align` | `global_align` | group token 与 C 对齐 |
-| 最终规约 | `dp_sum_tree` 的对应实例 | `final_sum` | 不把所有树都叫 tree0 |
-| FP32 输出转换 | `dp_fp32_round` | `fp32_round` | 规格含归一化/舍入/打包 |
+| 第 `N` 级有效控制输出 | `r<N>_valid` | `r1_valid`、`r4_valid`、`r8_valid` | 由 `ff_s{N-1}_s{N}_valid`（`dp_lib_DFFRU`）输出；严禁与组合输入 `in_valid` 混入同一数组（防 Verilator `UNOPTFLAT`） |
+| 第 `N` 级控制/格式旁带 | `r<N>_<control>` | `r1_datatype`、`r5_extension`、`r8_last` | 明确随第 `N` 级在途请求同拍保存的格式或控制标志 |
+| 第 `N` 级格式分类谓词 | `r<N>_is_<mode>` | `r1_is_e`、`r2_is_hif4`、`r3_is_e` | 基于 `r<N>_datatype` 解码出的本级模式布尔标志（用于写门控与读端恢复零） |
+| 待写入寄存器的组合候选值 | `<function>_d` | `product_magnitudes_d`、`aligned_leaves_d`、`lane_sum_d` | 本级组合逻辑产生、即将送入本级边界 DFF `.in_d` 的信号 |
+| 第 `N` 级数据寄存器输出 | `r<N>_<function>` | `r2_product_magnitudes`、`r3_aligned_leaves`、`r7_sum` | 本级边界 DFF `.out_q` 输出（或经目的级结构零恢复后的同拍信号），不再重复追加 `_q` 后缀 |
+| 寄存器更新使能 | `<target>_en` | `product_slot_en`、`product_upper_en`、`payload_s3_en` | 送入 `dp_lib_DFFE` / `dp_lib_DFFRE` 的 `.in_en` 信号 |
+| DFF 基础单元实例名 | `ff_s<src>_s<dst>_<field>` | `ff_s0_s1_valid`、`ff_s1_s2_exponents`、`ff_s6_s7_sum` | 显式标出源阶段与目标阶段边界（`s0` 代表模块输入级） |
 
-短名按**本层实例角色**定义，并在端口/互联表说明映射。同类型多个实例使用 `lane0/lane1` 等，或参数化数组及 `lane_index`；不能仅写 `lane_lane_*` 而无法区分端点。
-
-`_e` 仅在已定义的前端类型名称中表示 E 专用族，如 `dp_lane_e`、`files_e.f`。它不表示 exponent，更不能成为允许局部变量裸写 `e` 的理由。HiF4 的 `e1/e2` 是规范字段名，新增本地信号写 `hif4_e1` / `hif4_e2` 或结合用途，既有端口迁移另行核对。
-
-### 1.3 新增模块检查清单
-
-```text
-□ 在正确的 lane/group/top/unpack/arithmetic/common 目录，不新造一套 box 目录
-□ 文件名 = module 名 + .v，具有 dp_ 前缀和可读功能名
-□ 变体名仅表达稳定实现区别，不把可变参数硬编码进模块名
-□ 普通实例 u_<function>；DFF 实例 ff_<source_stage>_<dest_stage>_<payload>
-□ generate 使用 g_<function>，循环索引用 <role>_index
-□ 明确主/E 哪些 files.f 需要加入该模块，不靠 glob 混入同名实现
-□ test/rtl_tb 和必要验证文档命名对应模块功能
-□ spec 映射、源清单、TB 层级路径和导出引用同步
-□ 未修改冻结 SV、旧快照、旧报告及用户无关改动
-```
-
-## 二、接口信号命名规范
-
-### 2.1 核心原则与作用域
-
-**父模块内连接两个子模块的互联线**使用 `{driver}_{receiver}_{function}`，三个部分分别说明驱动方、接收方和传递的含义。端点使用上表定义的短名，不重复 `dp_`。
-
-可复用子模块自己的端口继续使用 `in_{function}` / `out_{function}`；时钟 `clock`、复位 `rst_n` 是例外。模块内部的局部运算变量只写功能和必要阶段，不强加端点前缀。顶层输入操作数 A/B/C 是已定义的数学角色，保留 `in_a/in_b/in_c`，不是禁止的无上下文局部 a/b/c。
+**标准分组声明示例（无需逐行注释，无需 `verilog_format` 标记）**：
 
 ```verilog
-// 示意连接片段，实例名称表达功能，互联线表达方向和内容。
-wire signed [LANE_SUM_W-1:0] lane_group_sum_s4;
-
-dp_lane u_lane (
-  // 其余端口按该模块接口连接。
-  .out_sop(lane_group_sum_s4)
-);
+  // Pipeline stage valid, datatype and mode predicates (S1..S4)
+  wire                  r1_valid;
+  wire                  r2_valid;
+  wire                  r3_valid;
+  wire                  r4_valid;
+  wire [`DP_TYPE_W-1:0] r1_datatype;
+  wire [`DP_TYPE_W-1:0] r2_datatype;
+  wire [`DP_TYPE_W-1:0] r3_datatype;
+  wire                  r1_is_e;
+  wire                  r2_is_e;
+  wire                  r3_is_e;
+  wire                  r1_is_hif4;
+  wire                  r2_is_hif4;
 ```
 
-示意中的 `lane_group_sum_s4` 表示 lane 输出供 group 使用的 S4 和；不要求为改名再增加 DFF。完整 RTL 必须连接完整端口，不能照抄省略端口的片段作为完整实例。
+---
 
-### 2.2 信号名结构模板
+## 二、文件、模块、宏、参数与实例命名规范
+
+### 2.1 命名维度总表
+
+| 维度 | 命名规则 | 标准示例 | 约束与例外 |
+| --- | --- | --- | --- |
+| RTL 源文件 | `dp_<function>[_<variant>].v` | `dp_lane.v`、`dp_lane_qe.v`、`dp_final_csa_sum.v` | 每文件仅一个 `module`，文件名与模块名严格一致 |
+| RTL 模块名 | `dp_<function>[_<variant>]` | `dp_group`、`dp_group_e`、`dp_top_t8h16q32e96` | 可变参数（`K_FP16`/`LOCAL_W`）不编码进通用模块名；固定配比顶层封装除外 |
+| 基础库模块 | `dp_lib_<TYPE>` / `dp_dff_*` | `dp_lib_DFFE`、`dp_lib_DFFRU`、`dp_lib_onehot_mux` | DFF 类型后缀保持大写（`DFFU/DFFE/DFFRU/DFFRE/DFFSU/DFFSE`） |
+| 头文件（`.vh`） | `dp_<purpose>.vh` | `dp_defs.vh`、`dp_functions.vh` | 宏名统一 `DP_` 前缀、`UPPER_SNAKE_CASE` |
+| 模块配置参数 | `parameter integer <NAME>` | `K_FP16`、`LOCAL_W`、`GLOBAL_W`、`BASELINE_V18` | 全大写下划线；优先使用 `OPERAND_A_W`、`INPUT_COUNT` 等自解释名，兼容算术库保留 `N`/`W` |
+| 模块派生常量 | `localparam integer <NAME>` | `LEAF_W`、`LANE_SOP_W`、`GROUP_MAG_W`、`Q_ANCHOR_OFFSET` | 全大写下划线；禁止定义无运算的纯宏别名 |
+| 普通子模块实例 | `u_<role_or_function>` | `u_lane_unpack`、`u_mantissa_mul_bank`、`u_local_alignment` | 体现实例在本层的架构职责，禁止叫 `u0`、`u_inst1`、`tree0` |
+| DFF 原语实例 | `ff_s<src>_s<dst>_<field>` | `ff_s0_s1_valid`、`ff_s2_s3_leaf_upper`、`ff_s7_s8_out_d` | 紧随本级计算就地放置 |
+| `generate` 块名 | `g_<function_or_branch>` | `g_group`、`g_lane`、`g_product_register`、`g_v19` | 所有 `generate for / if / else` 分支必须带 `: g_*` 标签 |
+| 循环 / `genvar` 索引 | `<role>_index` | `group_index`、`lane_index`、`element_index`、`pair_index`、`bit_index` | 严禁在 RTL 中使用无语义的 `i/j/k` 或 `index1/index2` |
+| 辅助纯函数 | `<verb_or_target>_<noun>` | `merge_special`、`elements`、`scale_type`、`element_bias`、`anchor_width` | `function automatic`，形参名须具名（如 `datatype`、`local_width`，禁叫 `t`/`w`） |
+| RTL Testbench | `dp_<target>_tb.v` | `dp_tb.v`、`dp_mixed_tb.v`、`dp_csa_tb.v` | 存放于 `test/rtl_tb/` 或 skill `assets/examples/` |
+
+### 2.2 DP 架构层级与互联短名对照表
+
+在父模块内部连接两个子模块时，使用下表定义的标准短名作为 `{driver}` 与 `{receiver}`：
+
+| 架构层级 / 功能单元 | 对应模块名 | 父层互联短名 | 职责说明 |
+| --- | --- | --- | --- |
+| 单 DP 顶层 | `dp_top`、`dp_top_e`、`dp_top_mixed`、`dp_top_lowp` | `top` | 顶层请求握手、C 管道、S6–S8 公共后端 |
+| 点积组（2 Lanes） | `dp_group`、`dp_group_e`、`dp_group_qe`、`dp_group_q` | `group` | 两 lane 汇总、S2 公共 MAX、S1–S5 scale 与 LZD |
+| 通道（Lane） | `dp_lane`、`dp_lane_e`、`dp_lane_qe`、`dp_lane_q` | `lane` | S1 解包、S2 乘积/指数、S3 局部对齐、S4 四项树 |
+| 操作数解包器 | `dp_lane_unpack*`、`dp_operand_unpack*`、`dp_c_unpack` | `unpack` | 原始浮点/定点位流译码与特殊值分类 |
+| 尾数乘法阵列 | `dp_mantissa_bank`、`dp_qe_product_bank`、`dp_mul_unsigned` | `mantissa_mul` | 无符号尾数/系数乘法 |
+| 指数加法与最大树 | `dp_exponent_bank`、`dp_max_tree` | `exponent_add` / `exponent_max` | 乘积指数求和与有符号活动最大值选择 |
+| 局部/全局对齐 | `dp_lane_align`、`dp_global_align`、`dp_mixed_global_align` | `local_align` / `global_align` | 指数差右移/双向移位与补码叶子恢复 |
+| 缩放系数乘法 | `dp_scale_multiply` | `scale_mul` | S5 组幅值与块缩放系数 `14x8` 无符号乘法 |
+| 累加压缩与求和树 | `dp_sum_tree`、`dp_final_csa_sum`、`dp_mixed_csa_sum` | `sop_tree` / `final_sum` | 平衡树或 4:2/3:2 CSA + CPA 规约 |
+| FP32 归一化舍入 | `dp_fp32_round` | `fp32_round` | S8 RNE 舍入、渐进下溢与 FP32 打包 |
+
+---
+
+## 三、端口、父层互联与内部信号的三层作用域规则
 
 ```text
-互联线：{driver}_{receiver}_{function}[_{operand_or_slot}][_s{stage}][_{role}]
-端口：  in_{function} / out_{function}
-局部值：{function}[_{operand_or_slot}][_s{stage}][_{role}]
-role：  d = 下一寄存输入；q = 寄存输出；en = 更新使能；n = 低有效
+1. 模块端口（Port）：         clock, rst_n, in_<function>, out_<function>
+2. 父层子模块互联（Wire）：    <driver>_<receiver>_<function>[_s<stage>]
+3. 模块内部运算信号（Wire）：  <function>_d, r<N>_<function>, <function>_en
 ```
 
-- 全小写、下划线分词；时钟/复位和类型名例外已列明。
-- 词根在全项目一致：使用 `valid/ready`，不混用 vld/rdy/v/r 表示同一类信号。
-- 多槽采用描述性索引/数组，必须展开的标量使用 `_0/_1`；不要把 `s1`（流水第 1 级）与槽位 `_1` 混淆。
-- 寄存状态以 `_q` 结束，如 `group_magnitude_s5_q`；组合下一状态以 `_d` 结束，如 `group_magnitude_s5_d`。前级与后级不能沿用同一个模糊名字。
-- `_s3_d` 表示将写入 S3 的值，`_s3_q` 表示 S3 保存后的值。跨模块线可仅标输出阶段 `_s4`；若使用 `_q`，必须确实来自该边界寄存器。组合 MAX 输出不能为了统一样式伪装成寄存结果。
-- 驱动/接收前缀用于模块边界，避免模块内部所有名字都重复一长串层级。
+1. **模块端口（`in_` / `out_`）**：
+   - 时钟固定为 `clock`，同步低有效复位固定为 `rst_n`。
+   - 其余输入端口一律以 `in_` 开头，输出端口以 `out_` 开头（如 `in_valid`、`in_datatype`、`out_sop`、`out_compare_exp`）。
+   - 顶层数学操作数 `in_a`、`in_b`、`in_c` 与输出 `out_d`、以及 DFF 原语端口 `in_d`、`out_q`、`in_en` 为固定合同名。
+2. **父层子模块间互联线（`{driver}_{receiver}_{function}`）**：
+   - 连接同一父模块内两个子模块的 `wire` 写明驱动方、接收方与传递内容，例如：
+     - `unpack_mantissa_mul_a_mantissas`（`u_lane_unpack` → `u_mantissa_mul_bank` 的 A 紧凑尾数）
+     - `unpack_exponent_add_a_exponents`（`u_lane_unpack` → `u_exponent_add` 的 A 紧凑指数）
+     - `lane_group_sum`（`u_lane` → `dp_group` 累加树的 S4 有符号和）
+     - `group_align_magnitude`（`u_group_unit` → `u_global_alignment` 的 S5 组幅值）
+3. **模块内部局部信号**：
+   - 直接描述数值或控制含义（如 `product_magnitudes_d`、`r2_product_magnitudes`、`exponent_max_active`），**不重复添加本模块名或外部端点前缀**。
 
-### 2.3 常见接口类型
+---
 
-以下是命名示例，不代表新增接口或已经实施的改名。S4/S5 的例子以多精度前端为背景；E 前端的 lane/group 流水归属按对应 spec 标注，不机械复制阶段号。
+## 四、多精度点积领域标准术语词典（禁止不明单字母缩写）
 
-#### 2.3.1 单 bit 控制信号
+在 RTL 与 CModel 中，**严禁使用裸 `a/b/c/d/e/f/m/n/t/x/y` 或 `tmp/tmp1/val/res/data0`**。所有数值与控制变量必须使用以下标准词根：
 
-| 名称 | 方向 | 含义 |
+### 4.1 浮点/定点编码与指数域
+
+| 物理/数学含义 | 标准命名词根 / 示例 | 严禁混淆的错误命名 |
 | --- | --- | --- |
-| `top_group_valid` | top → group | 合法请求的组内启动有效 |
-| `group_lane_valid` | group → lane | 当前 lane 输入有效 |
-| `lane_group_valid_s4` | lane → group | S4 lane 输出有效 |
-| `group_top_valid_s5` | group → top | S5 group 输出有效 |
+| 原始输入打包位流 | `raw_encoding`、`operand_bits`、`in_scale_a`、`r4_c_raw` | 不叫 `raw`、`n` 或 `magnitude` |
+| 原始编码中的指数位域（带偏置） | `exponent_field`、`a_exponent_field` | 不叫 `e`、`exp`（易混淆偏置/无偏） |
+| 指数位域的编码位宽（如 FP16 为 5） | `exponent_field_width` | 不叫 `eb`、`exp_w` 或与指数数值混用 |
+| 指数编码偏置常数（如 127、15、7） | `exponent_bias`、`element_bias` | 不叫 `b` 或 `bias0` |
+| 去偏置后的数学指数值 | `unbiased_exponent`、`scale_a_exponent_d` | 区分带偏编码域与有符号无偏指数 |
+| 有限数重编码/有效偏置指数 | `finite_exponent`、`product_exponents_d`、`r2_product_exponents` | 明确处于哪套偏置坐标系 |
+| 容器物理最高位（MSB）对应的指数坐标 | `anchor`、`r2_group_anchor`、`r3_raw_anchor`、`out_anchor` | `anchor` 是容器坐标 `A_raw`，不等于真实最高非零位指数 |
+| 前导零计数（Leading-Zero Count） | `leading_zero_count`、`z_d`、`out_z` | 不用裸 `l` 或 `lz` 表示多种不同宽度计数 |
+| 扣除前导零后的归一化 MAX 比较键 | `compare_exp`、`compare_exp_d`、`out_compare_exp` | `compare_exp = A_raw - z`，专供 S6 MAX 比较，移位差仍用 `A_raw` |
+| 指数对齐差值 / 移位量 | `alignment_delta`、`net_shift`、`e_lane_shift`、`shift_value` | 双向移位必须注释正负方向（如 `<0` 左移、`>0` 右移） |
 
-#### 2.3.2 多 bit 数据和数值字段
+### 4.2 尾数、幅值、二补码规约与舍入
 
-| 名称 | 含义/位宽来源 |
-| --- | --- |
-| `top_group_operand_a` | 分发给 group 的 A，宽度由容量/布局推导 |
-| `group_lane_operand_b` | 分发给 lane 的 B，不称 b0 |
-| `lane_group_sum_s4` | lane 有符号规约结果，宽度由局部窗口和项数推导 |
-| `group_top_magnitude_s5` | group S5 幅值，不包含独立 sign |
-| `group_top_anchor_s5` | 幅值最高物理位的指数坐标，不等于 encoded exponent |
-| `group_top_sign_s5` | 对应 magnitude 的独立符号 |
-
-#### 2.3.3 Valid/Ready 握手对
-
-```text
-valid: {driver}_{receiver}_valid
-ready: {receiver}_{driver}_ready
-```
-
-ready 的驱动方在前，因为它从接收者返回发送者。若外部 source 与 DP 的互联后续使用方向名，可称 `source_top_valid` / `top_source_ready`；子模块端口仍按其本地方向命名。
-
-**当前 DP lane/group 内无独立 ready/stall 握手，顶层输入原子接收，无输出背压。命名规范不授权增加 ready、停顿或 FIFO。**
-
-#### 2.3.4 反压/停顿信号
-
-若未来某接口合同定义反压，采用 `{receiver}_{driver}_stall`，full 信号按实际产生方命名。`stall` 必须能回答“谁要求谁停”；不能仅凭接收端名称决定前缀。目前单 DP 内部不新增此类信号。
-
-#### 2.3.5 结果返回与广播
-
-原规范的执行单元写回/唤醒命名在 DP 中对应结果传递：`fp32_round_top_result_bits`、未来上层的 `top_sink_result_valid`。功能词 result/datatype/last 分别表达语义；不得因为命名规则引入 OOO tag/唤醒机制或跨请求累加。
-
-广播一条线给多个接收方时，使用已定义的接收组名，或在分支处分别命名；文档列出所有消费者，不能伪造唯一 receiver。
-
-#### 2.3.6 多操作数、多 lane/group 端口
-
-```text
-{driver}_{receiver}_{operand_or_port}_{function}
-```
-
-| 名称 | 含义 |
-| --- | --- |
-| `top_group_a_scale_bits` | A 的 scale 编码数据 |
-| `top_group_b_scale_bits` | B 的 scale 编码数据 |
-| `group_lane0_operand_a` | group 到 lane0 的 A |
-| `group_lane1_operand_a` | group 到 lane1 的 A |
-
-参数化实现优先保留数组/generate 索引，注释其 group/lane/element 轴，不写死 lane0/lane1 扩展所有参数。原规范中的 CRF 读写口规则在本项目只作为多端口命名原则，不新增 CRF 模块。
-
-#### 2.3.7 接口组命名
-
-CSV 或接口表中的组名采用 `{driver}2{receiver}[_{purpose}]`：`lane2group`、`group2top`、`top2group_operand_a`。接口组标签中的数字 2 表方向；RTL 信号名仍用下划线，不混成 `group2top_valid`。
-
-### 2.4 正确与错误示例
-
-```text
-❌ valid0                  跨模块线上看不出方向和所属数据
-✅ lane_group_valid_s4     明确边界和阶段
-
-❌ group_data              不知是输入编码、累加和还是输出 token
-✅ group_top_magnitude_s5  明确内容、方向和阶段
-
-❌ stall                   不知谁要求谁停
-✅ sink_source_stall       仅在该接口确有反压合同时使用
-
-❌ a                       局部运算中含义不明
-✅ product_even            pair 的偶数项乘积
-✅ in_a                    顶层已定义的操作数 A，允许保留
-```
-
-## 三、内部变量、函数和数值命名
-
-### 3.1 禁止无含义缩写
-
-功能变量、函数形参、局部中间量不得使用裸 `a/b/c/d/e/f/m/n/t/x/y`，或 `tmp/tmp1/data0/val/res` 等不能解释用途的名称。作用域短也不能把 exponent/fraction/product 缩成单字母。
-
-允许的有限例外：
-
-- 已有数学操作数端口 `in_a/in_b/in_c`、有定义的 DFF 端口 `in_d/out_q`、寄存后缀 `_d/_q`。
-- 数值说明中的 S/I/F、K 等数学符号，标准精度族/格式名和 HiF4 e1/e2 字段；硬件变量仍用可读功能词。
-- 已有通用算术模块参数 `N/W/A_W/B_W` 等是兼容接口，不能未经依赖核查整体改名；新接口优先 `INPUT_COUNT/VALUE_W/OPERAND_A_W/OPERAND_B_W` 等。
-- 纯数学推导可写局部符号，但需要在邻近注释映射到代码变量。不要借此允许硬件中间值继续叫 e/f。
-
-循环/generate 新代码使用 `group_index/lane_index/element_index/pair_index/bit_index`，嵌套循环各有角色。不要为避免单字母而仅改成 index1/index2；不要将改名顺便变成循环展开或调度变化。
-
-### 3.2 DP 术语词典
-
-| 含义 | 推荐词根/例子 | 避免混淆 |
+| 物理/数学含义 | 标准命名词根 / 示例 | 严禁混淆的错误命名 |
 | --- | --- | --- |
-| 原始浮点编码 | `operand_bits`、`scale_bits` | 不是已解码 magnitude |
-| 编码指数域 | `exponent_field` | 带编码偏置，不能叫 unbiased_exponent |
-| 去偏置的数学指数 | `unbiased_exponent` | 区别于 anchor 和指数域 |
-| exponent 的编码位数 | `exponent_field_width` | 不是指数数值 |
-| 编码 fraction 域 | `fraction_field` | 不含隐含位，不等于完整 significand |
-| fraction 的编码位数 | `fraction_field_width` | 不是定点通路 fractional bits |
-| 定点小数位数 | `fractional_bits`、`group_fractional_bits` | 对应 S/I/F 的 F |
-| 解码后的有效数 | `significand`；已有 `mantissa` 保留定义 | 两种词不在同一新模块中随意混用 |
-| 无符号绝对幅值 | `magnitude` | 符号另传，不叫 signed_magnitude 表达 TC |
-| 有符号累加和 | `lane_sum`、`group_sum`、`signed_sum` | 不能用 magnitude 表示二补码 |
-| 比例系数/scale 乘积 | `scale_coefficient`、`scaled_product` | 区分 scale 编码和解码系数 |
-| 最高物理位坐标 | `anchor`、`group_anchor` | 不等于实际最高非零位指数 |
-| 实际最高有效位指数 | `leading_exponent` | 由 anchor 与 leading-zero count 得出时写明关系 |
-| 前导零个数 | `leading_zero_count` | 不用 l/z/leading 代表多种含义 |
-| 对齐差值 | `alignment_delta`、`exponent_delta` | 明确减法方向和正负含义 |
-| 移位量 | `left_shift_amount`、`right_shift_amount` | 双向量必须注释正负方向 |
-| 最大树结果 | `left_max`、`right_max` | 不用 a/b |
-| 最大树叶活动性 | `left_active`、`right_active` | active 不自动等于请求 valid |
-| 舍入 | `guard_bit`、`sticky_bit`、`round_increment` | guard bit 不同于溢出增长位 |
-| 特殊值状态 | `special_flags`、`is_nan`、`is_inf` | 不用 s 或 flag1 |
+| 原始编码中的显式尾数域（不含隐含 1） | `fraction_field` | 不叫 `f`、`mantissa`（`mantissa` 含隐含位） |
+| 显式尾数域的编码位宽（如 FP16 为 10） | `fraction_field_width` | 不叫 `fb`，且区别于定点通路小数位 `F` |
+| 定点容器的小数位数（S/I/F 中的 `F`） | `fractional_bits`、`product_fraction`、`group_fraction` | 对应二进制小数点右侧位数 |
+| 恢复隐含位后的无符号有效数/尾数 | `mantissa`、`a_mantissas`、`finite_magnitude` | 同一模块内保持统一，不与 `fraction_field` 混用 |
+| 符号分离的无符号绝对幅值（`S=0`） | `magnitude`、`product_magnitudes_d`、`compact_magnitude` | 二补码有符号数严禁命名为 `magnitude` |
+| 独立符号位（`1` 表示负，含 `-0.0`） | `negative`、`product_negative_d`、`out_negative`、`sign_value` | 明确 `1` 为负；全负乘积摘要用 `all_products_negative` |
+| 二补码（TC）有符号乘积或成对和 | `signed_products`、`pair_left`、`pair_right`、`pair_sum`、`pair_leaf` | 区分无符号乘积与带符号二补码项 |
+| 二补码（TC）对齐叶子与树规约和 | `aligned_leaves_d`、`r3_aligned_leaves`、`lane_sum_d`、`out_sop`、`group_sum` | 当前单 DP 无跨请求累加状态，不把单拍规约树叫 `accumulator` |
+| CSA 进位保存压缩行 | `group_sum` / `group_carry`、`total_sum` / `total_carry`、`base_sum` / `base_carry` | 明确区分 sum 行与已左移一位位权的 carry 行 |
+| RNE 舍入位与进位 | `guard_bit`、`round_bit`、`sticky_bit`、`round_increment`、`rounded` | 区分舍入 `guard_bit` 与防左移溢出的 `DP_E_GUARD` 保护位 |
+| 活动掩码 vs 请求有效 vs 非零 | `in_valid` / `rN_valid`、`product_active_d`、`in_participate`、`magnitude_active` | `valid` 表流水事务有效；`active` 表参与数值 MAX/规约；不可混用 |
+| IEEE/格式特殊值分类 | `number_class`、`is_nan`、`is_inf`、`is_signaling`、`special_flags` | 4-bit 摘要固定为 `{NAN, INVALID, POS_INF, NEG_INF}` |
 
-RTL `sum` 不自动命名为 `accumulator`：当前 DP 无跨请求累加状态。`valid` 表示请求/流水有效，`active` 表示参与数值规约等条件，`nonzero` 仅表示数值非零；不要互换名称掩盖不同合同。
+---
 
-### 3.3 从当前代码得到的具体例子
+## 五、Testbench 与断点探针（Cutpoint Trace）命名规范
 
-以下是经阅读实现后的改名建议，**本次未实施**；完整定位和解释见移植记录。
+1. **Testbench 模块与内部信号**：
+   - TB 顶层模块：`dp_<target>_tb`（如 `dp_csa_tb`、`dp_pipeline_boundary_example_tb`）。
+   - 激励与黄金存储数组：使用清晰复数名词（如 `stimulus_a`、`stimulus_b`、`expected_result`、`pending_req_id`）。
+   - 统计计数器：`cycle_count`、`accepted_count`、`checked_count`、`cancelled_count`。
+   - 驱动与检查任务：`reset_dut`、`drive_request`、`random_step`、`tick_and_check`。
+2. **层级探针宏（`test/rtl_tb/dp_tb_trace_names.vh`）**：
+   - 跨版本或跨实现的 TB 内部观察点统一通过 `` `DP_TRACE_* `` 宏映射（如 `` `DP_TRACE_LANE_PRODUCTS `` 映射到 `r2_product_magnitudes`），不在 TB 循环内硬编码未对齐的历史局部信号名。
 
-| 当前名字/位置 | 建议名字 | 理由 |
-| --- | --- | --- |
-| `dp_operand_unpack` 的 e | `exponent_field` | 从原始编码提取的指数域 |
-| 同模块的 f | `fraction_field` | 未加隐含位的编码 fraction |
-| eb / fb | `exponent_field_width` / `fraction_field_width` | 两者都是域宽度 |
-| raw / n | `operand_bits` / `decoded_number` | 区分输入编码和输出数值 token |
-| `dp_max_tree` 的 a / b | `left_max` / `right_max` | 左右子树输出 |
-| 同模块的 va / vb | `left_active` / `right_active` | 相应子树活动性 |
-| `dp_sum_tree` 的 a / b | `pair_left_value` / `pair_right_value` | 两个规约叶值 |
-| `dp_lane_e` pair 的 a / b | `product_even` / `product_odd` | 相邻两个有符号乘积 |
-| 格式函数形参 t | `datatype` | 运行时格式选择 |
+---
 
-函数名描述结果或判断：`decode_operand`、`compute_group_fractional_bits`、`is_supported_datatype`；不使用 do_calc/get_f/process1。这些是命名模式，现有函数重命名需同步调用方，不能推断已经存在这些 API。
+## 六、命名审查与重构检查清单
 
-### 3.4 文件和变体的歧义
-
-单独 `e.cpp` 在已知目录可推断 E 前端，但脱离路径易读错；新增文件优先 `lane_e.cpp` / `group_e.cpp` 等含功能名的形式。现有 `lib/lane/e.cpp`、`lib/group/e.cpp` 列为后续可审查迁移项，本次不搬文件、不修改构建目标。`dp_top_e` 的已定义后缀则足够清晰，不需要机械替换成冗长名称。
-
-## 四、接口文档与 CSV 命名规范
-
-### 4.1 表头
-
-保持原规范的接口文档维度。若任务需要 CSV，使用以下列；现有 Markdown 合同可以使用同等信息，不因本 skill 自动建立重复文档。
-
-| 列名 | 含义 | 示例 |
-| --- | --- | --- |
-| 信号名 | 父层互联完整名 | `lane_group_sum_s4` |
-| 方向 | 相对本行主体，O 输出、I 输入；必须说明主体 | `O`，以 lane 为主体 |
-| 宽度 | 参数公式或位数 | `LANE_SUM_W` |
-| 驱动模块 | 实例角色及 module | `u_lane:dp_lane` |
-| 接收模块 | 实例角色及 module | `u_group:dp_group` |
-| 接口组 | driver2receiver | `lane2group` |
-| 描述 | 功能、signed/unsigned、阶段 | S4 二补码 lane 和 |
-
-若记录嵌套的父子关系而非兄弟实例，在实例路径中体现真实层级。端口名与互联名不同，应增加驱动端口/接收端口列；不为了统一字符串把真实端口写错。源/目标在行中明确，方向列不能同时相对两边解释。
-
-### 4.2 注释和分组
-
-```csv
-# 以下仅示意，以 lane 为主体，宽度为参数公式。
-信号名,方向,宽度,驱动模块,接收模块,接口组,描述
-lane_group_sum_s4,O,LANE_SUM_W,dp_lane,dp_group,lane2group,S4 有符号规约和
-```
-
-CSV 的 `#` 注释是文档约定，解析脚本必须显式跳过，否则不要混用注释与纯 CSV 数据。规格格式/修订号遵循 `src/spec/document-control.md`，不沿用原项目固定的 Version0 编号。
-
-### 4.3 文件名
-
-| 类型 | 命名示例 |
-| --- | --- |
-| 顶层端口 | `dp_top_interface.csv`、`dp_top_e_interface.csv` |
-| group/lane 互联 | `dp_group_interconnect.csv` |
-| 单模块接口 | `dp_lane_e_interface.csv` |
-
-现有文件名不因本规范自动迁移；新建 spec Markdown 仍须填写规定的首行版本/时间/代码映射。
-
-## 五、审查检查清单
-
-### 5.1 文件、目录、模块
-
-1. RTL 文件与 module 同名，dp_ 前缀正确，DFF 类型后缀例外明确。
-2. 目录沿用 src/test/hw 职责，不增加另一套 rtl/verification 层级。
-3. 新增文件/函数不使用无含义单字母、tmp、final2 等名字。
-4. 变体、参数和精度族区别明确，未将参数化单元命名成固定配置。
-5. TB/清单/构建入口与模块相符，未破坏现有稳定工具路径。
-6. 文档名称可识别模块与功能，接口表有清晰来源与版本。
-
-### 5.2 接口、变量、实例
-
-1. 父层互联写明驱动方/接收方/功能，端点映射可追溯。
-2. 模块端口使用 in_/out_；本地变量无需重复外部端点。
-3. ready/stall 按实际驱动方向命名；未给无握手通路虚构握手。
-4. 多 group/lane/element 轴、槽位号、流水阶段不混淆。
-5. DFF 实例明确保存边界，d/q/en/n 后缀与真实行为一致。
-6. e/f/a 等已根据使用语义展开；指数域、指数值、域宽和小数位数不混淆。
-7. valid/active/nonzero、signed sum/magnitude、mantissa/fraction 含义准确。
-8. 循环索引、函数及局部变量使用功能词，兼容接口例外有明确依据。
-9. 同功能词在 spec/CModel/RTL/TB 对齐，语言风格分别遵守。
-
-审查表逐项标明“通过/不通过/N/A/未检查”，失败给出文件和行号、含义及建议；不要靠搜索单字母自动重命名。详细变量映射放审查结果或变更说明，避免仅输出“风格已统一”。
-
-## 六、重命名实施边界
-
-- 命名讨论/skill 更新仅更新规则，不默认授权全仓改名。接到实际迁移任务后先建立旧名→新名→作用域→语义映射，保护用户未提交改动。
-- 局部名可按模块迁移；端口/module/file/instance 名需检查源清单、实例连接、TB 层级探针、CModel trace、导出 manifest、DC 阶段识别、功耗注释等消费者。
-- 重命名不顺便改变位宽、signed、运算顺序、流水/握手。不能用普通文本替换把指数域与指数宽度混为一个名称。
-- RTL 源内容变化需要新快照和相应验证；不能因“仅改名”跳过既有门禁，不能直接修改历史导出或旧结果。冻结 SV 不同步。
-- 纯文档规则更新检查 skill、链接及冲突；实际 RTL/接口改名再按影响范围回归，EDA 仍使用新快照及真实证据。
-
-算术注释中的 `product` 统一译为“乘积”或“乘积结果”，`partial product` 为“部分积”，不得译为“产品”；英文标识符 `product/products` 保持原有数值含义。
+1. **文件与模块**：`.v` 文件名与 `module` 名完全一致，均带 `dp_` 前缀（DFF 库 `dp_lib_DFF*` 例外）。
+2. **流水级清晰度**：所有跨级寄存器输出采用 `r1_..r8_<function>`，组合候选采用 `<function>_d`，不存在将 `in_valid` 与寄存 valid 混入同一数组的写法。
+3. **无不明单字母与过程噪音**：无裸 `a/b/c/d/e/f/m/n/t/x/y` 或 `tmp/val/data2`；注释按功能组简洁编写，无 `// verilog_format: off/on`。
+4. **作用域分明**：端口用 `in_/out_`，父层互联用 `{driver}_{receiver}_{function}`，内部变量用纯功能名。
+5. **数值语义精确**：`exponent_field` / `exponent_field_width` / `unbiased_exponent` / `anchor` / `compare_exp` / `fraction_field` / `fractional_bits` / `magnitude` / `signed_sum` 严格区分。
+6. **消费端同步**：修改任何模块名、端口名或被 TB cutpoint 观察的 `rN_*` 内部寄存器名时，必须同步更新 `src/verilog/files*.f`、父模块例化、`test/rtl_tb/*.vh` 探针及验证脚本。

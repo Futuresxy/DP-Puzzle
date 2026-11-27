@@ -10,6 +10,6 @@
 
 已有 `.codex/`、`.agents/` 等设置保持不变。此目录名是项目统一存放约定；不假定应用会自动扫描任意自定义目录，下轮可显式指定技能文件使用。
 
-维护中的手写 Verilog 设计与审查使用 [dp-rtl-code-style](dp-rtl-code-style/SKILL.md)：完整移植 SN 的详细规则、示例、DFF/组合单元指南和逐项自检，按 DP 适配单变量声明、同步低有效 `rst_n`、显式流水保存及逐精度 S/I/F 注释。现有 RTL 的接口迁移状态见该技能，冻结 SV 不参与迁移。
+维护中的手写 Verilog 设计与审查使用 [dp-rtl-code-style](dp-rtl-code-style/SKILL.md)：融合 SN 基础规范与 Vortex `hw/rtl/tcu/` 工业级 RTL 风格，定义原生列对齐排版（禁用 `verilog_format: off/on` 屏蔽注释）、按功能/相关性分组的精炼注释规范、单变量声明、同步低有效 `rst_n`、显式 DFF 流水保存、多精度写门控与目的级结构零恢复、S/I/F 坐标表以及双层自检 Testbench 与 CModel 断点差分验证规范。现有 RTL 的接口迁移状态见该技能，冻结 SV 不参与迁移。
 
-文件、模块、实例、端口、互联和内部变量的命名使用 [dp-naming-convention](dp-naming-convention/SKILL.md)：保留 SN 命名维度/接口/CSV/审查规则并适配 DP，要求用功能名区分 exponent_field、fraction_field、位数、幅值和流水角色，避免 e/f/a 等不明局部变量。
+文件、模块、宏、参数、实例、端口、父层互联、流水变量与 Testbench 的命名使用 [dp-naming-convention](dp-naming-convention/SKILL.md)：统一采用 `rN_<function>`（第 N 级寄存输出）与 `<function>_d`（组合候选）替代跨级打包数组，通过自解释功能词区分 `exponent_field`、`exponent_field_width`、`unbiased_exponent`、`anchor`、`compare_exp`、`fraction_field`、`fractional_bits`、`magnitude` 与 `signed_sum`，消除裸 `e/f/a/tmp` 等不明缩写。
