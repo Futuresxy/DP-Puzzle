@@ -1,11 +1,10 @@
-// DP shared primitive: BIN_W >= 1, 1 <= ONEHOT_W <= 2**BIN_W.
-// Supports non-power-of-two entry counts; out-of-range input returns zero.
-// Combinational, no reset. Caller/export validation rejects invalid parameters.
+// Binary-to-onehot decoder primitive (BIN_W >= 1, 1 <= ONEHOT_W <= 2**BIN_W).
+// Supports non-power-of-two entry counts; out-of-range binary input returns all zeros.
 module dp_lib_bin2onehot #(
-  parameter integer BIN_W = 1,
+  parameter integer BIN_W    = 1,
   parameter integer ONEHOT_W = 2
 ) (
-  input wire [BIN_W-1:0] in_binary,
+  input  wire [   BIN_W-1:0] in_binary,
   output wire [ONEHOT_W-1:0] out_onehot
 );
 

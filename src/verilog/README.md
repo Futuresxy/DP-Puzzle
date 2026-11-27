@@ -46,24 +46,18 @@ dp_top                              单个 DP，C 传递/解包及 S6–S8
 
 文件、模块、实例和信号命名遵循 [dp-naming-convention](../../.skill/dp-naming-convention/SKILL.md)。局部数值不得只叫 `e/f/a`，应按实际含义写 `exponent_field/fraction_field/product_even` 等；互联线明确驱动方和接收方，模块端口保留 `in_`/`out_`。维护中的主/E RTL 已按 v1.6 迁移；历史 SV 与旧快照保留原名。
 
-遵循 [dp-rtl-code-style skill](../../.skill/dp-rtl-code-style/SKILL.md)。`*.v` 使用两空格缩进、LF 换行、100 列目标行宽，**每条声明只定义一个变量**。端口每行重复完整方向、类型和位宽；`wire/reg/parameter/localparam` 等也分别声明，取代此前同类变量合并的约定。
+遵循 [dp-rtl-code-style skill](../../.skill/dp-rtl-code-style/SKILL.md)。`*.v` 使用两空格缩进、LF 换行、100 列目标行宽，**每条声明只定义一个变量**。端口、参数、局部常量和内部信号按功能或流水级分组并垂直对齐，使用简洁的组级功能注释或阶段横幅（`// ==== Stage N: ... ====`），不使用逐变量冗余注释，也**禁止使用 `// verilog_format: off` / `// verilog_format: on`**。DFF 原语保持紧凑两行格式（模块类型/参数一行，实例名及全部端口下一行，豁免 100 列目标），普通子模块逐行连接并对齐括号。每级按“组合计算 → 本级 DFF → 下一级使用”排列，控制/符号旁带随级放置，不集中到文件末尾。
 
 ```verilog
-input wire in_a_valid,
-input wire in_b_valid,
-input wire in_c_valid,
-input wire [K_FP16*`DP_HALF_W-1:0] in_a,
-input wire [K_FP16*`DP_HALF_W-1:0] in_b,
-```
-
-先拆分声明，再用 Verible `v0.0-4298-g085eef05` 格式化本次涉及的维护文件。下面命令中的文件路径替换为本次修改的文件，不批量触及冻结 SV、历史快照或用户无关改动。formatter 不保证自动拆开多变量声明，不用 `verilog_format: off/on` 保护旧式合并声明。DFF 区块单独使用该保护：模块类型/参数一行，实例名和全部固定端口下一行；DFF 端口行豁免 100 列目标，普通模块仍逐行连接。每级按“组合计算 → 本级 DFF → 下一级使用”排列，控制/符号旁带随级放置，不集中到文件末尾。
-
-```sh
-verible-verilog-format --inplace --failsafe_success=false \
-  --indentation_spaces=2 --wrap_spaces=2 --column_limit=100 --try_wrap_long_lines \
-  --formal_parameters_indentation=indent --port_declarations_indentation=indent \
-  --named_parameter_indentation=indent --named_port_indentation=indent \
-  src/verilog/top/dp_top.v
+  // Clock, reset, and atomic input handshake
+  input  wire                               clock,
+  input  wire                               rst_n,
+  input  wire                               in_a_valid,
+  input  wire                               in_b_valid,
+  input  wire                               in_c_valid,
+  output wire                               out_a_ready,
+  output wire                               out_b_ready,
+  output wire                               out_c_ready,
 ```
 
 现用多精度与 E RTL 已采用同步低有效 `rst_n`，全部流水由 `common/` 参数化 DFF 保存。控制同步复位，payload 无复位、有效时更新；边界实例命名为 `ff_sN_sM_<field>`。详见 [寄存器合同](../../.skill/dp-rtl-code-style/references/registers.md) 和 [v1.6 验证](../../test/results/dp-style-v1.6.md)。冻结 SV 保留旧 reset 接口，旧快照及 PPA 结论不变。

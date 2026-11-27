@@ -1,13 +1,11 @@
-// DP skill template: BIN_W >= 1, 1 <= ONEHOT_W <= 2**BIN_W.
-// Zero input returns zero; caller must carry valid to distinguish index zero.
-// Multi-hot inputs OR the selected indices and are invalid for encoding.
-// This is not a priority encoder. Combinational, no reset.
+// Onehot-to-binary encoder primitive (BIN_W >= 1, 1 <= ONEHOT_W <= 2**BIN_W).
+// Zero input returns zero; multi-hot inputs OR selected indices (not a priority encoder).
 module dp_lib_onehot2bin #(
-  parameter integer BIN_W = 1,
+  parameter integer BIN_W    = 1,
   parameter integer ONEHOT_W = 2
 ) (
-  input wire [ONEHOT_W-1:0] in_onehot,
-  output wire [BIN_W-1:0] out_binary
+  input  wire [ONEHOT_W-1:0] in_onehot,
+  output wire [   BIN_W-1:0] out_binary
 );
 
   genvar bit_index;
