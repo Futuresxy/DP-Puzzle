@@ -13,7 +13,7 @@ ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'scripts'))
 from dp_rtl_gate import DP_INTERFACE, PARAMETERS, payload, validate_scopes, verification_inputs, MIXED_PROFILES, LOWP_PROFILES, frontend_top, frontend_list
 
-def snapshot(implementation,frontend='multi'):
+def snapshot(implementation,frontend='multi',*,diagnostic=False):
     base=ROOT/'src/verilog'
     if frontend not in ('multi','e') + MIXED_PROFILES + LOWP_PROFILES or (frontend!='multi' and implementation!='verilog'):
         raise ValueError('Unsupported/retired frontend or implementation; use an active pure-Verilog profile')
@@ -39,7 +39,7 @@ def snapshot(implementation,frontend='multi'):
         (dest/'manifest.json').write_text(json.dumps(dict(schema_version=1,export_id=export_id,
             implementation=implementation,frontend=frontend,source_fingerprint=fingerprint,source_sha256=source_hashes,
             exported_sha256=exported,status='generated',verified_scopes=[],
-            created_utc=datetime.now(timezone.utc).isoformat(),top=top,
+            created_utc=datetime.now(timezone.utc).isoformat(),top=top,interface=interface,
             specialization='parameterized source snapshot; parameters recorded per simulation',ppa_eligible=False),indent=2)+'\n')
         (dest/'README.md').write_text(f'# {export_id}\n\nFrozen hand-written RTL sources for DP {"v1.6" if implementation == "verilog" else "v1.5 legacy"}, frontend={frontend}.\n\n'
             'Created by `test/adapters/rtl.py`; no flattening or source editing. '
@@ -51,8 +51,9 @@ def snapshot(implementation,frontend='multi'):
     for rel,digest in manifest['exported_sha256'].items():
         if hashlib.sha256((dest/rel).read_bytes()).hexdigest()!=digest:
             raise RuntimeError(f'modified snapshot: {dest/rel}')
-    manifest.update(status='generated',ppa_eligible=False,interface=interface)
-    (dest/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+    if not diagnostic:
+        manifest.update(status='generated',ppa_eligible=False,interface=interface)
+        (dest/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     # Build-tool adapter only; canonical manifest/list above use portable paths.
     resolved=[]
     for line in (dest/'files.f').read_text().splitlines():

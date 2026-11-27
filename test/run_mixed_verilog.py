@@ -19,8 +19,8 @@ from adapters.cmodel import ROOT, evaluate
 from adapters.rtl import snapshot, record_validation
 from cases.common import make, random_request
 from cases.mixed import PROFILES, corpus, extended, poison_inactive, groups_for_profile
-from dp_rtl_gate import MIXED_CONFIGS
-from reference.exact import DTYPES
+from dp_rtl_gate import DEFAULT_SCOPE, MIXED_CONFIGS
+from reference.exact import DTYPES, reference
 from cases.mixed_v19 import directed as v19_directed
 
 
@@ -88,27 +88,71 @@ def q_only_switching_requests(profile):
     return requests
 
 
+def bf16_cancellation_requests(profile):
+    """Move the same residual across group boundaries, then stress S6."""
+    requests=[]
+    for ident, positions, residual_exponent in (
+        (0, (0, 1, 2), -28),  # All terms in one group: S3 can lose the residual.
+        (1, (0, 4, 8), -28),  # Separate groups: the S6 default window retains it.
+        (2, (0, 4, 8), -40),  # Separate groups: S6 can lose the smaller residual.
+    ):
+        elements=[0]*16
+        for index,value in zip(positions,(0x3f80,0xbf80,(127+residual_exponent)<<7)):
+            elements[index]=value
+        requests.append(poison_inactive(make('bf16',a=elements,ident=ident),profile))
+    return requests
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--frontend',choices=PROFILES,required=True)
     parser.add_argument('--verilator',default=os.environ.get('VERILATOR','verilator'))
+    parser.add_argument('--bf16-only',action='store_true',
+                        help='run BF16 corpus and cancellation probes with S3–S7 cutpoint checks')
+    parser.add_argument('--local-w',type=int,default=DEFAULT_SCOPE[1],help='S3 unsigned window')
+    parser.add_argument('--global-w',type=int,default=DEFAULT_SCOPE[2],help='S6 signed window')
     args=parser.parse_args()
+    k,local,glob=DEFAULT_SCOPE[0],args.local_w,args.global_w
+    custom=(k,local,glob)!=DEFAULT_SCOPE
+    if custom and not args.bf16_only:
+        parser.error('custom windows require --bf16-only')
+    if local<27 or glob<max(local+4,33):
+        parser.error('require LOCAL_W >= 27 and GLOBAL_W >= max(LOCAL_W+4, 33)')
     started=datetime.now(timezone.utc).isoformat()
     shared.FRONTEND=args.frontend
     shared.VERILATOR=args.verilator
     shared.RUN=ROOT/'test/runs/verilog'/datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
     shared.RUN.mkdir(parents=True)
-    shared.EXPORT,shared.SOURCE_LIST=snapshot('verilog',args.frontend)
+    shared.EXPORT,shared.SOURCE_LIST=snapshot('verilog',args.frontend,diagnostic=args.bf16_only)
     records=[]
-    print(f'{args.frontend}: L8 / II=1, base K16, windows 28/40',flush=True)
-    exe=compile_tb(args.frontend,28,40)
+    print(f'{args.frontend}: L8 / II=1, base K{k}, windows {local}/{glob}',flush=True)
+    exe=compile_tb(args.frontend,local,glob)
+    config=dict(frontend=args.frontend,architecture_v19=args.frontend in shared.V19_PROFILES,
+                k_fp16=k,local_shift_mag_width=local,global_signed_align_width=glob)
     for mode,requests,golden in corpus(args.frontend):
-        expected=evaluate(requests,config={'frontend':args.frontend,'architecture_v19':args.frontend in shared.V19_PROFILES},run_dir=shared.RUN/'model')
-        for result,reference in zip(expected,golden):
-            result['exact_fp32_or_int32']=reference['exact_fp32_or_int32']
-        records.append(shared.campaign(mode,16,28,40,requests,exe,expected=expected))
-        if records[-1]['max_ulp'] is not None and records[-1]['max_ulp']>4:
+        if args.bf16_only and mode!='bf16':
+            continue
+        expected=evaluate(requests,config=config,trace=args.bf16_only,run_dir=shared.RUN/'model')
+        for result,golden_row in zip(expected,golden):
+            result['exact_fp32_or_int32']=golden_row['exact_fp32_or_int32']
+        records.append(shared.campaign(mode,k,local,glob,requests,exe,
+                                       expected=expected,observe=args.bf16_only))
+        max_ulp=records[-1]['max_ulp']
+        if not custom and max_ulp is not None and max_ulp>4:
             raise AssertionError('native corpus exceeds 4 ULP')
+        if args.bf16_only:
+            break
+    if args.bf16_only:
+        requests=bf16_cancellation_requests(args.frontend)
+        expected=evaluate(requests,config=config,trace=True,run_dir=shared.RUN/'model')
+        for result,request in zip(expected,requests):
+            result['exact_fp32_or_int32']=f'{reference(request,config)["bits"]:08x}'
+        records.append(shared.campaign('bf16-cancellation',k,local,glob,requests,exe,
+                                       expected=expected,observe=True))
+        summary=shared.RUN/'verilator-verilog-bf16-summary.json'
+        summary.write_text(json.dumps(records,indent=2)+'\n')
+        print(f'Report: {summary.relative_to(ROOT)}',flush=True)
+        return
     rng=random.Random(20271105)
     requests=[expand(random_request(mode,rng,16),args.frontend) for _ in range(48) for mode in DTYPES]
     # Directed nibble/scale/metadata/cancellation/FP32 C edges exercise all groups.

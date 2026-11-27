@@ -64,7 +64,8 @@ def finish_time(flow, path):
                 return None
         else:
             reports = [p for p in path.glob("*-summary.json")
-                       if re.fullmatch(r"(verilator|iverilog)-(verilog|systemverilog|both)-(all|existing|parameters)-summary\.json", p.name)
+                       if re.fullmatch(r"(?:(verilator|iverilog)-(verilog|systemverilog|both)-(all|existing|parameters)"
+                                       r"|verilator-verilog-bf16)-summary\.json", p.name)
                        and not p.is_symlink()]
             if len(reports) != 1:
                 return None

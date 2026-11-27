@@ -13,6 +13,7 @@ import sys
 import hashlib
 import os
 from itertools import product
+from collections import Counter
 from datetime import datetime, timezone
 
 sys.path.insert(0,str(Path(__file__).resolve().parent))
@@ -101,12 +102,17 @@ def campaign(name,k,local,glob,requests,exe,source=None,expected=None,stress=Fal
         max_ulp=metrics['max_ulp'] if metrics['max_ulp'] is not None else 'n/a'
         print(f'  {precision:<16} PASS  golden_exact={count}/{count}  '
               f'math_exact={metrics["math_exact"]}/{count}  max_ulp={max_ulp}',flush=True)
+        if metrics['worst_fp32_cases']:
+            worst=metrics['worst_fp32_cases'][0]
+            print(f'    FP32 max at id={worst["id"]}: RTL={worst["rtl_fp32"]} '
+                  f'math={worst["math_fp32"]}',flush=True)
     return dict(export_id=EXPORT.name,frontend=FRONTEND,simulator=SIMULATOR,implementation=IMPLEMENTATION,name=name,k_fp16=k,local_width=local,global_width=glob,cutpoints_checked=cutpoints,simulation_log=str((dest/'simulation.log').relative_to(ROOT)), lint_log=str((exe.parent/'lint.log').relative_to(ROOT)), compile_log=str((exe.parent/'compile.log').relative_to(ROOT)), results_path=str((dest/'results.txt').relative_to(ROOT)), input_path=str(inp.relative_to(ROOT)), golden_path=str(gold.relative_to(ROOT)), schedule_path=str(sched.relative_to(ROOT)), output_sha256=hashlib.sha256((dest/"results.txt").read_bytes()).hexdigest(),input_sha256=hashlib.sha256(inp.read_bytes()).hexdigest(),result=line,**metrics)
 
 def precision_metrics(outputs,expected):
     math_bits={r['id']:int(r['exact_fp32_or_int32'],16) for r in expected}
     math_exact=0
-    distances=[]
+    histogram=Counter()
+    mismatches=[]
     nonfinite=0
     for ident,bits,result_type,_ in outputs:
         reference=math_bits[ident]
@@ -115,9 +121,16 @@ def precision_metrics(outputs,expected):
             if any((value & 0x7f800000)==0x7f800000 for value in (bits,reference)):
                 nonfinite+=1
             else:
-                distances.append(ulp_distance(bits,reference))
+                distance=ulp_distance(bits,reference)
+                histogram[distance]+=1
+                if distance:
+                    mismatches.append(dict(id=ident,ulp=distance,rtl_fp32=f'{bits:08x}',
+                                           math_fp32=f'{reference:08x}'))
+    mismatches.sort(key=lambda case: (-case['ulp'],case['id']))
     return dict(golden_exact=len(outputs),math_exact=math_exact,
-                max_ulp=max(distances,default=None),fp32_ulp_count=len(distances),
+                max_ulp=max(histogram,default=None),fp32_ulp_count=sum(histogram.values()),
+                fp32_ulp_histogram=dict(sorted(histogram.items())),
+                worst_fp32_cases=mismatches[:5],
                 nonfinite_fp32_count=nonfinite)
 
 def legal_tuple(r):

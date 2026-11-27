@@ -1,0 +1,1229 @@
+{
+  "source_commit": "14e938b4918d8e41622b8eca0cc3ea5e89d185ad",
+  "simulators": {
+    "verilator": "5.034",
+    "iverilog": "12.0"
+  },
+  "corpus": {
+    "directory": "test/data/dp/bf16/K16/correct_961",
+    "inputs_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+    "golden_sha256": "9baa7b20393c98e481f614cd55dcc8d6191e5bae34a83a325f9b64e6f84f9710",
+    "independent_math_matches": 961,
+    "worst_segment": {
+      "name": "batch128_mixed_random",
+      "seed": 20461614,
+      "first_id": 64,
+      "last_id": 191
+    }
+  },
+  "e96_full_regression": {
+    "report": "test/runs/verilog/20261127T024411968285Z/verilator-verilog-all-summary.json",
+    "verification_receipt": "test/runs/verilog/20261127T024411968285Z/verification.json",
+    "native_vectors": 10747,
+    "parameter_campaigns": 3
+  },
+  "id_113_default": {
+    "trace_path": "test/runs/verilog/20261127T024306883361Z/verilator-verilog/bf16/cutpoints.txt",
+    "rtl_trace_excerpt": [
+      "113 3 frontend_leaf 8 -15614",
+      "113 3 frontend_leaf 16 -4186",
+      "113 3 frontend_leaf 20 3749",
+      "113 5 compare_exp 0 2",
+      "113 5 compare_exp 1 13",
+      "113 5 compare_exp 2 13",
+      "113 5 compare_exp 3 2",
+      "113 5 group 0 1cc0f000 4 2 0 0",
+      "113 5 group 1 17d47dec 15 2 1 0",
+      "113 5 group 2 0b9a15c6 16 3 0 0",
+      "113 5 group 3 0fcadc00 5 3 0 0",
+      "113 5 c 0 9edff600 -1 0 0 0",
+      "113 6 aligned 0 241203200 13",
+      "113 6 aligned 1 -409397080064 13",
+      "113 6 aligned 2 398638067712 13",
+      "113 6 aligned 3 264952832 13",
+      "113 6 aligned 4 0 13",
+      "113 6 aligned 5 0 13",
+      "113 6 aligned 6 20824044 13",
+      "113 7 sum 0 -10232032276"
+    ],
+    "output_ulp": "1/32768",
+    "s7_unrounded": "-2558008069/8388608",
+    "dominant_signed_s3_error": "13/131072",
+    "s6_quantization_error": "0"
+  },
+  "directed_math_bits": {
+    "0": "31800000",
+    "1": "31800000",
+    "2": "2b800000"
+  },
+  "runs": [
+    {
+      "frontend": "t8h16q32e96",
+      "export_id": "DP_verilog_t8h16q32e96_5aa70d11ce130e91",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 27,
+      "global_width": 40,
+      "cutpoints_checked": 54777,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 950,
+      "fp32_ulp_histogram": {
+        "0": 950,
+        "1": 9,
+        "2": 1,
+        "4": 1
+      },
+      "max_ulp": 4,
+      "worst_fp32_cases": [
+        {
+          "id": 190,
+          "ulp": 4,
+          "rtl_fp32": "4270959b",
+          "math_fp32": "42709597"
+        },
+        {
+          "id": 116,
+          "ulp": 2,
+          "rtl_fp32": "3f418ef4",
+          "math_fp32": "3f418ef2"
+        },
+        {
+          "id": 77,
+          "ulp": 1,
+          "rtl_fp32": "c11270c4",
+          "math_fp32": "c11270c5"
+        },
+        {
+          "id": 91,
+          "ulp": 1,
+          "rtl_fp32": "c4af8e78",
+          "math_fp32": "c4af8e77"
+        },
+        {
+          "id": 92,
+          "ulp": 1,
+          "rtl_fp32": "46c0ce67",
+          "math_fp32": "46c0ce68"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "1d9f1a78ed273affe2076f2a8918cc54870a370131e170cfceeefd5ffa630483",
+      "report": "test/runs/verilog/20261127T024318519274Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024318519274Z",
+      "id_113_output": "c398781f",
+      "id_113_ulp": 1,
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 171,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "multi",
+      "export_id": "DP_verilog_d7c8c865ebf856be",
+      "simulator": "iverilog",
+      "k_fp16": 16,
+      "local_width": 28,
+      "global_width": 40,
+      "cutpoints_checked": 0,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 958,
+      "fp32_ulp_histogram": {
+        "0": 958,
+        "1": 2,
+        "3": 1
+      },
+      "max_ulp": 3,
+      "worst_fp32_cases": [
+        {
+          "id": 113,
+          "ulp": 3,
+          "rtl_fp32": "c398781b",
+          "math_fp32": "c398781e"
+        },
+        {
+          "id": 116,
+          "ulp": 1,
+          "rtl_fp32": "3f418ef3",
+          "math_fp32": "3f418ef2"
+        },
+        {
+          "id": 122,
+          "ulp": 1,
+          "rtl_fp32": "45fa6c8f",
+          "math_fp32": "45fa6c90"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "6c29383006cb8be9d893a08742a9993f3010d1b66567d617fa51a1946c8822d9",
+      "report": "test/runs/verilog/20261127T024113848130Z/iverilog-verilog-existing-summary.json",
+      "run_id": "20261127T024113848130Z"
+    },
+    {
+      "frontend": "t8h16q128e256",
+      "export_id": "DP_verilog_t8h16q128e256_f8209095129aa89a",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 28,
+      "global_width": 40,
+      "cutpoints_checked": 64387,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 958,
+      "fp32_ulp_histogram": {
+        "0": 958,
+        "1": 2,
+        "3": 1
+      },
+      "max_ulp": 3,
+      "worst_fp32_cases": [
+        {
+          "id": 113,
+          "ulp": 3,
+          "rtl_fp32": "c398781b",
+          "math_fp32": "c398781e"
+        },
+        {
+          "id": 116,
+          "ulp": 1,
+          "rtl_fp32": "3f418ef3",
+          "math_fp32": "3f418ef2"
+        },
+        {
+          "id": 122,
+          "ulp": 1,
+          "rtl_fp32": "45fa6c8f",
+          "math_fp32": "45fa6c90"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "6c29383006cb8be9d893a08742a9993f3010d1b66567d617fa51a1946c8822d9",
+      "report": "test/runs/verilog/20261127T024318238673Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024318238673Z",
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 201,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q32e128",
+      "export_id": "DP_verilog_t8h16q32e128_3db4348360e2fc6e",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 28,
+      "global_width": 40,
+      "cutpoints_checked": 56699,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 958,
+      "fp32_ulp_histogram": {
+        "0": 958,
+        "1": 2,
+        "3": 1
+      },
+      "max_ulp": 3,
+      "worst_fp32_cases": [
+        {
+          "id": 113,
+          "ulp": 3,
+          "rtl_fp32": "c398781b",
+          "math_fp32": "c398781e"
+        },
+        {
+          "id": 116,
+          "ulp": 1,
+          "rtl_fp32": "3f418ef3",
+          "math_fp32": "3f418ef2"
+        },
+        {
+          "id": 122,
+          "ulp": 1,
+          "rtl_fp32": "45fa6c8f",
+          "math_fp32": "45fa6c90"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "6c29383006cb8be9d893a08742a9993f3010d1b66567d617fa51a1946c8822d9",
+      "report": "test/runs/verilog/20261127T024306883690Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024306883690Z",
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 177,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q32e192",
+      "export_id": "DP_verilog_t8h16q32e192_b677d181f0a29c7f",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 28,
+      "global_width": 40,
+      "cutpoints_checked": 60543,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 958,
+      "fp32_ulp_histogram": {
+        "0": 958,
+        "1": 2,
+        "3": 1
+      },
+      "max_ulp": 3,
+      "worst_fp32_cases": [
+        {
+          "id": 113,
+          "ulp": 3,
+          "rtl_fp32": "c398781b",
+          "math_fp32": "c398781e"
+        },
+        {
+          "id": 116,
+          "ulp": 1,
+          "rtl_fp32": "3f418ef3",
+          "math_fp32": "3f418ef2"
+        },
+        {
+          "id": 122,
+          "ulp": 1,
+          "rtl_fp32": "45fa6c8f",
+          "math_fp32": "45fa6c90"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "6c29383006cb8be9d893a08742a9993f3010d1b66567d617fa51a1946c8822d9",
+      "report": "test/runs/verilog/20261127T024306885807Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024306885807Z",
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 189,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q32e256",
+      "export_id": "DP_verilog_t8h16q32e256_87332acf0b331629",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 28,
+      "global_width": 40,
+      "cutpoints_checked": 64387,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 958,
+      "fp32_ulp_histogram": {
+        "0": 958,
+        "1": 2,
+        "3": 1
+      },
+      "max_ulp": 3,
+      "worst_fp32_cases": [
+        {
+          "id": 113,
+          "ulp": 3,
+          "rtl_fp32": "c398781b",
+          "math_fp32": "c398781e"
+        },
+        {
+          "id": 116,
+          "ulp": 1,
+          "rtl_fp32": "3f418ef3",
+          "math_fp32": "3f418ef2"
+        },
+        {
+          "id": 122,
+          "ulp": 1,
+          "rtl_fp32": "45fa6c8f",
+          "math_fp32": "45fa6c90"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "6c29383006cb8be9d893a08742a9993f3010d1b66567d617fa51a1946c8822d9",
+      "report": "test/runs/verilog/20261127T024317024995Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024317024995Z",
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 201,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q32e96",
+      "export_id": "DP_verilog_t8h16q32e96_5aa70d11ce130e91",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 28,
+      "global_width": 40,
+      "cutpoints_checked": 54777,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 958,
+      "fp32_ulp_histogram": {
+        "0": 958,
+        "1": 2,
+        "3": 1
+      },
+      "max_ulp": 3,
+      "worst_fp32_cases": [
+        {
+          "id": 113,
+          "ulp": 3,
+          "rtl_fp32": "c398781b",
+          "math_fp32": "c398781e"
+        },
+        {
+          "id": 116,
+          "ulp": 1,
+          "rtl_fp32": "3f418ef3",
+          "math_fp32": "3f418ef2"
+        },
+        {
+          "id": 122,
+          "ulp": 1,
+          "rtl_fp32": "45fa6c8f",
+          "math_fp32": "45fa6c90"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "6c29383006cb8be9d893a08742a9993f3010d1b66567d617fa51a1946c8822d9",
+      "report": "test/runs/verilog/20261127T024306883361Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024306883361Z",
+      "id_113_output": "c398781b",
+      "id_113_ulp": 3,
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 171,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q64e128_opt",
+      "export_id": "DP_verilog_t8h16q64e128_opt_d9812dc7d50a0d7b",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 28,
+      "global_width": 40,
+      "cutpoints_checked": 56699,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 958,
+      "fp32_ulp_histogram": {
+        "0": 958,
+        "1": 2,
+        "3": 1
+      },
+      "max_ulp": 3,
+      "worst_fp32_cases": [
+        {
+          "id": 113,
+          "ulp": 3,
+          "rtl_fp32": "c398781b",
+          "math_fp32": "c398781e"
+        },
+        {
+          "id": 116,
+          "ulp": 1,
+          "rtl_fp32": "3f418ef3",
+          "math_fp32": "3f418ef2"
+        },
+        {
+          "id": 122,
+          "ulp": 1,
+          "rtl_fp32": "45fa6c8f",
+          "math_fp32": "45fa6c90"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "6c29383006cb8be9d893a08742a9993f3010d1b66567d617fa51a1946c8822d9",
+      "report": "test/runs/verilog/20261127T024306884371Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024306884371Z",
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 177,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q64e64",
+      "export_id": "DP_verilog_t8h16q64e64_7547c127f790ac6d",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 28,
+      "global_width": 40,
+      "cutpoints_checked": 56699,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 958,
+      "fp32_ulp_histogram": {
+        "0": 958,
+        "1": 2,
+        "3": 1
+      },
+      "max_ulp": 3,
+      "worst_fp32_cases": [
+        {
+          "id": 113,
+          "ulp": 3,
+          "rtl_fp32": "c398781b",
+          "math_fp32": "c398781e"
+        },
+        {
+          "id": 116,
+          "ulp": 1,
+          "rtl_fp32": "3f418ef3",
+          "math_fp32": "3f418ef2"
+        },
+        {
+          "id": 122,
+          "ulp": 1,
+          "rtl_fp32": "45fa6c8f",
+          "math_fp32": "45fa6c90"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "6c29383006cb8be9d893a08742a9993f3010d1b66567d617fa51a1946c8822d9",
+      "report": "test/runs/verilog/20261127T024306884829Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024306884829Z",
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 177,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q96e192",
+      "export_id": "DP_verilog_t8h16q96e192_1e63c2625d0dd101",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 28,
+      "global_width": 40,
+      "cutpoints_checked": 60543,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 958,
+      "fp32_ulp_histogram": {
+        "0": 958,
+        "1": 2,
+        "3": 1
+      },
+      "max_ulp": 3,
+      "worst_fp32_cases": [
+        {
+          "id": 113,
+          "ulp": 3,
+          "rtl_fp32": "c398781b",
+          "math_fp32": "c398781e"
+        },
+        {
+          "id": 116,
+          "ulp": 1,
+          "rtl_fp32": "3f418ef3",
+          "math_fp32": "3f418ef2"
+        },
+        {
+          "id": 122,
+          "ulp": 1,
+          "rtl_fp32": "45fa6c8f",
+          "math_fp32": "45fa6c90"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "6c29383006cb8be9d893a08742a9993f3010d1b66567d617fa51a1946c8822d9",
+      "report": "test/runs/verilog/20261127T024317333383Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024317333383Z",
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 189,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q32e96",
+      "export_id": "DP_verilog_t8h16q32e96_5aa70d11ce130e91",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 28,
+      "global_width": 64,
+      "cutpoints_checked": 54777,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 958,
+      "fp32_ulp_histogram": {
+        "0": 958,
+        "1": 2,
+        "3": 1
+      },
+      "max_ulp": 3,
+      "worst_fp32_cases": [
+        {
+          "id": 113,
+          "ulp": 3,
+          "rtl_fp32": "c398781b",
+          "math_fp32": "c398781e"
+        },
+        {
+          "id": 116,
+          "ulp": 1,
+          "rtl_fp32": "3f418ef3",
+          "math_fp32": "3f418ef2"
+        },
+        {
+          "id": 122,
+          "ulp": 1,
+          "rtl_fp32": "45fa6c8f",
+          "math_fp32": "45fa6c90"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "6c29383006cb8be9d893a08742a9993f3010d1b66567d617fa51a1946c8822d9",
+      "report": "test/runs/verilog/20261127T024319733001Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024319733001Z",
+      "id_113_output": "c398781b",
+      "id_113_ulp": 3,
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 171,
+        "math_exact": 2,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "2b800000"
+        }
+      }
+    },
+    {
+      "frontend": "multi",
+      "export_id": "DP_verilog_d7c8c865ebf856be",
+      "simulator": "iverilog",
+      "k_fp16": 16,
+      "local_width": 29,
+      "global_width": 40,
+      "cutpoints_checked": 0,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 959,
+      "fp32_ulp_histogram": {
+        "0": 959,
+        "1": 2
+      },
+      "max_ulp": 1,
+      "worst_fp32_cases": [
+        {
+          "id": 185,
+          "ulp": 1,
+          "rtl_fp32": "c2c8cde2",
+          "math_fp32": "c2c8cde1"
+        },
+        {
+          "id": 190,
+          "ulp": 1,
+          "rtl_fp32": "42709596",
+          "math_fp32": "42709597"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "8d34f0a5443322928ba2e143377d35ca950977febbd091b4fea41112e78e1b0b",
+      "report": "test/runs/verilog/20261127T024557496959Z/iverilog-verilog-existing-summary.json",
+      "run_id": "20261127T024557496959Z"
+    },
+    {
+      "frontend": "t8h16q128e256",
+      "export_id": "DP_verilog_t8h16q128e256_f8209095129aa89a",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 29,
+      "global_width": 40,
+      "cutpoints_checked": 64387,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 959,
+      "fp32_ulp_histogram": {
+        "0": 959,
+        "1": 2
+      },
+      "max_ulp": 1,
+      "worst_fp32_cases": [
+        {
+          "id": 185,
+          "ulp": 1,
+          "rtl_fp32": "c2c8cde2",
+          "math_fp32": "c2c8cde1"
+        },
+        {
+          "id": 190,
+          "ulp": 1,
+          "rtl_fp32": "42709596",
+          "math_fp32": "42709597"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "8d34f0a5443322928ba2e143377d35ca950977febbd091b4fea41112e78e1b0b",
+      "report": "test/runs/verilog/20261127T024423641398Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024423641398Z",
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 201,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q32e128",
+      "export_id": "DP_verilog_t8h16q32e128_3db4348360e2fc6e",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 29,
+      "global_width": 40,
+      "cutpoints_checked": 56699,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 959,
+      "fp32_ulp_histogram": {
+        "0": 959,
+        "1": 2
+      },
+      "max_ulp": 1,
+      "worst_fp32_cases": [
+        {
+          "id": 185,
+          "ulp": 1,
+          "rtl_fp32": "c2c8cde2",
+          "math_fp32": "c2c8cde1"
+        },
+        {
+          "id": 190,
+          "ulp": 1,
+          "rtl_fp32": "42709596",
+          "math_fp32": "42709597"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "8d34f0a5443322928ba2e143377d35ca950977febbd091b4fea41112e78e1b0b",
+      "report": "test/runs/verilog/20261127T024412008983Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024412008983Z",
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 177,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q32e192",
+      "export_id": "DP_verilog_t8h16q32e192_b677d181f0a29c7f",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 29,
+      "global_width": 40,
+      "cutpoints_checked": 60543,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 959,
+      "fp32_ulp_histogram": {
+        "0": 959,
+        "1": 2
+      },
+      "max_ulp": 1,
+      "worst_fp32_cases": [
+        {
+          "id": 185,
+          "ulp": 1,
+          "rtl_fp32": "c2c8cde2",
+          "math_fp32": "c2c8cde1"
+        },
+        {
+          "id": 190,
+          "ulp": 1,
+          "rtl_fp32": "42709596",
+          "math_fp32": "42709597"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "8d34f0a5443322928ba2e143377d35ca950977febbd091b4fea41112e78e1b0b",
+      "report": "test/runs/verilog/20261127T024412011876Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024412011876Z",
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 189,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q32e256",
+      "export_id": "DP_verilog_t8h16q32e256_87332acf0b331629",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 29,
+      "global_width": 40,
+      "cutpoints_checked": 64387,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 959,
+      "fp32_ulp_histogram": {
+        "0": 959,
+        "1": 2
+      },
+      "max_ulp": 1,
+      "worst_fp32_cases": [
+        {
+          "id": 185,
+          "ulp": 1,
+          "rtl_fp32": "c2c8cde2",
+          "math_fp32": "c2c8cde1"
+        },
+        {
+          "id": 190,
+          "ulp": 1,
+          "rtl_fp32": "42709596",
+          "math_fp32": "42709597"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "8d34f0a5443322928ba2e143377d35ca950977febbd091b4fea41112e78e1b0b",
+      "report": "test/runs/verilog/20261127T024422377676Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024422377676Z",
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 201,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q32e96",
+      "export_id": "DP_verilog_t8h16q32e96_5aa70d11ce130e91",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 29,
+      "global_width": 40,
+      "cutpoints_checked": 54777,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 959,
+      "fp32_ulp_histogram": {
+        "0": 959,
+        "1": 2
+      },
+      "max_ulp": 1,
+      "worst_fp32_cases": [
+        {
+          "id": 185,
+          "ulp": 1,
+          "rtl_fp32": "c2c8cde2",
+          "math_fp32": "c2c8cde1"
+        },
+        {
+          "id": 190,
+          "ulp": 1,
+          "rtl_fp32": "42709596",
+          "math_fp32": "42709597"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "8d34f0a5443322928ba2e143377d35ca950977febbd091b4fea41112e78e1b0b",
+      "report": "test/runs/verilog/20261127T024328877987Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024328877987Z",
+      "id_113_output": "c398781e",
+      "id_113_ulp": 0,
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 171,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q64e128_opt",
+      "export_id": "DP_verilog_t8h16q64e128_opt_d9812dc7d50a0d7b",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 29,
+      "global_width": 40,
+      "cutpoints_checked": 56699,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 959,
+      "fp32_ulp_histogram": {
+        "0": 959,
+        "1": 2
+      },
+      "max_ulp": 1,
+      "worst_fp32_cases": [
+        {
+          "id": 185,
+          "ulp": 1,
+          "rtl_fp32": "c2c8cde2",
+          "math_fp32": "c2c8cde1"
+        },
+        {
+          "id": 190,
+          "ulp": 1,
+          "rtl_fp32": "42709596",
+          "math_fp32": "42709597"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "8d34f0a5443322928ba2e143377d35ca950977febbd091b4fea41112e78e1b0b",
+      "report": "test/runs/verilog/20261127T024412010470Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024412010470Z",
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 177,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q64e64",
+      "export_id": "DP_verilog_t8h16q64e64_7547c127f790ac6d",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 29,
+      "global_width": 40,
+      "cutpoints_checked": 56699,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 959,
+      "fp32_ulp_histogram": {
+        "0": 959,
+        "1": 2
+      },
+      "max_ulp": 1,
+      "worst_fp32_cases": [
+        {
+          "id": 185,
+          "ulp": 1,
+          "rtl_fp32": "c2c8cde2",
+          "math_fp32": "c2c8cde1"
+        },
+        {
+          "id": 190,
+          "ulp": 1,
+          "rtl_fp32": "42709596",
+          "math_fp32": "42709597"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "8d34f0a5443322928ba2e143377d35ca950977febbd091b4fea41112e78e1b0b",
+      "report": "test/runs/verilog/20261127T024412013141Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024412013141Z",
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 177,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q96e192",
+      "export_id": "DP_verilog_t8h16q96e192_1e63c2625d0dd101",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 29,
+      "global_width": 40,
+      "cutpoints_checked": 60543,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 959,
+      "fp32_ulp_histogram": {
+        "0": 959,
+        "1": 2
+      },
+      "max_ulp": 1,
+      "worst_fp32_cases": [
+        {
+          "id": 185,
+          "ulp": 1,
+          "rtl_fp32": "c2c8cde2",
+          "math_fp32": "c2c8cde1"
+        },
+        {
+          "id": 190,
+          "ulp": 1,
+          "rtl_fp32": "42709596",
+          "math_fp32": "42709597"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "8d34f0a5443322928ba2e143377d35ca950977febbd091b4fea41112e78e1b0b",
+      "report": "test/runs/verilog/20261127T024423520594Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024423520594Z",
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 189,
+        "math_exact": 1,
+        "max_ulp": 830472192,
+        "outputs": {
+          "0": "00000000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q32e96",
+      "export_id": "DP_verilog_t8h16q32e96_5aa70d11ce130e91",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 30,
+      "global_width": 40,
+      "cutpoints_checked": 54777,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 959,
+      "fp32_ulp_histogram": {
+        "0": 959,
+        "1": 2
+      },
+      "max_ulp": 1,
+      "worst_fp32_cases": [
+        {
+          "id": 185,
+          "ulp": 1,
+          "rtl_fp32": "c2c8cde2",
+          "math_fp32": "c2c8cde1"
+        },
+        {
+          "id": 190,
+          "ulp": 1,
+          "rtl_fp32": "42709596",
+          "math_fp32": "42709597"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "8d34f0a5443322928ba2e143377d35ca950977febbd091b4fea41112e78e1b0b",
+      "report": "test/runs/verilog/20261127T024329183780Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024329183780Z",
+      "id_113_output": "c398781e",
+      "id_113_ulp": 0,
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 171,
+        "math_exact": 2,
+        "max_ulp": 729808896,
+        "outputs": {
+          "0": "31800000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q32e96",
+      "export_id": "DP_verilog_t8h16q32e96_5aa70d11ce130e91",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 31,
+      "global_width": 40,
+      "cutpoints_checked": 54777,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 959,
+      "fp32_ulp_histogram": {
+        "0": 959,
+        "1": 2
+      },
+      "max_ulp": 1,
+      "worst_fp32_cases": [
+        {
+          "id": 113,
+          "ulp": 1,
+          "rtl_fp32": "c398781f",
+          "math_fp32": "c398781e"
+        },
+        {
+          "id": 190,
+          "ulp": 1,
+          "rtl_fp32": "42709596",
+          "math_fp32": "42709597"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "3868ddfb1c00a2bd6677f8037151e6e87aeeb0b126f01b2f267a8a02c7c0917c",
+      "report": "test/runs/verilog/20261127T024329879042Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024329879042Z",
+      "id_113_output": "c398781f",
+      "id_113_ulp": 1,
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 171,
+        "math_exact": 2,
+        "max_ulp": 729808896,
+        "outputs": {
+          "0": "31800000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q32e96",
+      "export_id": "DP_verilog_t8h16q32e96_5aa70d11ce130e91",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 32,
+      "global_width": 40,
+      "cutpoints_checked": 54777,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 960,
+      "fp32_ulp_histogram": {
+        "0": 960,
+        "1": 1
+      },
+      "max_ulp": 1,
+      "worst_fp32_cases": [
+        {
+          "id": 190,
+          "ulp": 1,
+          "rtl_fp32": "42709596",
+          "math_fp32": "42709597"
+        }
+      ],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "0e2c53141c150114038cfe388d20ce34f9b0e94260ac6db770260c3e5efe40ed",
+      "report": "test/runs/verilog/20261127T024333046492Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024333046492Z",
+      "id_113_output": "c398781e",
+      "id_113_ulp": 0,
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 171,
+        "math_exact": 2,
+        "max_ulp": 729808896,
+        "outputs": {
+          "0": "31800000",
+          "1": "31800000",
+          "2": "00000000"
+        }
+      }
+    },
+    {
+      "frontend": "t8h16q32e96",
+      "export_id": "DP_verilog_t8h16q32e96_5aa70d11ce130e91",
+      "simulator": "verilator",
+      "k_fp16": 16,
+      "local_width": 40,
+      "global_width": 48,
+      "cutpoints_checked": 54777,
+      "result": "PASS cycles=969 accepted=961 checked=961 cancelled=0",
+      "golden_exact": 961,
+      "math_exact": 961,
+      "fp32_ulp_histogram": {
+        "0": 961
+      },
+      "max_ulp": 0,
+      "worst_fp32_cases": [],
+      "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+      "output_sha256": "d39c05d158b9295f1381bdb95ca84e9453c6ef49253533f6edb3a57a263c8cf6",
+      "report": "test/runs/verilog/20261127T024336895549Z/verilator-verilog-bf16-summary.json",
+      "run_id": "20261127T024336895549Z",
+      "id_113_output": "c398781e",
+      "id_113_ulp": 0,
+      "cancellation": {
+        "result": "PASS cycles=11 accepted=3 checked=3 cancelled=0",
+        "cutpoints_checked": 171,
+        "math_exact": 3,
+        "max_ulp": 0,
+        "outputs": {
+          "0": "31800000",
+          "1": "31800000",
+          "2": "2b800000"
+        }
+      }
+    }
+  ]
+}

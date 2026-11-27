@@ -1,0 +1,309 @@
+{
+  "device": "NVIDIA GeForce RTX 4090 | sm_89 | driver_api=13030 | runtime=13010",
+  "nvcc": "Cuda compilation tools, release 13.1, V13.1.115",
+  "ptx": "mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32",
+  "hmma_sass": [
+    "/*0250*/                   HMMA.16816.F32.BF16 R4, R8, R14, R4 ;"
+  ],
+  "source_sha256": "20fee39fa70dc6080278923fde0be558195127c245f7113f8ddce290267922a9",
+  "replay_sha256": "a13f9a053cdc539b31d7e9708dd723bbddc9e90c8393b646a7c1de54d202ed8f",
+  "sass_sha256": "369ea8cf4bdefd0983bcea286cbd53909552fc35fe87b22ed13510c0f3733e43",
+  "input_sha256": "2013bba6061ce4444ac8b38f692792f612eafb1804f954636d37823216b34cfb",
+  "golden_sha256": "9baa7b20393c98e481f614cd55dcc8d6191e5bae34a83a325f9b64e6f84f9710",
+  "results_sha256": "84739b2aa71e4887882fd987aca0c40edb390b2346ab2818eb6b2da7051c57f6",
+  "rtl_receipts": {
+    "rtl_28_40": {
+      "export_id": "DP_verilog_t8h16q32e96_5aa70d11ce130e91",
+      "run_id": "20261127T024306883361Z",
+      "output_sha256": "6c29383006cb8be9d893a08742a9993f3010d1b66567d617fa51a1946c8822d9"
+    },
+    "rtl_29_40": {
+      "export_id": "DP_verilog_t8h16q32e96_5aa70d11ce130e91",
+      "run_id": "20261127T024328877987Z",
+      "output_sha256": "8d34f0a5443322928ba2e143377d35ca950977febbd091b4fea41112e78e1b0b"
+    }
+  },
+  "corpus": {
+    "rtx4090": {
+      "count": 961,
+      "math_exact": 644,
+      "nonfinite_mismatch": 0,
+      "max_ulp": 32,
+      "ulp_histogram": {
+        "0": 644,
+        "1": 260,
+        "2": 39,
+        "3": 5,
+        "4": 5,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "8": 2,
+        "9": 1,
+        "16": 1,
+        "32": 1
+      },
+      "worst_ids": [
+        511
+      ]
+    },
+    "rtl_28_40": {
+      "count": 961,
+      "math_exact": 958,
+      "nonfinite_mismatch": 0,
+      "max_ulp": 3,
+      "ulp_histogram": {
+        "0": 958,
+        "1": 2,
+        "3": 1
+      },
+      "worst_ids": [
+        113
+      ]
+    },
+    "rtl_29_40": {
+      "count": 961,
+      "math_exact": 959,
+      "nonfinite_mismatch": 0,
+      "max_ulp": 1,
+      "ulp_histogram": {
+        "0": 959,
+        "1": 2
+      },
+      "worst_ids": [
+        185,
+        190
+      ]
+    }
+  },
+  "paired_with_rtx4090": {
+    "rtl_28_40": {
+      "rtl_closer": 316,
+      "equal_error": 644,
+      "gpu_closer": 1,
+      "nonfinite_mismatch": 0
+    },
+    "rtl_29_40": {
+      "rtl_closer": 317,
+      "equal_error": 644,
+      "gpu_closer": 0,
+      "nonfinite_mismatch": 0
+    }
+  },
+  "segments": {
+    "batch64_random": {
+      "rtx4090": {
+        "count": 64,
+        "math_exact": 35,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 4,
+        "ulp_histogram": {
+          "0": 35,
+          "1": 27,
+          "2": 1,
+          "4": 1
+        },
+        "worst_ids": [
+          15
+        ]
+      },
+      "rtl_28_40": {
+        "count": 64,
+        "math_exact": 64,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 0,
+        "ulp_histogram": {
+          "0": 64
+        },
+        "worst_ids": []
+      },
+      "rtl_29_40": {
+        "count": 64,
+        "math_exact": 64,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 0,
+        "ulp_histogram": {
+          "0": 64
+        },
+        "worst_ids": []
+      }
+    },
+    "batch128_mixed_random": {
+      "rtx4090": {
+        "count": 128,
+        "math_exact": 67,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 9,
+        "ulp_histogram": {
+          "0": 67,
+          "1": 45,
+          "2": 10,
+          "3": 3,
+          "5": 1,
+          "7": 1,
+          "9": 1
+        },
+        "worst_ids": [
+          190
+        ]
+      },
+      "rtl_28_40": {
+        "count": 128,
+        "math_exact": 125,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 3,
+        "ulp_histogram": {
+          "0": 125,
+          "1": 2,
+          "3": 1
+        },
+        "worst_ids": [
+          113
+        ]
+      },
+      "rtl_29_40": {
+        "count": 128,
+        "math_exact": 126,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 1,
+        "ulp_histogram": {
+          "0": 126,
+          "1": 2
+        },
+        "worst_ids": [
+          185,
+          190
+        ]
+      }
+    },
+    "batch256_deepseek_ai_load": {
+      "rtx4090": {
+        "count": 256,
+        "math_exact": 160,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 3,
+        "ulp_histogram": {
+          "0": 160,
+          "1": 80,
+          "2": 15,
+          "3": 1
+        },
+        "worst_ids": [
+          399
+        ]
+      },
+      "rtl_28_40": {
+        "count": 256,
+        "math_exact": 256,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 0,
+        "ulp_histogram": {
+          "0": 256
+        },
+        "worst_ids": []
+      },
+      "rtl_29_40": {
+        "count": 256,
+        "math_exact": 256,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 0,
+        "ulp_histogram": {
+          "0": 256
+        },
+        "worst_ids": []
+      }
+    },
+    "batch512_ai_load": {
+      "rtx4090": {
+        "count": 512,
+        "math_exact": 381,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 32,
+        "ulp_histogram": {
+          "0": 381,
+          "1": 108,
+          "2": 13,
+          "3": 1,
+          "4": 4,
+          "6": 1,
+          "8": 2,
+          "16": 1,
+          "32": 1
+        },
+        "worst_ids": [
+          511
+        ]
+      },
+      "rtl_28_40": {
+        "count": 512,
+        "math_exact": 512,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 0,
+        "ulp_histogram": {
+          "0": 512
+        },
+        "worst_ids": []
+      },
+      "rtl_29_40": {
+        "count": 512,
+        "math_exact": 512,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 0,
+        "ulp_histogram": {
+          "0": 512
+        },
+        "worst_ids": []
+      }
+    },
+    "ones": {
+      "rtx4090": {
+        "count": 1,
+        "math_exact": 1,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 0,
+        "ulp_histogram": {
+          "0": 1
+        },
+        "worst_ids": []
+      },
+      "rtl_28_40": {
+        "count": 1,
+        "math_exact": 1,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 0,
+        "ulp_histogram": {
+          "0": 1
+        },
+        "worst_ids": []
+      },
+      "rtl_29_40": {
+        "count": 1,
+        "math_exact": 1,
+        "nonfinite_mismatch": 0,
+        "max_ulp": 0,
+        "ulp_histogram": {
+          "0": 1
+        },
+        "worst_ids": []
+      }
+    }
+  },
+  "k_position_mapping_checks": 16,
+  "cancellation_probes": [
+    {
+      "id": -17,
+      "math_fp32": "31800000",
+      "rtx4090_fp32": "00000000"
+    },
+    {
+      "id": -18,
+      "math_fp32": "31800000",
+      "rtx4090_fp32": "31800000"
+    },
+    {
+      "id": -19,
+      "math_fp32": "2b800000",
+      "rtx4090_fp32": "2b800000"
+    }
+  ]
+}

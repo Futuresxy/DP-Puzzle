@@ -44,7 +44,7 @@ python3 test/run_verilog.py --simulator iverilog --implementation verilog --phas
 
 默认局部/全局窗口为 28/40。使用 `--local-w` 和 `--global-w` 可分别扫参；固定数据集仍为 K16。自选窗口用同配置 CModel 重算 `golden_exact` 的期望，数学参考和提交的 golden 文件保持原样。自选回归只记录功能验证；使用默认配置完整回归可重建 DC 门禁回执。
 
-命令行按实现逐项显示完整数据集结果。默认配置下，`golden_exact` 是实际 RTL 输出与 `expected.jsonl` 的 `d` 字段逐位一致的数量，该字段保存已验证的有限位宽 CModel 结果。`math_exact` 对比同文件的 `exact_fp32_or_int32`。`max_ulp` 统计有限 FP32 输出与数学参考之间的最大 ULP 距离，INT8 显示 `n/a`。特殊值仍计入逐位一致数。两项数学统计用于查看精度，RTL 的通过条件是逐位匹配有限位宽 golden 和满足协议。
+命令行按实现逐项显示完整数据集结果。默认配置下，`golden_exact` 是实际 RTL 输出与 `expected.jsonl` 的 `d` 字段逐位一致的数量，该字段保存已验证的有限位宽 CModel 结果。`math_exact` 对比同文件的 `exact_fp32_or_int32`。`max_ulp` 统计有限 FP32 输出与数学参考之间的最大 ULP 距离，即使输入是 BF16 也使用 FP32 ULP。INT8 显示 `n/a`。报告中的 `fp32_ulp_histogram` 给出各 ULP 距离的频数，`worst_fp32_cases` 保存最多五笔非零 ULP 请求的 ID、RTL 与数学输出位型。特殊值仍计入逐位一致数。RTL 的通过条件是逐位匹配有限位宽 golden 和满足协议。
 
 九种原有浮点编码各 961 笔，INT8 为 1045 笔，TF32 为 1053 笔。混格式参数回归单独生成每种格式 48 笔，现场调用 CModel，并插入气泡和复位来覆盖协议。`reset_cancelled` 表示已接收但在输出前被复位清空的请求数。最终打印完整 JSON 报告路径。
 
@@ -59,6 +59,15 @@ python3.11 test/run_mixed_verilog.py --frontend t8h16q64e128_opt
 ```
 
 每个顶层独立导出和 lint，完整运行11种精度的10747笔原生数据，再运行三组窗口的混格式/边界/协议/断点测试。`golden_exact` 使用本 profile 现场 CModel，`math_exact/max_ulp` 使用提交的独立数学 golden；不会覆写数据中的历史期望。验证记录见 [混合 RTL 验证](results/mixed-rtl-v1.7.md)。
+
+使用 `--bf16-only` 可单独检查 961 笔 BF16 语料和三笔抵消用例的 S3–S7 断点及 L8/II=1。摘要分别记录两组统计，原生语料的默认配置继续执行 4 ULP 门槛。自选窗口用于扫参，专项重放不更新完整回归回执。
+
+```sh
+python3 test/run_mixed_verilog.py --frontend t8h16q32e96 --bf16-only
+python3 test/run_mixed_verilog.py --frontend t8h16q32e96 --bf16-only --local-w 29 --global-w 40
+```
+
+默认 3 ULP 的样本、逐级归因和扫参结果见 [BF16 精度分析](results/bf16-rtl-precision-20261127.md)。
 
 ## E64 / Q32E64 独立顶层
 
